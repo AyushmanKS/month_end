@@ -91,17 +91,6 @@ class OptionalAuthScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSpacing.sm),
               AppButton(
-                label: 'Continue with Apple',
-                icon: Icons.apple_rounded,
-                variant: AppButtonVariant.secondary,
-                isLoading: busy,
-                onPressed: busy
-                    ? null
-                    : () => _handle(context, ref,
-                        () => ref.read(authControllerProvider.notifier).upgradeWithApple()),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              AppButton(
                 label: 'Use email & password',
                 icon: Icons.email_outlined,
                 variant: AppButtonVariant.ghost,

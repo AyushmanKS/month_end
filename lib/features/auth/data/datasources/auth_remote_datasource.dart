@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/error_handler.dart';
@@ -10,6 +11,7 @@ class AuthRemoteDataSource {
   final SupabaseClient _client;
 
   static const String _usersTable = 'users';
+  static const String _oauthRedirect = 'monthend://login-callback';
 
   GoTrueClient get _auth => _client.auth;
 
@@ -64,7 +66,10 @@ class AuthRemoteDataSource {
 
   Future<void> linkOAuthIdentity(OAuthProvider provider) async {
     try {
-      await _auth.linkIdentity(provider);
+      await _auth.linkIdentity(
+        provider,
+        redirectTo: kIsWeb ? null : _oauthRedirect,
+      );
     } catch (e, s) {
       throw ErrorHandler.map(e, s);
     }
@@ -72,7 +77,10 @@ class AuthRemoteDataSource {
 
   Future<void> signInWithOAuth(OAuthProvider provider) async {
     try {
-      await _auth.signInWithOAuth(provider);
+      await _auth.signInWithOAuth(
+        provider,
+        redirectTo: kIsWeb ? null : _oauthRedirect,
+      );
     } catch (e, s) {
       throw ErrorHandler.map(e, s);
     }
