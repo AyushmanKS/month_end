@@ -1,0 +1,5 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"
+#include "Generated.xcconfig"
+
+// arm64 has no MLKit simulator slice; use x86_64 (Rosetta) for sim builds only.
+EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64
