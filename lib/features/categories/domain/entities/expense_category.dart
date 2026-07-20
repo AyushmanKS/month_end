@@ -15,6 +15,10 @@ class ExpenseCategory {
 
   IconData get icon => categoryIcons[iconKey] ?? Icons.category_outlined;
 
+  bool get isLocalFallback => id.startsWith('preset_');
+
+  String? get persistableId => isLocalFallback ? null : id;
+
   factory ExpenseCategory.fromJson(Map<String, dynamic> json) {
     return ExpenseCategory(
       id: json['id'] as String,

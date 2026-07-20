@@ -65,7 +65,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       }
     }
 
-    final categoryId = _category!.isPreset ? null : _category!.id;
+    final categoryId = _category!.persistableId;
     final ok = await controller.addExpense(
       bucketId: bucketId,
       amount: double.parse(_amount.text),
