@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../shared_providers/supabase_providers.dart';
+import '../../../expenses/domain/entities/expense.dart';
+import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../data/datasources/bucket_remote_datasource.dart';
 import '../../data/repositories/bucket_repository_impl.dart';
 import '../../domain/entities/bucket.dart';
@@ -60,6 +62,14 @@ final bucketMembersFamilyProvider =
     FutureProvider.family<List<BucketMember>, String>((ref, bucketId) async {
       return ref.watch(bucketRepositoryProvider).fetchMembers(bucketId);
     });
+
+final weekExpensesProvider = Provider.family<List<Expense>, String>((
+  ref,
+  weekId,
+) {
+  final expenses = ref.watch(expensesProvider).valueOrNull ?? const [];
+  return expenses.where((e) => e.weekId == weekId).toList();
+});
 
 class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
   BucketController(this._ref) : super(const AsyncValue.data(null));
@@ -149,6 +159,23 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
       _ref.invalidate(myBucketsProvider);
       _ref.invalidate(bucketMembersProvider);
       _ref.invalidate(bucketMembersFamilyProvider(bucketId));
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> setWeekManualTotal({
+    required String weekId,
+    required double amount,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repo.setWeekManualTotal(weekId: weekId, amount: amount);
+      _ref.invalidate(myBucketsProvider);
+      _ref.invalidate(weeklyBucketsProvider);
       state = const AsyncValue.data(null);
       return true;
     } catch (e, s) {

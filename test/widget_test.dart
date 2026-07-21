@@ -15,6 +15,8 @@ void main() {
       weekIndex: index,
       startDate: DateTime(2026, 7, 1 + index * 7),
       endDate: DateTime(2026, 7, 7 + index * 7),
+      effectiveStartDate: DateTime(2026, 7, 1 + index * 7),
+      kind: WeeklyBucketKind.active,
       allocatedAmount: allocated,
       spentAmount: spent,
       remainingAmount: allocated - spent,

@@ -18,4 +18,6 @@ class RouteNames {
   static const String addExpense = '/expense/add';
   static const String bigExpense = '/expense/big';
   static const String expenseHistory = '/expense/history';
+
+  static const String weekDetails = '/week/details';
 }

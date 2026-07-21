@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -121,6 +122,7 @@ class AuthRemoteDataSource {
   Future<(AppUser user, bool signedIntoExisting)> linkOrSignInGoogle() async {
     try {
       final idToken = await _googleIdToken();
+      final claims = _decodeIdToken(idToken);
       try {
         await _auth.linkIdentityWithIdToken(
           provider: OAuthProvider.google,
@@ -130,6 +132,8 @@ class AuthRemoteDataSource {
         final user = await _syncProfile(
           _requireUser(currentAuthUser),
           AuthType.google,
+          name: _claimName(claims),
+          photoUrl: _claimPhoto(claims),
         );
         return (user, false);
       } on AuthApiException catch (e) {
@@ -144,6 +148,8 @@ class AuthRemoteDataSource {
         final user = await _syncProfile(
           _requireUser(response.user),
           AuthType.google,
+          name: _claimName(claims),
+          photoUrl: _claimPhoto(claims),
         );
         return (user, true);
       }
@@ -155,12 +161,18 @@ class AuthRemoteDataSource {
   Future<AppUser> signInWithGoogleNative() async {
     try {
       final idToken = await _googleIdToken();
+      final claims = _decodeIdToken(idToken);
       final response = await _auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
       );
       final user = _requireUser(response.user);
-      return _syncProfile(user, AuthType.google);
+      return _syncProfile(
+        user,
+        AuthType.google,
+        name: _claimName(claims),
+        photoUrl: _claimPhoto(claims),
+      );
     } catch (e, s) {
       throw ErrorHandler.map(e, s);
     }
@@ -234,16 +246,21 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<AppUser> _syncProfile(User user, AuthType authType) async {
+  Future<AppUser> _syncProfile(
+    User user,
+    AuthType authType, {
+    String? name,
+    String? photoUrl,
+  }) async {
     final resolvedType = _resolveAuthType(user, authType);
-    final name = _profileName(user);
-    final photoUrl = _profilePhoto(user);
+    final resolvedName = name ?? _profileName(user);
+    final resolvedPhoto = photoUrl ?? _profilePhoto(user);
     final payload = {
       'id': user.id,
       'auth_type': resolvedType.name,
       'email': user.email,
-      'name': ?name,
-      'photo_url': ?photoUrl,
+      'name': ?resolvedName,
+      'photo_url': ?resolvedPhoto,
     };
     final row = await _client
         .from(_usersTable)
@@ -251,6 +268,30 @@ class AuthRemoteDataSource {
         .select()
         .single();
     return AppUser.fromJson(row);
+  }
+
+  Map<String, dynamic> _decodeIdToken(String idToken) {
+    try {
+      final parts = idToken.split('.');
+      if (parts.length != 3) return const {};
+      final decoded = utf8.decode(
+        base64Url.decode(base64Url.normalize(parts[1])),
+      );
+      final map = jsonDecode(decoded);
+      return map is Map<String, dynamic> ? map : const {};
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  String? _claimName(Map<String, dynamic> claims) {
+    final name = (claims['name'] ?? claims['full_name']) as String?;
+    return (name != null && name.isNotEmpty) ? name : null;
+  }
+
+  String? _claimPhoto(Map<String, dynamic> claims) {
+    final photo = (claims['picture'] ?? claims['avatar_url']) as String?;
+    return (photo != null && photo.isNotEmpty) ? photo : null;
   }
 
   String? _profileName(User user) {

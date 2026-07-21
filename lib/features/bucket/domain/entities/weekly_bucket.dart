@@ -1,5 +1,7 @@
 enum WeeklyBucketStatus { active, closed }
 
+enum WeeklyBucketKind { active, historical }
+
 class WeeklyBucket {
   const WeeklyBucket({
     required this.id,
@@ -7,6 +9,8 @@ class WeeklyBucket {
     required this.weekIndex,
     required this.startDate,
     required this.endDate,
+    required this.effectiveStartDate,
+    required this.kind,
     required this.allocatedAmount,
     required this.spentAmount,
     required this.remainingAmount,
@@ -18,6 +22,8 @@ class WeeklyBucket {
   final int weekIndex;
   final DateTime startDate;
   final DateTime endDate;
+  final DateTime effectiveStartDate;
+  final WeeklyBucketKind kind;
   final double allocatedAmount;
   final double spentAmount;
   final double remainingAmount;
@@ -25,14 +31,22 @@ class WeeklyBucket {
 
   bool get isActive => status == WeeklyBucketStatus.active;
 
+  bool get isHistorical => kind == WeeklyBucketKind.historical;
+
+  bool get needsManualTotal => isHistorical && spentAmount <= 0;
+
+  int get activeDays => endDate.difference(effectiveStartDate).inDays + 1;
+
   double get progress => allocatedAmount <= 0
       ? 0
       : (spentAmount / allocatedAmount).clamp(0.0, 1.0);
 
   bool get isOverThreshold => progress >= 0.8;
-  bool get isOverBudget => spentAmount > allocatedAmount;
+  bool get isOverBudget => !isHistorical && spentAmount > allocatedAmount;
 
   WeeklyBucket copyWith({
+    DateTime? effectiveStartDate,
+    WeeklyBucketKind? kind,
     double? allocatedAmount,
     double? spentAmount,
     double? remainingAmount,
@@ -44,6 +58,8 @@ class WeeklyBucket {
       weekIndex: weekIndex,
       startDate: startDate,
       endDate: endDate,
+      effectiveStartDate: effectiveStartDate ?? this.effectiveStartDate,
+      kind: kind ?? this.kind,
       allocatedAmount: allocatedAmount ?? this.allocatedAmount,
       spentAmount: spentAmount ?? this.spentAmount,
       remainingAmount: remainingAmount ?? this.remainingAmount,
@@ -52,12 +68,19 @@ class WeeklyBucket {
   }
 
   factory WeeklyBucket.fromJson(Map<String, dynamic> json) {
+    final startDate = DateTime.parse(json['start_date'] as String);
     return WeeklyBucket(
       id: json['id'] as String,
       bucketId: json['bucket_id'] as String? ?? '',
       weekIndex: (json['week_index'] as num?)?.toInt() ?? 0,
-      startDate: DateTime.parse(json['start_date'] as String),
+      startDate: startDate,
       endDate: DateTime.parse(json['end_date'] as String),
+      effectiveStartDate: json['effective_start_date'] != null
+          ? DateTime.parse(json['effective_start_date'] as String)
+          : startDate,
+      kind: (json['kind'] as String?) == 'historical'
+          ? WeeklyBucketKind.historical
+          : WeeklyBucketKind.active,
       allocatedAmount: _toDouble(json['allocated_amount']),
       spentAmount: _toDouble(json['spent_amount']),
       remainingAmount: _toDouble(json['remaining_amount']),

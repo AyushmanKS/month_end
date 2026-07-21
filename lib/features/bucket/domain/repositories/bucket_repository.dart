@@ -38,4 +38,9 @@ abstract class BucketRepository {
   Future<List<WeeklyBucket>> fetchWeeklyBuckets(String bucketId);
 
   Stream<List<WeeklyBucket>> watchWeeklyBuckets(String bucketId);
+
+  Future<WeeklyBucket> setWeekManualTotal({
+    required String weekId,
+    required double amount,
+  });
 }

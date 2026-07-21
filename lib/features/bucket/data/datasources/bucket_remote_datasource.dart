@@ -133,6 +133,21 @@ class BucketRemoteDataSource {
     }
   }
 
+  Future<WeeklyBucket> setWeekManualTotal({
+    required String weekId,
+    required double amount,
+  }) async {
+    try {
+      final data = await _client.rpc(
+        'set_week_manual_total',
+        params: {'p_week_id': weekId, 'p_amount': amount},
+      );
+      return WeeklyBucket.fromJson(Map<String, dynamic>.from(data as Map));
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
   Future<List<BucketMember>> fetchMembers(String bucketId) async {
     try {
       final rows = await _client

@@ -15,54 +15,112 @@ class WeeklyBucketCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Week ${week.weekIndex + 1}',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  _StatusChip(week: week),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xxs),
-              Text(
-                '${AppDateUtils.day(week.startDate)} – ${AppDateUtils.day(week.endDate)}',
-                style: TextStyle(color: brand.textSecondary, fontSize: 12),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              AnimatedProgressBar(value: week.progress),
-              const SizedBox(height: AppSpacing.xs),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${CurrencyFormatter.format(week.spentAmount)} spent',
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  Text(
-                    '${CurrencyFormatter.format(week.remainingAmount)} left',
-                    style: TextStyle(
-                      color: week.isOverBudget ? brand.danger : brand.success,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13,
+    return Opacity(
+      opacity: week.isHistorical ? 0.85 : 1,
+      child: Card(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Week ${week.weekIndex + 1}',
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    _StatusChip(week: week),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.xxs),
+                Text(
+                  '${AppDateUtils.day(week.startDate)} – ${AppDateUtils.day(week.endDate)}',
+                  style: TextStyle(color: brand.textSecondary, fontSize: 12),
+                ),
+                const SizedBox(height: AppSpacing.md),
+                if (week.isHistorical)
+                  _HistoricalFooter(week: week, brand: brand)
+                else
+                  _ActiveFooter(week: week, brand: brand),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ActiveFooter extends StatelessWidget {
+  const _ActiveFooter({required this.week, required this.brand});
+
+  final WeeklyBucket week;
+  final AppBrandColors brand;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AnimatedProgressBar(value: week.progress),
+        const SizedBox(height: AppSpacing.xs),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              '${CurrencyFormatter.format(week.spentAmount)} spent',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            Text(
+              '${CurrencyFormatter.format(week.remainingAmount)} left',
+              style: TextStyle(
+                color: week.isOverBudget ? brand.danger : brand.success,
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _HistoricalFooter extends StatelessWidget {
+  const _HistoricalFooter({required this.week, required this.brand});
+
+  final WeeklyBucket week;
+  final AppBrandColors brand;
+
+  @override
+  Widget build(BuildContext context) {
+    if (week.needsManualTotal) {
+      return Row(
+        children: [
+          Icon(Icons.edit_note_rounded, size: 18, color: brand.textSecondary),
+          const SizedBox(width: AppSpacing.xs),
+          Expanded(
+            child: Text(
+              'Tap to enter total spent',
+              style: TextStyle(color: brand.textSecondary, fontSize: 13),
+            ),
+          ),
+        ],
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text('Total spent', style: Theme.of(context).textTheme.bodySmall),
+        Text(
+          CurrencyFormatter.format(week.spentAmount),
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+        ),
+      ],
     );
   }
 }
@@ -75,7 +133,9 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brand = context.brand;
-    final (label, color) = week.isActive
+    final (label, color) = week.isHistorical
+        ? ('Past', brand.textSecondary)
+        : week.isActive
         ? ('Active', brand.success)
         : ('Closed', brand.textSecondary);
     return Container(

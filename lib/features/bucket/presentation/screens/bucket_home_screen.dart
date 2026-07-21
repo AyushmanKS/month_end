@@ -123,13 +123,20 @@ class _BucketDashboard extends ConsumerWidget {
                   for (var i = 0; i < weeks.length; i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: WeeklyBucketCard(week: weeks[i])
-                          .animate()
-                          .fadeIn(
-                            delay: AppDurations.listStagger * i,
-                            duration: AppDurations.medium,
-                          )
-                          .slideY(begin: 0.1, end: 0),
+                      child:
+                          WeeklyBucketCard(
+                                week: weeks[i],
+                                onTap: () => context.push(
+                                  RouteNames.weekDetails,
+                                  extra: weeks[i],
+                                ),
+                              )
+                              .animate()
+                              .fadeIn(
+                                delay: AppDurations.listStagger * i,
+                                duration: AppDurations.medium,
+                              )
+                              .slideY(begin: 0.1, end: 0),
                     ),
                 ],
               );

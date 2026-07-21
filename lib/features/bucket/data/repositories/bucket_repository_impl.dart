@@ -63,4 +63,10 @@ class BucketRepositoryImpl implements BucketRepository {
   @override
   Stream<List<WeeklyBucket>> watchWeeklyBuckets(String bucketId) =>
       _remote.watchWeeklyBuckets(bucketId);
+
+  @override
+  Future<WeeklyBucket> setWeekManualTotal({
+    required String weekId,
+    required double amount,
+  }) => _remote.setWeekManualTotal(weekId: weekId, amount: amount);
 }

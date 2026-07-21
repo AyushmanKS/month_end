@@ -8,6 +8,7 @@ import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/bucket_providers.dart';
@@ -56,52 +57,59 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentAppUserProvider);
+    final userAsync = ref.watch(appUserStreamProvider);
+    final user = userAsync.valueOrNull;
     final busy = ref.watch(bucketControllerProvider).isLoading;
+    final resolvingUser = userAsync.isLoading && !userAsync.hasValue;
     final canCreate = user?.canCreateBucket ?? false;
 
     return Scaffold(
       appBar: AppBar(title: const Text('New bucket')),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: canCreate
-              ? Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      AppTextField(
-                        controller: _name,
-                        label: 'Bucket name',
-                        hint: 'e.g. Flat 402',
-                        prefixIcon: Icons.home_outlined,
-                        textCapitalization: TextCapitalization.words,
-                        validator: (v) => Validators.required(v, field: 'Name'),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      AppTextField(
-                        controller: _budget,
-                        label: 'Monthly budget',
-                        hint: '0',
-                        prefixIcon: Icons.currency_rupee_rounded,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                        ],
-                        validator: Validators.amount,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-                      AppButton(
-                        label: 'Create bucket',
-                        isLoading: busy,
-                        onPressed: busy ? null : _submit,
-                      ),
-                    ],
-                  ),
-                )
-              : _LockedNotice(),
-        ),
+        child: resolvingUser
+            ? const AppLoader()
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: canCreate
+                    ? Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            AppTextField(
+                              controller: _name,
+                              label: 'Bucket name',
+                              hint: 'e.g. Flat 402',
+                              prefixIcon: Icons.home_outlined,
+                              textCapitalization: TextCapitalization.words,
+                              validator: (v) =>
+                                  Validators.required(v, field: 'Name'),
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            AppTextField(
+                              controller: _budget,
+                              label: 'Monthly budget',
+                              hint: '0',
+                              prefixIcon: Icons.currency_rupee_rounded,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9.]'),
+                                ),
+                              ],
+                              validator: Validators.amount,
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            AppButton(
+                              label: 'Create bucket',
+                              isLoading: busy,
+                              onPressed: busy ? null : _submit,
+                            ),
+                          ],
+                        ),
+                      )
+                    : _LockedNotice(),
+              ),
       ),
     );
   }

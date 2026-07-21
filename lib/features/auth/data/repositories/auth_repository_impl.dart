@@ -29,10 +29,10 @@ class AuthRepositoryImpl implements AuthRepository {
           if (user == null) return null;
           final resolvedType = _resolveType(user);
           final meta = user.userMetadata ?? const {};
-          final metaName =
+          var metaName =
               (meta['full_name'] ?? meta['name']) as String? ??
               _identityValue(user, const ['full_name', 'name']);
-          final metaPhoto =
+          var metaPhoto =
               (meta['avatar_url'] ?? meta['picture']) as String? ??
               _identityValue(user, const ['avatar_url', 'picture']);
           AppUser? profile;
@@ -40,6 +40,16 @@ class AuthRepositoryImpl implements AuthRepository {
             profile = await _remote.fetchProfile(user.id);
           } catch (_) {
             profile = null;
+          }
+          final profileNameMissing =
+              profile == null || profile.name == null || profile.name!.isEmpty;
+          if (metaName == null &&
+              profileNameMissing &&
+              (resolvedType == AuthType.google ||
+                  resolvedType == AuthType.apple)) {
+            final (serverName, serverPhoto) = await _serverIdentity();
+            metaName ??= serverName;
+            metaPhoto ??= serverPhoto;
           }
           if (profile != null) {
             final needsName =
@@ -78,6 +88,30 @@ class AuthRepositoryImpl implements AuthRepository {
         .handleError((Object error, StackTrace stack) {
           AppLogger.instance.w('Auth stream error ignored', error);
         });
+  }
+
+  Future<(String?, String?)> _serverIdentity() async {
+    try {
+      final identities = await _client.auth.getUserIdentities();
+      String? pick(List<String> keys) {
+        for (final identity in identities) {
+          final data = identity.identityData;
+          if (data == null) continue;
+          for (final key in keys) {
+            final value = data[key];
+            if (value is String && value.isNotEmpty) return value;
+          }
+        }
+        return null;
+      }
+
+      return (
+        pick(const ['full_name', 'name']),
+        pick(const ['avatar_url', 'picture']),
+      );
+    } catch (_) {
+      return (null, null);
+    }
   }
 
   String? _identityValue(User user, List<String> keys) {
