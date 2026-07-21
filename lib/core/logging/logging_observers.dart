@@ -35,7 +35,9 @@ class LoggingNavigatorObserver extends NavigatorObserver {
   }
 }
 
-class LoggingProviderObserver extends ProviderObserver {
+final class LoggingProviderObserver extends ProviderObserver {
+  const LoggingProviderObserver();
+
   static const int _maxLen = 120;
 
   String _short(Object? value) {
@@ -44,17 +46,16 @@ class LoggingProviderObserver extends ProviderObserver {
     return '${text.substring(0, _maxLen)}…';
   }
 
-  String _name(ProviderBase<Object?> provider) =>
-      provider.name ?? provider.runtimeType.toString();
+  String _name(ProviderObserverContext context) =>
+      context.provider.name ?? context.provider.runtimeType.toString();
 
   @override
   void didUpdateProvider(
-    ProviderBase<Object?> provider,
+    ProviderObserverContext context,
     Object? previousValue,
     Object? newValue,
-    ProviderContainer container,
   ) {
-    final name = _name(provider);
+    final name = _name(context);
     if (name.contains('router') || name.contains('logger')) return;
     AppLogger.instance.d(
       '🔄 STATE $name: ${_short(previousValue)} → ${_short(newValue)}',
@@ -63,13 +64,12 @@ class LoggingProviderObserver extends ProviderObserver {
 
   @override
   void providerDidFail(
-    ProviderBase<Object?> provider,
+    ProviderObserverContext context,
     Object error,
     StackTrace stackTrace,
-    ProviderContainer container,
   ) {
     AppLogger.instance.e(
-      '🔥 PROVIDER FAILED ${_name(provider)}',
+      '🔥 PROVIDER FAILED ${_name(context)}',
       error,
       stackTrace,
     );

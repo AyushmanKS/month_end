@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -24,7 +25,7 @@ final appUserStreamProvider = StreamProvider<AppUser?>((ref) {
 });
 
 final currentAppUserProvider = Provider<AppUser?>((ref) {
-  return ref.watch(appUserStreamProvider).valueOrNull;
+  return ref.watch(appUserStreamProvider).value;
 });
 
 class AuthController extends StateNotifier<AsyncValue<AppUser?>> {

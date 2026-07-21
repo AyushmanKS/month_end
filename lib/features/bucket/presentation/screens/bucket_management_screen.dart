@@ -4,6 +4,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../core/widgets/app_messenger.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../shared_providers/supabase_providers.dart';
@@ -233,8 +234,8 @@ class _MemberPicker extends ConsumerWidget {
             const SizedBox(height: AppSpacing.sm),
             membersAsync.when(
               loading: () => const Padding(
-                padding: EdgeInsets.all(AppSpacing.lg),
-                child: AppLoader(),
+                padding: EdgeInsets.all(AppSpacing.md),
+                child: MembersSkeleton(),
               ),
               error: (e, _) => const Padding(
                 padding: EdgeInsets.all(AppSpacing.md),

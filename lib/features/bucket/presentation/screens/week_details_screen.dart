@@ -8,6 +8,7 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_messenger.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../../../expenses/domain/entities/expense.dart';
 import '../../domain/entities/weekly_bucket.dart';
 import '../providers/bucket_providers.dart';
@@ -37,55 +38,59 @@ class WeekDetailsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final type = ref.watch(chartTypeProvider);
     final expenses = ref.watch(weekExpensesProvider(week.id));
-    final members = ref.watch(bucketMembersProvider).valueOrNull ?? const [];
+    final membersAsync = ref.watch(bucketMembersProvider);
+    final members = membersAsync.value ?? const [];
     final busy = ref.watch(bucketControllerProvider).isLoading;
 
     return Scaffold(
       appBar: AppBar(title: Text('Week ${week.weekIndex + 1}')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            120,
-          ),
-          children: [
-            _SummaryCard(week: week),
-            const SizedBox(height: AppSpacing.lg),
-            if (week.isHistorical) ...[
-              _HistoricalCard(
-                week: week,
-                busy: busy,
-                onEnter: () => _enterManualTotal(context, ref),
+        child: membersAsync.isLoading && !membersAsync.hasValue
+            ? const WeekDetailsSkeleton()
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  120,
+                ),
+                children: [
+                  _SummaryCard(week: week),
+                  const SizedBox(height: AppSpacing.lg),
+                  if (week.isHistorical) ...[
+                    _HistoricalCard(
+                      week: week,
+                      busy: busy,
+                      onEnter: () => _enterManualTotal(context, ref),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+                  Text(
+                    'Member contributions',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  _ChartSwitcher(
+                    selected: type,
+                    onSelected: (t) =>
+                        ref.read(chartTypeProvider.notifier).set(t),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  MemberContributionChart(
+                    week: week,
+                    expenses: expenses,
+                    members: members,
+                    type: type,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    'Daily breakdown',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  _DailyBreakdown(week: week, expenses: expenses),
+                ],
               ),
-              const SizedBox(height: AppSpacing.lg),
-            ],
-            Text(
-              'Member contributions',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _ChartSwitcher(
-              selected: type,
-              onSelected: (t) => ref.read(chartTypeProvider.notifier).set(t),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            MemberContributionChart(
-              week: week,
-              expenses: expenses,
-              members: members,
-              type: type,
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            Text(
-              'Daily breakdown',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: AppSpacing.sm),
-            _DailyBreakdown(week: week, expenses: expenses),
-          ],
-        ),
       ),
     );
   }

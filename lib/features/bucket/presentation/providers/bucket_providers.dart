@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../../expenses/domain/entities/expense.dart';
@@ -27,7 +28,7 @@ final selectedBucketIdProvider = StateProvider<String?>((ref) => null);
 
 final activeBucketIdProvider = Provider<String?>((ref) {
   final selected = ref.watch(selectedBucketIdProvider);
-  final buckets = ref.watch(myBucketsProvider).valueOrNull ?? const <Bucket>[];
+  final buckets = ref.watch(myBucketsProvider).value ?? const <Bucket>[];
   if (buckets.isEmpty) return null;
   if (selected != null && buckets.any((b) => b.id == selected)) return selected;
   return buckets.first.id;
@@ -53,7 +54,7 @@ final bucketMembersProvider = FutureProvider<List<BucketMember>>((ref) async {
 
 final ownedBucketsProvider = Provider<List<Bucket>>((ref) {
   final uid = ref.watch(currentUserIdProvider);
-  final buckets = ref.watch(myBucketsProvider).valueOrNull ?? const <Bucket>[];
+  final buckets = ref.watch(myBucketsProvider).value ?? const <Bucket>[];
   if (uid == null) return const [];
   return buckets.where((b) => b.ownerId == uid).toList();
 });
@@ -67,7 +68,7 @@ final weekExpensesProvider = Provider.family<List<Expense>, String>((
   ref,
   weekId,
 ) {
-  final expenses = ref.watch(expensesProvider).valueOrNull ?? const [];
+  final expenses = ref.watch(expensesProvider).value ?? const [];
   return expenses.where((e) => e.weekId == weekId).toList();
 });
 

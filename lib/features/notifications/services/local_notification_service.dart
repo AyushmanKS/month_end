@@ -15,7 +15,7 @@ class LocalNotificationService {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings();
     await _plugin.initialize(
-      const InitializationSettings(android: android, iOS: darwin),
+      settings: const InitializationSettings(android: android, iOS: darwin),
     );
     _initialized = true;
     AppLogger.instance.i('Local notifications initialized');
@@ -50,7 +50,12 @@ class LocalNotificationService {
       ),
       iOS: DarwinNotificationDetails(),
     );
-    await _plugin.show(id, title, body, details);
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
     AppLogger.instance.i('Threshold local notification fired: $title');
   }
 }

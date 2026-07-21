@@ -8,6 +8,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../providers/bucket_providers.dart';
 import '../widgets/monthly_overview_ring.dart';
 import '../widgets/weekly_bucket_card.dart';
@@ -22,7 +23,7 @@ class BucketHomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: bucketsAsync.when(
-          loading: () => const AppLoader(),
+          loading: () => const DashboardSkeleton(),
           error: (e, _) => AppErrorView(
             message: ErrorHandler.userMessage(e),
             onRetry: () => ref.invalidate(myBucketsProvider),
@@ -83,7 +84,7 @@ class _BucketDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           bucketAsync.when(
-            loading: () => const SizedBox(height: 140, child: AppLoader()),
+            loading: () => const MonthlyRingSkeleton(),
             error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
             data: (bucket) => bucket == null
                 ? const SizedBox.shrink()
@@ -106,10 +107,7 @@ class _BucketDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.xs),
           weeksAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.all(AppSpacing.lg),
-              child: AppLoader(),
-            ),
+            loading: () => const WeeklyCardsSkeleton(),
             error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
             data: (weeks) {
               if (weeks.isEmpty) {

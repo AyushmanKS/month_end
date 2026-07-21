@@ -19,7 +19,7 @@ class CategoryPicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesProvider);
-    final categories = categoriesAsync.valueOrNull ?? presetCategories;
+    final categories = categoriesAsync.value ?? presetCategories;
 
     return Wrap(
       spacing: AppSpacing.xs,

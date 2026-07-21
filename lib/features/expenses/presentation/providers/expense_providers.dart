@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/services/image_upload_service.dart';
 import '../../../../shared_providers/supabase_providers.dart';

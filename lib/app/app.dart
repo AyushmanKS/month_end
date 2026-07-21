@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/widgets/app_messenger.dart';
@@ -21,6 +22,12 @@ class MonthEndApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       routerConfig: router,
+      builder: (context, child) => SkeletonizerConfig(
+        data: const SkeletonizerConfigData(
+          effect: ShimmerEffect(duration: Duration(milliseconds: 1100)),
+        ),
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 }

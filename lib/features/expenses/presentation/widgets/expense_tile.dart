@@ -25,7 +25,7 @@ class ExpenseTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final category = ref.watch(categoryByIdProvider(expense.categoryId));
     final brand = context.brand;
-    final members = ref.watch(bucketMembersProvider).valueOrNull ?? const [];
+    final members = ref.watch(bucketMembersProvider).value ?? const [];
     String? creatorName;
     if (expense.addedByUid.isEmpty) {
       creatorName = 'Deleted User';

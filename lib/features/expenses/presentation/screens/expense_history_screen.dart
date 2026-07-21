@@ -6,6 +6,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
@@ -52,13 +53,13 @@ class ExpenseHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expensesAsync = ref.watch(expensesProvider);
     final userId = ref.watch(currentAppUserProvider)?.id;
-    final ownerId = ref.watch(activeBucketProvider).valueOrNull?.ownerId;
+    final ownerId = ref.watch(activeBucketProvider).value?.ownerId;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Expenses')),
       body: SafeArea(
         child: expensesAsync.when(
-          loading: () => const AppLoader(),
+          loading: () => const ExpenseListSkeleton(),
           error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
           data: (expenses) {
             if (expenses.isEmpty) {

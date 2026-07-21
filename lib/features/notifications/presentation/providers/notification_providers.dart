@@ -1,5 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../../../bucket/domain/entities/weekly_bucket.dart';
@@ -28,8 +29,7 @@ final notificationsProvider = StreamProvider<List<AppNotification>>((ref) {
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
   final userId = ref.watch(currentUserIdProvider);
-  final notifications =
-      ref.watch(notificationsProvider).valueOrNull ?? const [];
+  final notifications = ref.watch(notificationsProvider).value ?? const [];
   if (userId == null) return 0;
   return notifications.where((n) => !n.isReadBy(userId)).length;
 });
@@ -45,7 +45,7 @@ final _thresholdAlertedProvider = StateProvider<Set<String>>((ref) => {});
 final thresholdWatcherProvider = Provider<void>((ref) {
   final service = ref.read(localNotificationServiceProvider);
   ref.listen<AsyncValue<List<WeeklyBucket>>>(weeklyBucketsProvider, (_, next) {
-    final weeks = next.valueOrNull ?? const <WeeklyBucket>[];
+    final weeks = next.value ?? const <WeeklyBucket>[];
     final alerted = ref.read(_thresholdAlertedProvider);
     for (final week in weeks) {
       final key = '${week.bucketId}:${week.weekIndex}';

@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/app_messenger.dart';
 import '../../../auth/domain/entities/app_user.dart';
@@ -65,62 +66,73 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentAppUserProvider);
+    final userAsync = ref.watch(appUserStreamProvider);
+    final user = userAsync.value;
     final ownsBuckets = ref.watch(ownedBucketsProvider).isNotEmpty;
     final isRegistered = user != null && !user.isAnonymous;
     final hasAccountActions = ownsBuckets || isRegistered;
+    final resolvingUser = userAsync.isLoading && !userAsync.hasValue;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.md,
-            AppSpacing.md,
-            AppSpacing.md,
-            120,
-          ),
-          children: [
-            _ProfileHeader(user: user),
-            const SizedBox(height: AppSpacing.lg),
-            if (user != null && user.isAnonymous) ...[
-              _BackupPrompt(),
-              const SizedBox(height: AppSpacing.lg),
-            ],
-            Text('Appearance', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.xs),
-            const ThemeToggleTile(),
-            const SizedBox(height: AppSpacing.lg),
-            if (hasAccountActions) ...[
-              Text('Account', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: AppSpacing.xs),
-              if (ownsBuckets) ...[
-                AppButton(
-                  label: 'Manage my buckets',
-                  variant: AppButtonVariant.ghost,
-                  icon: Icons.folder_outlined,
-                  onPressed: () => context.push(RouteNames.manageBuckets),
+        child: resolvingUser
+            ? const ProfileSkeleton()
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  120,
                 ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-              if (isRegistered) ...[
-                AppButton(
-                  label: 'Sign out',
-                  variant: AppButtonVariant.ghost,
-                  icon: Icons.logout_rounded,
-                  onPressed: () => _signOut(context, ref),
-                ),
-                const SizedBox(height: AppSpacing.sm),
-                AppButton(
-                  label: 'Delete account',
-                  variant: AppButtonVariant.ghost,
-                  icon: Icons.person_off_outlined,
-                  onPressed: () => _deleteAccount(context, ref, ownsBuckets),
-                ),
-              ],
-            ],
-          ],
-        ),
+                children: [
+                  _ProfileHeader(user: user),
+                  const SizedBox(height: AppSpacing.lg),
+                  if (user != null && user.isAnonymous) ...[
+                    _BackupPrompt(),
+                    const SizedBox(height: AppSpacing.lg),
+                  ],
+                  Text(
+                    'Appearance',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  const ThemeToggleTile(),
+                  const SizedBox(height: AppSpacing.lg),
+                  if (hasAccountActions) ...[
+                    Text(
+                      'Account',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    if (ownsBuckets) ...[
+                      AppButton(
+                        label: 'Manage my buckets',
+                        variant: AppButtonVariant.ghost,
+                        icon: Icons.folder_outlined,
+                        onPressed: () => context.push(RouteNames.manageBuckets),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                    ],
+                    if (isRegistered) ...[
+                      AppButton(
+                        label: 'Sign out',
+                        variant: AppButtonVariant.ghost,
+                        icon: Icons.logout_rounded,
+                        onPressed: () => _signOut(context, ref),
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      AppButton(
+                        label: 'Delete account',
+                        variant: AppButtonVariant.ghost,
+                        icon: Icons.person_off_outlined,
+                        onPressed: () =>
+                            _deleteAccount(context, ref, ownsBuckets),
+                      ),
+                    ],
+                  ],
+                ],
+              ),
       ),
     );
   }

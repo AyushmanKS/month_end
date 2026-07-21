@@ -8,6 +8,7 @@ import '../../../../core/error/error_handler.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_providers.dart';
@@ -55,14 +56,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
-    final suggestions = ref.watch(suggestionsProvider).valueOrNull ?? const [];
+    final suggestions = ref.watch(suggestionsProvider).value ?? const [];
     final userId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Activity')),
       body: SafeArea(
         child: notificationsAsync.when(
-          loading: () => const AppLoader(),
+          loading: () => const NotificationsSkeleton(),
           error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
           data: (notifications) {
             if (notifications.isEmpty && suggestions.isEmpty) {

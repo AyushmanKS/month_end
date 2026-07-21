@@ -5,6 +5,7 @@ import '../../../../core/error/error_handler.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/validators.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -60,7 +61,28 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Invite members')),
       body: bucketAsync.when(
-        loading: () => const AppLoader(),
+        loading: () => Skeletonizer.zone(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
+            child: Column(
+              children: const [
+                Bone.text(width: 180, fontSize: 18),
+                SizedBox(height: AppSpacing.lg),
+                Bone.square(size: 220, uniRadius: AppSpacing.radiusMd),
+                SizedBox(height: AppSpacing.lg),
+                Bone.text(width: 140),
+                SizedBox(height: AppSpacing.md),
+                Bone(
+                  width: double.infinity,
+                  height: 52,
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(AppSpacing.radiusMd),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
         data: (bucket) {
           if (bucket == null) {

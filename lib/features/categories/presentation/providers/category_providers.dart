@@ -16,8 +16,7 @@ final categoryByIdProvider = Provider.family<ExpenseCategory?, String?>((
   id,
 ) {
   if (id == null) return null;
-  final categories =
-      ref.watch(categoriesProvider).valueOrNull ?? presetCategories;
+  final categories = ref.watch(categoriesProvider).value ?? presetCategories;
   for (final category in categories) {
     if (category.id == id) return category;
   }
