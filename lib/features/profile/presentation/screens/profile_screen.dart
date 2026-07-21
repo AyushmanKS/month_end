@@ -67,6 +67,8 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentAppUserProvider);
     final ownsBuckets = ref.watch(ownedBucketsProvider).isNotEmpty;
+    final isRegistered = user != null && !user.isAnonymous;
+    final hasAccountActions = ownsBuckets || isRegistered;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -89,32 +91,34 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.xs),
             const ThemeToggleTile(),
             const SizedBox(height: AppSpacing.lg),
-            Text('Account', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: AppSpacing.xs),
-            if (ownsBuckets) ...[
-              AppButton(
-                label: 'Manage my buckets',
-                variant: AppButtonVariant.ghost,
-                icon: Icons.folder_outlined,
-                onPressed: () => context.push(RouteNames.manageBuckets),
-              ),
-              const SizedBox(height: AppSpacing.sm),
+            if (hasAccountActions) ...[
+              Text('Account', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: AppSpacing.xs),
+              if (ownsBuckets) ...[
+                AppButton(
+                  label: 'Manage my buckets',
+                  variant: AppButtonVariant.ghost,
+                  icon: Icons.folder_outlined,
+                  onPressed: () => context.push(RouteNames.manageBuckets),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              if (isRegistered) ...[
+                AppButton(
+                  label: 'Sign out',
+                  variant: AppButtonVariant.ghost,
+                  icon: Icons.logout_rounded,
+                  onPressed: () => _signOut(context, ref),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                AppButton(
+                  label: 'Delete account',
+                  variant: AppButtonVariant.ghost,
+                  icon: Icons.person_off_outlined,
+                  onPressed: () => _deleteAccount(context, ref, ownsBuckets),
+                ),
+              ],
             ],
-            if (user != null && !user.isAnonymous) ...[
-              AppButton(
-                label: 'Sign out',
-                variant: AppButtonVariant.ghost,
-                icon: Icons.logout_rounded,
-                onPressed: () => _signOut(context, ref),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-            ],
-            AppButton(
-              label: 'Delete account',
-              variant: AppButtonVariant.ghost,
-              icon: Icons.person_off_outlined,
-              onPressed: () => _deleteAccount(context, ref, ownsBuckets),
-            ),
           ],
         ),
       ),
