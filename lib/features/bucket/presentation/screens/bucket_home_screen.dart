@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_durations.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/error/error_handler.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../providers/bucket_providers.dart';
@@ -23,7 +24,7 @@ class BucketHomeScreen extends ConsumerWidget {
         child: bucketsAsync.when(
           loading: () => const AppLoader(),
           error: (e, _) => AppErrorView(
-            message: e.toString(),
+            message: ErrorHandler.userMessage(e),
             onRetry: () => ref.invalidate(myBucketsProvider),
           ),
           data: (buckets) {
@@ -83,7 +84,7 @@ class _BucketDashboard extends ConsumerWidget {
           const SizedBox(height: AppSpacing.sm),
           bucketAsync.when(
             loading: () => const SizedBox(height: 140, child: AppLoader()),
-            error: (e, _) => AppErrorView(message: e.toString()),
+            error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
             data: (bucket) => bucket == null
                 ? const SizedBox.shrink()
                 : MonthlyOverviewRing(bucket: bucket),
@@ -109,7 +110,7 @@ class _BucketDashboard extends ConsumerWidget {
               padding: EdgeInsets.all(AppSpacing.lg),
               child: AppLoader(),
             ),
-            error: (e, _) => AppErrorView(message: e.toString()),
+            error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
             data: (weeks) {
               if (weeks.isEmpty) {
                 return const AppEmptyState(

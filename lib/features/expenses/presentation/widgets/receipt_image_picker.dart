@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
+import '../../../../core/widgets/app_messenger.dart';
 
 class ReceiptImagePicker extends StatelessWidget {
   const ReceiptImagePicker({
@@ -17,13 +18,17 @@ class ReceiptImagePicker extends StatelessWidget {
   final VoidCallback onCleared;
 
   Future<void> _pick(ImageSource source) async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: source,
-      maxWidth: 1600,
-      imageQuality: 80,
-    );
-    if (file != null) onPicked(file.path);
+    try {
+      final picker = ImagePicker();
+      final file = await picker.pickImage(
+        source: source,
+        maxWidth: 1600,
+        imageQuality: 80,
+      );
+      if (file != null) onPicked(file.path);
+    } catch (_) {
+      showAppSnack('Could not access the image. Check app permissions.');
+    }
   }
 
   @override

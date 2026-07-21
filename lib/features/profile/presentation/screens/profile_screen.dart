@@ -7,6 +7,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
+import '../../../../core/widgets/app_messenger.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../widgets/theme_toggle_tile.dart';
@@ -61,7 +62,11 @@ class ProfileScreen extends ConsumerWidget {
                   icon: Icons.logout_rounded,
                 );
                 if (!confirmed) return;
-                await ref.read(authControllerProvider.notifier).signOut();
+                try {
+                  await ref.read(authControllerProvider.notifier).signOut();
+                } catch (_) {
+                  showAppSnack('Could not sign out. Please try again.');
+                }
               },
             ),
           ],

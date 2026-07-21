@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/widgets/app_messenger.dart';
 import '../../../../core/theme/theme_extension.dart';
 
 class BucketQrDisplay extends StatelessWidget {
@@ -35,9 +36,7 @@ class BucketQrDisplay extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Clipboard.setData(ClipboardData(text: joinCode));
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Join code copied')));
+            showAppSnack('Join code copied', success: true);
           },
           child: Container(
             padding: const EdgeInsets.symmetric(

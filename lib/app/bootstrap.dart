@@ -4,12 +4,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 import '../core/logging/logging_observers.dart';
 import '../core/logging/tap_logger.dart';
 import '../features/notifications/presentation/providers/notification_providers.dart';
+import '../shared_providers/supabase_providers.dart';
 
 Future<void> bootstrap(Widget Function() rootBuilder) async {
   await runZonedGuarded<Future<void>>(
@@ -20,8 +22,10 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
       await _initSupabase();
       _installErrorHandlers();
 
+      final prefs = await SharedPreferences.getInstance();
       final container = ProviderContainer(
         observers: [LoggingProviderObserver()],
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       );
       try {
         await container.read(localNotificationServiceProvider).init();

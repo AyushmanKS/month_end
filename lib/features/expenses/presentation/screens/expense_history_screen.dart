@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_durations.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/error/error_handler.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
@@ -60,7 +59,7 @@ class ExpenseHistoryScreen extends ConsumerWidget {
       body: SafeArea(
         child: expensesAsync.when(
           loading: () => const AppLoader(),
-          error: (e, _) => AppErrorView(message: e.toString()),
+          error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
           data: (expenses) {
             if (expenses.isEmpty) {
               return const AppEmptyState(
@@ -97,12 +96,7 @@ class ExpenseHistoryScreen extends ConsumerWidget {
                     await _confirmDelete(context, ref, expense);
                     return false;
                   },
-                  child: ExpenseTile(
-                    expense: expense,
-                    onTap: canEdit
-                        ? () => context.push(RouteNames.addExpense)
-                        : null,
-                  ),
+                  child: ExpenseTile(expense: expense),
                 ).animate().fadeIn(
                   delay: AppDurations.listStagger * (index % 8),
                   duration: AppDurations.fast,

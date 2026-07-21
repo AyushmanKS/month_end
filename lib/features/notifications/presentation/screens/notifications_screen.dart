@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_durations.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/error/error_handler.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/app_loader.dart';
@@ -45,7 +46,7 @@ class NotificationsScreen extends ConsumerWidget {
       body: SafeArea(
         child: notificationsAsync.when(
           loading: () => const AppLoader(),
-          error: (e, _) => AppErrorView(message: e.toString()),
+          error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
           data: (notifications) {
             if (notifications.isEmpty && suggestions.isEmpty) {
               return const AppEmptyState(

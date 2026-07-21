@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -42,8 +43,11 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
     });
   }
 
+  Timer? _cooldown;
+
   @override
   void dispose() {
+    _cooldown?.cancel();
     _controller?.dispose();
     super.dispose();
   }
@@ -54,6 +58,10 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
     if (code == null || code.isEmpty) return;
     _handled = true;
     widget.onDetected(code.trim().toUpperCase());
+    _cooldown?.cancel();
+    _cooldown = Timer(const Duration(seconds: 3), () {
+      if (mounted) _handled = false;
+    });
   }
 
   @override

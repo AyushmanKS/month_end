@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/error/error_handler.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/validators.dart';
@@ -60,7 +61,7 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
       appBar: AppBar(title: const Text('Invite members')),
       body: bucketAsync.when(
         loading: () => const AppLoader(),
-        error: (e, _) => AppErrorView(message: e.toString()),
+        error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
         data: (bucket) {
           if (bucket == null) {
             return const AppEmptyState(title: 'No active bucket');
