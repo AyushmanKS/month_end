@@ -9,6 +9,7 @@ import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 import '../core/logging/logging_observers.dart';
 import '../core/logging/tap_logger.dart';
+import '../features/notifications/presentation/providers/notification_providers.dart';
 
 Future<void> bootstrap(Widget Function() rootBuilder) async {
   await runZonedGuarded<Future<void>>(() async {
@@ -18,6 +19,21 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
     await _initSupabase();
     _installErrorHandlers();
 
+    final container = ProviderContainer(
+      observers: [LoggingProviderObserver()],
+    );
+    try {
+      await container.read(localNotificationServiceProvider).init();
+    } catch (e, s) {
+      AppLogger.instance.w('Local notifications init failed', e);
+      unawaited(Sentry.captureException(e, stackTrace: s));
+    }
+
+    Widget appRoot() => UncontrolledProviderScope(
+          container: container,
+          child: TapLogger(child: rootBuilder()),
+        );
+
     final sentryDsn = dotenv.maybeGet('SENTRY_DSN') ?? '';
     if (sentryDsn.isNotEmpty && kReleaseMode) {
       await SentryFlutter.init(
@@ -25,16 +41,10 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
           options.dsn = sentryDsn;
           options.tracesSampleRate = 0.2;
         },
-        appRunner: () => runApp(ProviderScope(
-          observers: [LoggingProviderObserver()],
-          child: TapLogger(child: rootBuilder()),
-        )),
+        appRunner: () => runApp(appRoot()),
       );
     } else {
-      runApp(ProviderScope(
-        observers: [LoggingProviderObserver()],
-        child: TapLogger(child: rootBuilder()),
-      ));
+      runApp(appRoot());
     }
   }, (error, stack) {
     AppLogger.instance.e('Uncaught zone error', error, stack);

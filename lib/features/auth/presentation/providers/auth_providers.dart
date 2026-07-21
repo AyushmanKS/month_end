@@ -6,6 +6,8 @@ import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
+enum GoogleAuthOutcome { upgraded, signedIntoExisting, failed }
+
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSource(ref.watch(supabaseClientProvider));
 });
@@ -26,7 +28,7 @@ final currentAppUserProvider = Provider<AppUser?>((ref) {
 });
 
 class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
-  AuthController(this._repository) : super(const AsyncValue.loading());
+  AuthController(this._repository) : super(const AsyncValue.data(null));
 
   final AuthRepository _repository;
 
@@ -51,7 +53,19 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
   Future<bool> signInWithEmail(String email, String password) =>
       _run(() => _repository.signInWithEmail(email: email, password: password));
 
-  Future<bool> upgradeWithGoogle() => _run(_repository.upgradeWithGoogle);
+  Future<GoogleAuthOutcome> upgradeWithGoogle() async {
+    state = const AsyncValue.loading();
+    try {
+      final (user, signedIntoExisting) = await _repository.upgradeWithGoogle();
+      state = AsyncValue.data(user);
+      return signedIntoExisting
+          ? GoogleAuthOutcome.signedIntoExisting
+          : GoogleAuthOutcome.upgraded;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return GoogleAuthOutcome.failed;
+    }
+  }
 
   Future<bool> upgradeWithApple() => _run(_repository.upgradeWithApple);
 

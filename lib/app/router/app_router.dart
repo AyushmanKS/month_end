@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/constants/app_durations.dart';
 import '../../core/logging/logging_observers.dart';
 import '../../features/auth/presentation/screens/optional_auth_screen.dart';
@@ -21,11 +24,53 @@ import 'route_names.dart';
 final _rootKey = GlobalKey<NavigatorState>();
 final _shellKey = GlobalKey<NavigatorState>();
 
+class _AuthRefreshStream extends ChangeNotifier {
+  _AuthRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
+bool _isUpgraded(User user) {
+  if (!user.isAnonymous) return true;
+  final providers = user.appMetadata['providers'];
+  if (providers is List) {
+    return providers.any(
+        (p) => p == 'google' || p == 'apple' || p == 'email');
+  }
+  return false;
+}
+
+String? _authRedirect(GoRouterState state) {
+  final session = Supabase.instance.client.auth.currentSession;
+  final loc = state.matchedLocation;
+  if (session == null) {
+    return loc == RouteNames.splash ? null : RouteNames.splash;
+  }
+  if (loc == RouteNames.splash) return RouteNames.home;
+  if (_isUpgraded(session.user) &&
+      (loc == RouteNames.optionalAuth || loc == RouteNames.signup)) {
+    return RouteNames.home;
+  }
+  return null;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final refresh = _AuthRefreshStream(Supabase.instance.client.auth.onAuthStateChange);
+  ref.onDispose(refresh.dispose);
   return GoRouter(
     navigatorKey: _rootKey,
     initialLocation: RouteNames.splash,
     observers: [LoggingNavigatorObserver()],
+    refreshListenable: refresh,
+    redirect: (context, state) => _authRedirect(state),
     routes: [
       GoRoute(
         path: RouteNames.splash,

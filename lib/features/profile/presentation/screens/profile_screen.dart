@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
+import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../widgets/theme_toggle_tile.dart';
@@ -46,8 +47,22 @@ class ProfileScreen extends ConsumerWidget {
               variant: AppButtonVariant.ghost,
               icon: Icons.logout_rounded,
               onPressed: () async {
+                final anonymous = user?.isAnonymous ?? false;
+                final confirmed = await showConfirmDialog(
+                  context,
+                  title: 'Sign out?',
+                  message: anonymous
+                      ? 'You are on an anonymous session. Signing out will '
+                          'permanently delete this session and its data. '
+                          'Secure your account first to keep it.'
+                      : 'You will need to sign in again to access your buckets '
+                          'and expenses on this device.',
+                  confirmLabel: 'Sign out',
+                  destructive: true,
+                  icon: Icons.logout_rounded,
+                );
+                if (!confirmed) return;
                 await ref.read(authControllerProvider.notifier).signOut();
-                if (context.mounted) context.go(RouteNames.splash);
               },
             ),
           ],

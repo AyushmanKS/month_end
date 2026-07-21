@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_provider.dart';
+import '../core/widgets/app_messenger.dart';
 import 'router/app_router.dart';
 
 class MonthEndApp extends ConsumerWidget {
@@ -14,6 +15,7 @@ class MonthEndApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Month End',
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import '../app/router/route_names.dart';
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_spacing.dart';
 import '../features/auth/presentation/providers/auth_providers.dart';
-import '../features/notifications/presentation/providers/notification_providers.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -22,12 +19,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _boot() async {
-    await ref.read(localNotificationServiceProvider).init();
-    final user = await ref.read(authControllerProvider.notifier).ensureSignedIn();
-    if (!mounted) return;
-    if (user != null) {
-      context.go(RouteNames.home);
-    }
+    await ref.read(authControllerProvider.notifier).ensureSignedIn();
   }
 
   @override

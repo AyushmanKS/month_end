@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_durations.dart';
 import '../constants/app_spacing.dart';
@@ -32,6 +33,18 @@ class _AppButtonState extends State<AppButton> {
 
   bool get _enabled => widget.onPressed != null && !widget.isLoading;
 
+  void _setPressed(bool value) {
+    if (!mounted) return;
+    if (WidgetsBinding.instance.schedulerPhase ==
+        SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _pressed = value);
+      });
+    } else {
+      setState(() => _pressed = value);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPrimary = widget.variant == AppButtonVariant.primary;
@@ -49,9 +62,9 @@ class _AppButtonState extends State<AppButton> {
       duration: AppDurations.instant,
       curve: Curves.easeOut,
       child: GestureDetector(
-        onTapDown: _enabled ? (_) => setState(() => _pressed = true) : null,
-        onTapUp: _enabled ? (_) => setState(() => _pressed = false) : null,
-        onTapCancel: _enabled ? () => setState(() => _pressed = false) : null,
+        onTapDown: _enabled ? (_) => _setPressed(true) : null,
+        onTapUp: _enabled ? (_) => _setPressed(false) : null,
+        onTapCancel: _enabled ? () => _setPressed(false) : null,
         onTap: _enabled ? widget.onPressed : null,
         child: AnimatedOpacity(
           opacity: _enabled ? 1 : 0.5,

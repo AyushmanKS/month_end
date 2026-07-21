@@ -28,7 +28,7 @@ abstract class AuthRepository {
     required String password,
   });
 
-  Future<AppUser> upgradeWithGoogle();
+  Future<(AppUser user, bool signedIntoExisting)> upgradeWithGoogle();
 
   Future<AppUser> upgradeWithApple();
 

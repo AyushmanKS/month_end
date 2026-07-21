@@ -7,6 +7,7 @@ import '../../../../core/constants/app_durations.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../../domain/entities/expense.dart';
@@ -21,24 +22,16 @@ class ExpenseHistoryScreen extends ConsumerWidget {
     WidgetRef ref,
     Expense expense,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete expense?'),
-        content: const Text('This cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Delete expense?',
+      message: 'This expense will be permanently removed. This cannot be '
+          'undone.',
+      confirmLabel: 'Delete',
+      destructive: true,
+      icon: Icons.delete_outline_rounded,
     );
-    if (confirmed != true) return;
+    if (!confirmed) return;
     final ok = await ref
         .read(expenseControllerProvider.notifier)
         .deleteExpense(expense.id);
