@@ -225,12 +225,25 @@ class AuthRemoteDataSource {
     }
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      await _client.rpc('delete_account');
+      await _auth.signOut();
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
   Future<AppUser> _syncProfile(User user, AuthType authType) async {
     final resolvedType = _resolveAuthType(user, authType);
+    final name = _profileName(user);
+    final photoUrl = _profilePhoto(user);
     final payload = {
       'id': user.id,
       'auth_type': resolvedType.name,
       'email': user.email,
+      'name': ?name,
+      'photo_url': ?photoUrl,
     };
     final row = await _client
         .from(_usersTable)
@@ -238,6 +251,34 @@ class AuthRemoteDataSource {
         .select()
         .single();
     return AppUser.fromJson(row);
+  }
+
+  String? _profileName(User user) {
+    final meta = user.userMetadata ?? const {};
+    final metaName = (meta['full_name'] ?? meta['name']) as String?;
+    if (metaName != null && metaName.isNotEmpty) return metaName;
+    return _identityValue(user, const ['full_name', 'name']);
+  }
+
+  String? _profilePhoto(User user) {
+    final meta = user.userMetadata ?? const {};
+    final metaPhoto = (meta['avatar_url'] ?? meta['picture']) as String?;
+    if (metaPhoto != null && metaPhoto.isNotEmpty) return metaPhoto;
+    return _identityValue(user, const ['avatar_url', 'picture']);
+  }
+
+  String? _identityValue(User user, List<String> keys) {
+    final identities = user.identities;
+    if (identities == null) return null;
+    for (final identity in identities) {
+      final data = identity.identityData;
+      if (data == null) continue;
+      for (final key in keys) {
+        final value = data[key];
+        if (value is String && value.isNotEmpty) return value;
+      }
+    }
+    return null;
   }
 
   AuthType _resolveAuthType(User user, AuthType fallback) {

@@ -38,6 +38,15 @@ class BucketRepositoryImpl implements BucketRepository {
       _remote.joinBucketViaCode(joinCode);
 
   @override
+  Future<Bucket> transferOwnership({
+    required String bucketId,
+    required String newOwnerId,
+  }) => _remote.transferOwnership(bucketId: bucketId, newOwnerId: newOwnerId);
+
+  @override
+  Future<void> deleteBucket(String bucketId) => _remote.deleteBucket(bucketId);
+
+  @override
   Future<List<BucketMember>> fetchMembers(String bucketId) =>
       _remote.fetchMembers(bucketId);
 

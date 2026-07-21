@@ -43,6 +43,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         return Icons.bolt_outlined;
       case AppNotificationType.budgetThreshold:
         return Icons.warning_amber_rounded;
+      case AppNotificationType.ownershipTransferred:
+        return Icons.swap_horiz_rounded;
+      case AppNotificationType.memberLeft:
+        return Icons.person_off_outlined;
       case AppNotificationType.unknown:
         return Icons.notifications_none_rounded;
     }

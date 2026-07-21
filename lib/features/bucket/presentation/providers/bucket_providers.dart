@@ -49,6 +49,18 @@ final bucketMembersProvider = FutureProvider<List<BucketMember>>((ref) async {
   return ref.watch(bucketRepositoryProvider).fetchMembers(id);
 });
 
+final ownedBucketsProvider = Provider<List<Bucket>>((ref) {
+  final uid = ref.watch(currentUserIdProvider);
+  final buckets = ref.watch(myBucketsProvider).valueOrNull ?? const <Bucket>[];
+  if (uid == null) return const [];
+  return buckets.where((b) => b.ownerId == uid).toList();
+});
+
+final bucketMembersFamilyProvider =
+    FutureProvider.family<List<BucketMember>, String>((ref, bucketId) async {
+      return ref.watch(bucketRepositoryProvider).fetchMembers(bucketId);
+    });
+
 class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
   BucketController(this._ref) : super(const AsyncValue.data(null));
 
@@ -119,6 +131,40 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
         username: username,
       );
       _ref.invalidate(bucketMembersProvider);
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> transferOwnership({
+    required String bucketId,
+    required String newOwnerId,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repo.transferOwnership(bucketId: bucketId, newOwnerId: newOwnerId);
+      _ref.invalidate(myBucketsProvider);
+      _ref.invalidate(bucketMembersProvider);
+      _ref.invalidate(bucketMembersFamilyProvider(bucketId));
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> deleteBucket(String bucketId) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repo.deleteBucket(bucketId);
+      if (_ref.read(selectedBucketIdProvider) == bucketId) {
+        _ref.read(selectedBucketIdProvider.notifier).state = null;
+      }
+      _ref.invalidate(myBucketsProvider);
       state = const AsyncValue.data(null);
       return true;
     } catch (e, s) {

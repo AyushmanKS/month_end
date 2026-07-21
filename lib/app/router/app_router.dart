@@ -11,6 +11,7 @@ import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/bucket/presentation/screens/bucket_home_screen.dart';
 import '../../features/bucket/presentation/screens/create_bucket_screen.dart';
 import '../../features/bucket/presentation/screens/join_bucket_screen.dart';
+import '../../features/bucket/presentation/screens/bucket_management_screen.dart';
 import '../../features/bucket/presentation/screens/invite_member_screen.dart';
 import '../../features/expenses/presentation/screens/add_expense_screen.dart';
 import '../../features/expenses/presentation/screens/big_expense_screen.dart';
@@ -106,6 +107,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
             _fadeSlide(state, const InviteMemberScreen()),
+      ),
+      GoRoute(
+        path: RouteNames.manageBuckets,
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (context, state) => _fadeSlide(
+          state,
+          BucketManagementScreen(
+            forAccountDeletion: state.extra as bool? ?? false,
+          ),
+        ),
       ),
       GoRoute(
         path: RouteNames.addExpense,

@@ -5,6 +5,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/utils/date_utils.dart';
+import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../../../categories/presentation/providers/category_providers.dart';
 import '../../domain/entities/expense.dart';
 
@@ -24,6 +25,18 @@ class ExpenseTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final category = ref.watch(categoryByIdProvider(expense.categoryId));
     final brand = context.brand;
+    final members = ref.watch(bucketMembersProvider).valueOrNull ?? const [];
+    String? creatorName;
+    if (expense.addedByUid.isEmpty) {
+      creatorName = 'Deleted User';
+    } else {
+      for (final member in members) {
+        if (member.userId == expense.addedByUid) {
+          creatorName = member.name;
+          break;
+        }
+      }
+    }
 
     return Card(
       child: InkWell(
@@ -59,8 +72,7 @@ class ExpenseTile extends ConsumerWidget {
                       [
                         if (expense.note != null && expense.note!.isNotEmpty)
                           expense.note!,
-                        if (expense.addedByName != null)
-                          'by ${expense.addedByName}',
+                        if (creatorName != null) 'by $creatorName',
                         AppDateUtils.day(expense.createdAt),
                       ].join(' · '),
                       maxLines: 1,

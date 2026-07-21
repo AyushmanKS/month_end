@@ -35,4 +35,6 @@ abstract class AuthRepository {
   Future<AppUser> updateProfile({String? name, String? username});
 
   Future<void> signOut();
+
+  Future<void> deleteAccount();
 }

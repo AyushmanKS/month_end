@@ -29,8 +29,12 @@ class AuthRepositoryImpl implements AuthRepository {
           if (user == null) return null;
           final resolvedType = _resolveType(user);
           final meta = user.userMetadata ?? const {};
-          final metaName = (meta['full_name'] ?? meta['name']) as String?;
-          final metaPhoto = (meta['avatar_url'] ?? meta['picture']) as String?;
+          final metaName =
+              (meta['full_name'] ?? meta['name']) as String? ??
+              _identityValue(user, const ['full_name', 'name']);
+          final metaPhoto =
+              (meta['avatar_url'] ?? meta['picture']) as String? ??
+              _identityValue(user, const ['avatar_url', 'picture']);
           AppUser? profile;
           try {
             profile = await _remote.fetchProfile(user.id);
@@ -74,6 +78,20 @@ class AuthRepositoryImpl implements AuthRepository {
         .handleError((Object error, StackTrace stack) {
           AppLogger.instance.w('Auth stream error ignored', error);
         });
+  }
+
+  String? _identityValue(User user, List<String> keys) {
+    final identities = user.identities;
+    if (identities == null) return null;
+    for (final identity in identities) {
+      final data = identity.identityData;
+      if (data == null) continue;
+      for (final key in keys) {
+        final value = data[key];
+        if (value is String && value.isNotEmpty) return value;
+      }
+    }
+    return null;
   }
 
   AuthType _resolveType(User user) {
@@ -150,4 +168,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signOut() => _remote.signOut();
+
+  @override
+  Future<void> deleteAccount() => _remote.deleteAccount();
 }

@@ -10,14 +10,63 @@ import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/app_messenger.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../widgets/theme_toggle_tile.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
+  Future<void> _signOut(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Sign out?',
+      message:
+          'You will need to sign in again to access your buckets and expenses '
+          'on this device.',
+      confirmLabel: 'Sign out',
+      destructive: true,
+      icon: Icons.logout_rounded,
+    );
+    if (!confirmed) return;
+    try {
+      await ref.read(authControllerProvider.notifier).signOut();
+    } catch (_) {
+      showAppSnack('Could not sign out. Please try again.');
+    }
+  }
+
+  Future<void> _deleteAccount(
+    BuildContext context,
+    WidgetRef ref,
+    bool ownsBuckets,
+  ) async {
+    if (ownsBuckets) {
+      context.push(RouteNames.manageBuckets, extra: true);
+      return;
+    }
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Delete your account?',
+      message:
+          'Your account will be permanently deleted. Your past expenses stay '
+          'in shared buckets, attributed to a deleted user. This cannot be '
+          'undone.',
+      confirmLabel: 'Delete account',
+      destructive: true,
+      icon: Icons.person_off_outlined,
+    );
+    if (!confirmed) return;
+    final ok = await ref.read(authControllerProvider.notifier).deleteAccount();
+    showAppSnack(
+      ok ? 'Your account has been deleted.' : 'Could not delete your account.',
+      success: ok,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentAppUserProvider);
+    final ownsBuckets = ref.watch(ownedBucketsProvider).isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -42,32 +91,29 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.lg),
             Text('Account', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: AppSpacing.xs),
+            if (ownsBuckets) ...[
+              AppButton(
+                label: 'Manage my buckets',
+                variant: AppButtonVariant.ghost,
+                icon: Icons.folder_outlined,
+                onPressed: () => context.push(RouteNames.manageBuckets),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+            if (user != null && !user.isAnonymous) ...[
+              AppButton(
+                label: 'Sign out',
+                variant: AppButtonVariant.ghost,
+                icon: Icons.logout_rounded,
+                onPressed: () => _signOut(context, ref),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
             AppButton(
-              label: 'Sign out',
+              label: 'Delete account',
               variant: AppButtonVariant.ghost,
-              icon: Icons.logout_rounded,
-              onPressed: () async {
-                final anonymous = user?.isAnonymous ?? false;
-                final confirmed = await showConfirmDialog(
-                  context,
-                  title: 'Sign out?',
-                  message: anonymous
-                      ? 'You are on an anonymous session. Signing out will '
-                            'permanently delete this session and its data. '
-                            'Secure your account first to keep it.'
-                      : 'You will need to sign in again to access your buckets '
-                            'and expenses on this device.',
-                  confirmLabel: 'Sign out',
-                  destructive: true,
-                  icon: Icons.logout_rounded,
-                );
-                if (!confirmed) return;
-                try {
-                  await ref.read(authControllerProvider.notifier).signOut();
-                } catch (_) {
-                  showAppSnack('Could not sign out. Please try again.');
-                }
-              },
+              icon: Icons.person_off_outlined,
+              onPressed: () => _deleteAccount(context, ref, ownsBuckets),
             ),
           ],
         ),

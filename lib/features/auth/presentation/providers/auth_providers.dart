@@ -78,6 +78,18 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     state = const AsyncValue.data(null);
   }
 
+  Future<bool> deleteAccount() async {
+    state = const AsyncValue.loading();
+    try {
+      await _repository.deleteAccount();
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
   Future<bool> _run(Future<AppUser> Function() action) async {
     state = const AsyncValue.loading();
     try {

@@ -110,6 +110,29 @@ class BucketRemoteDataSource {
     }
   }
 
+  Future<Bucket> transferOwnership({
+    required String bucketId,
+    required String newOwnerId,
+  }) async {
+    try {
+      final data = await _client.rpc(
+        'transfer_bucket_ownership',
+        params: {'p_bucket_id': bucketId, 'p_new_owner': newOwnerId},
+      );
+      return Bucket.fromJson(Map<String, dynamic>.from(data as Map));
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
+  Future<void> deleteBucket(String bucketId) async {
+    try {
+      await _client.rpc('delete_bucket', params: {'p_bucket_id': bucketId});
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
   Future<List<BucketMember>> fetchMembers(String bucketId) async {
     try {
       final rows = await _client

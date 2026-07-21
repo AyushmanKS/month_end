@@ -4,6 +4,8 @@ enum AppNotificationType {
   expenseDeleted,
   bigExpenseAdded,
   budgetThreshold,
+  ownershipTransferred,
+  memberLeft,
   unknown,
 }
 
@@ -54,6 +56,10 @@ class AppNotification {
         return AppNotificationType.bigExpenseAdded;
       case 'budget_threshold':
         return AppNotificationType.budgetThreshold;
+      case 'ownership_transferred':
+        return AppNotificationType.ownershipTransferred;
+      case 'member_left':
+        return AppNotificationType.memberLeft;
       default:
         return AppNotificationType.unknown;
     }

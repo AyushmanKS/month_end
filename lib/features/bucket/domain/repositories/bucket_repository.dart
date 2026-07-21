@@ -21,6 +21,13 @@ abstract class BucketRepository {
 
   Future<Bucket> joinBucketViaCode(String joinCode);
 
+  Future<Bucket> transferOwnership({
+    required String bucketId,
+    required String newOwnerId,
+  });
+
+  Future<void> deleteBucket(String bucketId);
+
   Future<List<BucketMember>> fetchMembers(String bucketId);
 
   Future<void> inviteMemberByUsername({
