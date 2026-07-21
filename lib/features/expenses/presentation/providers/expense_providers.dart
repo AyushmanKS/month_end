@@ -18,7 +18,7 @@ final expenseRepositoryProvider = Provider<ExpenseRepository>((ref) {
   return ExpenseRepositoryImpl(ref.watch(expenseRemoteDataSourceProvider));
 });
 
-final expensesProvider = StreamProvider<List<Expense>>((ref) {
+final expensesProvider = StreamProvider.autoDispose<List<Expense>>((ref) {
   final bucketId = ref.watch(activeBucketIdProvider);
   if (bucketId == null) return Stream.value(const []);
   return ref.watch(expenseRepositoryProvider).watchExpenses(bucketId);

@@ -14,8 +14,22 @@ import '../providers/notification_providers.dart';
 import '../../../suggestions/presentation/providers/suggestion_providers.dart';
 import '../../../suggestions/presentation/widgets/suggestion_card.dart';
 
-class NotificationsScreen extends ConsumerWidget {
+class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
+
+  @override
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => markNotificationsRead(ref),
+    );
+  }
 
   IconData _iconFor(AppNotificationType type) {
     switch (type) {
@@ -35,11 +49,10 @@ class NotificationsScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
     final suggestions = ref.watch(suggestionsProvider).valueOrNull ?? const [];
     final userId = ref.watch(currentUserIdProvider);
-    ref.watch(thresholdWatcherProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Activity')),

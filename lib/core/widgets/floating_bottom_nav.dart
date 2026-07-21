@@ -83,51 +83,56 @@ class _NavButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final secondary = Theme.of(context).textTheme.bodySmall?.color;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppDurations.fast,
-        curve: Curves.easeOut,
-        padding: EdgeInsets.symmetric(
-          horizontal: selected ? AppSpacing.md : AppSpacing.sm,
-          vertical: AppSpacing.xs + 2,
-        ),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primary.withValues(alpha: 0.14)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
-        ),
-        child: Row(
-          children: [
-            AnimatedScale(
-              scale: selected ? 1.1 : 1.0,
-              duration: AppDurations.fast,
-              child: Icon(
-                item.icon,
-                size: 22,
-                color: selected ? AppColors.primary : secondary,
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: item.label,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: AppDurations.fast,
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: selected ? AppSpacing.md : AppSpacing.sm,
+            vertical: AppSpacing.xs + 2,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.primary.withValues(alpha: 0.14)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
+          ),
+          child: Row(
+            children: [
+              AnimatedScale(
+                scale: selected ? 1.1 : 1.0,
+                duration: AppDurations.fast,
+                child: Icon(
+                  item.icon,
+                  size: 22,
+                  color: selected ? AppColors.primary : secondary,
+                ),
               ),
-            ),
-            AnimatedSize(
-              duration: AppDurations.fast,
-              curve: Curves.easeOut,
-              child: selected
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: AppSpacing.xs),
-                      child: Text(
-                        item.label,
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 13,
+              AnimatedSize(
+                duration: AppDurations.fast,
+                curve: Curves.easeOut,
+                child: selected
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.xs),
+                        child: Text(
+                          item.label,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
                         ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -53,14 +53,20 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         receiptUrl = await controller.uploadReceipt(_receiptLocalPath!);
       } catch (e) {
         if (mounted) {
+          setState(() => _uploading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                e is AppException ? e.message : 'Receipt upload failed',
+                e is AppException
+                    ? e.message
+                    : 'Receipt upload failed. Tap save to retry, or remove the '
+                          'photo to continue without it.',
               ),
             ),
           );
         }
+
+        return;
       } finally {
         if (mounted) setState(() => _uploading = false);
       }

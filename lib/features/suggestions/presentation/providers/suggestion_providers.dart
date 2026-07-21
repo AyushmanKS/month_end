@@ -10,7 +10,9 @@ final suggestionRemoteDataSourceProvider = Provider<SuggestionRemoteDataSource>(
   },
 );
 
-final suggestionsProvider = StreamProvider<List<SpendSuggestion>>((ref) {
+final suggestionsProvider = StreamProvider.autoDispose<List<SpendSuggestion>>((
+  ref,
+) {
   final bucketId = ref.watch(activeBucketIdProvider);
   if (bucketId == null) return Stream.value(const []);
   return ref.watch(suggestionRemoteDataSourceProvider).watchForBucket(bucketId);

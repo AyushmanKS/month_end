@@ -58,7 +58,7 @@ class Expense {
       id: json['id'] as String,
       bucketId: json['bucket_id'] as String,
       weekId: json['week_id'] as String?,
-      addedByUid: json['added_by_uid'] as String,
+      addedByUid: json['added_by_uid'] as String? ?? '',
       amount: _toDouble(json['amount']),
       categoryId: json['category_id'] as String?,
       note: json['note'] as String?,

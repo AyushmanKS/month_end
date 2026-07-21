@@ -21,9 +21,13 @@ final myBucketsProvider = FutureProvider<List<Bucket>>((ref) async {
   return ref.watch(bucketRepositoryProvider).fetchMyBuckets();
 });
 
-final activeBucketIdProvider = StateProvider<String?>((ref) {
-  final buckets = ref.watch(myBucketsProvider).valueOrNull;
-  if (buckets == null || buckets.isEmpty) return null;
+final selectedBucketIdProvider = StateProvider<String?>((ref) => null);
+
+final activeBucketIdProvider = Provider<String?>((ref) {
+  final selected = ref.watch(selectedBucketIdProvider);
+  final buckets = ref.watch(myBucketsProvider).valueOrNull ?? const <Bucket>[];
+  if (buckets.isEmpty) return null;
+  if (selected != null && buckets.any((b) => b.id == selected)) return selected;
   return buckets.first.id;
 });
 
@@ -63,7 +67,7 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
         monthlyBudget: monthlyBudget,
       );
       _ref.invalidate(myBucketsProvider);
-      _ref.read(activeBucketIdProvider.notifier).state = bucket.id;
+      _ref.read(selectedBucketIdProvider.notifier).state = bucket.id;
       state = AsyncValue.data(bucket);
       return bucket;
     } catch (e, s) {
@@ -77,7 +81,7 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
     try {
       final bucket = await _repo.joinBucketViaCode(code);
       _ref.invalidate(myBucketsProvider);
-      _ref.read(activeBucketIdProvider.notifier).state = bucket.id;
+      _ref.read(selectedBucketIdProvider.notifier).state = bucket.id;
       state = AsyncValue.data(bucket);
       return bucket;
     } catch (e, s) {

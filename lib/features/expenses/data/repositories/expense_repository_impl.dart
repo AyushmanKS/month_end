@@ -13,10 +13,6 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
       _remote.watchExpenses(bucketId);
 
   @override
-  Future<List<Expense>> fetchExpenses(String bucketId) =>
-      _remote.fetchExpenses(bucketId);
-
-  @override
   Future<Expense> addExpense({
     required String bucketId,
     required double amount,

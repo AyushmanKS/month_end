@@ -17,7 +17,7 @@ class SpendSuggestion {
   final String? weekId;
   final String? categoryId;
 
-  bool get isIncrease => percentChange >= 0;
+  bool get isIncrease => percentChange > 0;
 
   factory SpendSuggestion.fromJson(Map<String, dynamic> json) {
     return SpendSuggestion(

@@ -54,7 +54,7 @@ class WeeklyBucket {
   factory WeeklyBucket.fromJson(Map<String, dynamic> json) {
     return WeeklyBucket(
       id: json['id'] as String,
-      bucketId: json['bucket_id'] as String,
+      bucketId: json['bucket_id'] as String? ?? '',
       weekIndex: (json['week_index'] as num?)?.toInt() ?? 0,
       startDate: DateTime.parse(json['start_date'] as String),
       endDate: DateTime.parse(json['end_date'] as String),

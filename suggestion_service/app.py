@@ -5,6 +5,7 @@ Supabase Database Webhook posts here when a weekly_buckets row flips to 'closed'
 
 from __future__ import annotations
 
+import hmac
 import os
 
 from fastapi import FastAPI, Header, HTTPException
@@ -23,7 +24,11 @@ def health() -> dict:
 
 @app.post("/webhooks/week-closed")
 async def week_closed(payload: dict, x_webhook_secret: str = Header(default="")):
-    if WEBHOOK_SECRET and x_webhook_secret != WEBHOOK_SECRET:
+    # Fail closed: reject if no secret is configured, and use a constant-time
+    # comparison to avoid timing attacks.
+    if not WEBHOOK_SECRET or not hmac.compare_digest(
+        x_webhook_secret, WEBHOOK_SECRET
+    ):
         raise HTTPException(status_code=401, detail="Invalid webhook secret")
 
     record = payload.get("record") or {}

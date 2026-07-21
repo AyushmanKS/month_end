@@ -27,6 +27,7 @@ class MainShell extends ConsumerWidget {
     final location = GoRouterState.of(context).uri.path;
     final currentIndex = _indexForLocation(location);
     final unread = ref.watch(unreadNotificationCountProvider);
+    ref.watch(thresholdWatcherProvider);
 
     return Scaffold(
       extendBody: true,

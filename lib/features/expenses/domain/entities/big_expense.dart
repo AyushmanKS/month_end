@@ -19,7 +19,7 @@ class BigExpense {
     return BigExpense(
       id: json['id'] as String,
       bucketId: json['bucket_id'] as String,
-      addedByUid: json['added_by_uid'] as String,
+      addedByUid: json['added_by_uid'] as String? ?? '',
       title: json['title'] as String? ?? '',
       amount: _toDouble(json['amount']),
       createdAt: json['created_at'] != null

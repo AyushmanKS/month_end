@@ -18,19 +18,12 @@ class NotificationRemoteDataSource {
         .map((rows) => rows.map(AppNotification.fromJson).toList());
   }
 
-  Future<void> markRead({
-    required String notificationId,
-    required String userId,
-    required List<String> currentReadBy,
-  }) async {
+  Future<void> markAllRead(String bucketId) async {
     try {
-      if (currentReadBy.contains(userId)) return;
-      await _client
-          .from(_table)
-          .update({
-            'read_by': [...currentReadBy, userId],
-          })
-          .eq('id', notificationId);
+      await _client.rpc(
+        'mark_notifications_read',
+        params: {'p_bucket_id': bucketId},
+      );
     } catch (e, s) {
       throw ErrorHandler.map(e, s);
     }

@@ -4,8 +4,6 @@ import '../entities/expense.dart';
 abstract class ExpenseRepository {
   Stream<List<Expense>> watchExpenses(String bucketId);
 
-  Future<List<Expense>> fetchExpenses(String bucketId);
-
   Future<Expense> addExpense({
     required String bucketId,
     required double amount,
