@@ -11,11 +11,13 @@ final categoriesProvider = FutureProvider<List<ExpenseCategory>>((ref) {
   return ref.watch(categoryRepositoryProvider).fetchCategories();
 });
 
-final categoryByIdProvider =
-    Provider.family<ExpenseCategory?, String?>((ref, id) {
+final categoryByIdProvider = Provider.family<ExpenseCategory?, String?>((
+  ref,
+  id,
+) {
   if (id == null) return null;
-  final categories = ref.watch(categoriesProvider).valueOrNull ??
-      presetCategories;
+  final categories =
+      ref.watch(categoriesProvider).valueOrNull ?? presetCategories;
   for (final category in categories) {
     if (category.id == id) return category;
   }

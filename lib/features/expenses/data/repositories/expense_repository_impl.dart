@@ -23,14 +23,13 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required String? categoryId,
     String? note,
     String? receiptImageUrl,
-  }) =>
-      _remote.addExpense(
-        bucketId: bucketId,
-        amount: amount,
-        categoryId: categoryId,
-        note: note,
-        receiptImageUrl: receiptImageUrl,
-      );
+  }) => _remote.addExpense(
+    bucketId: bucketId,
+    amount: amount,
+    categoryId: categoryId,
+    note: note,
+    receiptImageUrl: receiptImageUrl,
+  );
 
   @override
   Future<Expense> editExpense({
@@ -39,14 +38,13 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     String? categoryId,
     String? note,
     String? receiptImageUrl,
-  }) =>
-      _remote.editExpense(
-        expenseId: expenseId,
-        amount: amount,
-        categoryId: categoryId,
-        note: note,
-        receiptImageUrl: receiptImageUrl,
-      );
+  }) => _remote.editExpense(
+    expenseId: expenseId,
+    amount: amount,
+    categoryId: categoryId,
+    note: note,
+    receiptImageUrl: receiptImageUrl,
+  );
 
   @override
   Future<void> deleteExpense(String expenseId) =>
@@ -57,6 +55,5 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
     required String bucketId,
     required String title,
     required double amount,
-  }) =>
-      _remote.addBigExpense(bucketId: bucketId, title: title, amount: amount);
+  }) => _remote.addBigExpense(bucketId: bucketId, title: title, amount: amount);
 }

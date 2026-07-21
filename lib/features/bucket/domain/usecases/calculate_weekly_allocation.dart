@@ -14,15 +14,19 @@ class CalculateWeeklyAllocation {
   const CalculateWeeklyAllocation();
 
   List<WeeklyBucket> call(WeeklyAllocationInput input) {
-    final activeWeeks =
-        input.weeks.where((w) => w.isActive).toList(growable: false);
-    final closedWeeks =
-        input.weeks.where((w) => !w.isActive).toList(growable: false);
+    final activeWeeks = input.weeks
+        .where((w) => w.isActive)
+        .toList(growable: false);
+    final closedWeeks = input.weeks
+        .where((w) => !w.isActive)
+        .toList(growable: false);
 
     if (activeWeeks.isEmpty) return input.weeks;
 
-    final alreadySpentInActive =
-        activeWeeks.fold<double>(0, (sum, w) => sum + w.spentAmount);
+    final alreadySpentInActive = activeWeeks.fold<double>(
+      0,
+      (sum, w) => sum + w.spentAmount,
+    );
     final distributable = input.remainingMainBucket + alreadySpentInActive;
     final perWeek = distributable / activeWeeks.length;
 

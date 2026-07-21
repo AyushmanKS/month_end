@@ -28,7 +28,8 @@ class CategoryPicker extends ConsumerWidget {
         for (var i = 0; i < categories.length; i++)
           _CategoryChip(
             category: categories[i],
-            color: AppColors.categorySwatch[i % AppColors.categorySwatch.length],
+            color:
+                AppColors.categorySwatch[i % AppColors.categorySwatch.length],
             selected: categories[i].id == selectedId,
             onTap: () => onSelected(categories[i]),
           ),
@@ -61,7 +62,9 @@ class _CategoryChip extends StatelessWidget {
           vertical: AppSpacing.xs,
         ),
         decoration: BoxDecoration(
-          color: selected ? color.withValues(alpha: 0.18) : context.brand.surfaceAlt,
+          color: selected
+              ? color.withValues(alpha: 0.18)
+              : context.brand.surfaceAlt,
           borderRadius: BorderRadius.circular(AppSpacing.radiusPill),
           border: Border.all(
             color: selected ? color : Colors.transparent,

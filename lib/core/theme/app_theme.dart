@@ -8,24 +8,24 @@ class AppTheme {
   const AppTheme._();
 
   static ThemeData get lightTheme => _build(
-        brightness: Brightness.light,
-        background: AppColors.lightBackground,
-        surface: AppColors.lightSurface,
-        textPrimary: AppColors.lightTextPrimary,
-        textSecondary: AppColors.lightTextSecondary,
-        border: AppColors.lightBorder,
-        brand: AppBrandColors.light,
-      );
+    brightness: Brightness.light,
+    background: AppColors.lightBackground,
+    surface: AppColors.lightSurface,
+    textPrimary: AppColors.lightTextPrimary,
+    textSecondary: AppColors.lightTextSecondary,
+    border: AppColors.lightBorder,
+    brand: AppBrandColors.light,
+  );
 
   static ThemeData get darkTheme => _build(
-        brightness: Brightness.dark,
-        background: AppColors.darkBackground,
-        surface: AppColors.darkSurface,
-        textPrimary: AppColors.darkTextPrimary,
-        textSecondary: AppColors.darkTextSecondary,
-        border: AppColors.darkBorder,
-        brand: AppBrandColors.dark,
-      );
+    brightness: Brightness.dark,
+    background: AppColors.darkBackground,
+    surface: AppColors.darkSurface,
+    textPrimary: AppColors.darkTextPrimary,
+    textSecondary: AppColors.darkTextSecondary,
+    border: AppColors.darkBorder,
+    brand: AppBrandColors.dark,
+  );
 
   static ThemeData _build({
     required Brightness brightness,

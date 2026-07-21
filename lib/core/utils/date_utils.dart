@@ -11,7 +11,8 @@ class AppDateUtils {
   static String dayYear(DateTime date) => _dayYear.format(date);
   static String month(DateTime date) => _month.format(date);
 
-  static DateTime startOfMonth(DateTime date) => DateTime(date.year, date.month);
+  static DateTime startOfMonth(DateTime date) =>
+      DateTime(date.year, date.month);
 
   static DateTime endOfMonth(DateTime date) =>
       DateTime(date.year, date.month + 1, 0);

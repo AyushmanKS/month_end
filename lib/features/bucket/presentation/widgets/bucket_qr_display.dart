@@ -35,9 +35,9 @@ class BucketQrDisplay extends StatelessWidget {
         GestureDetector(
           onTap: () {
             Clipboard.setData(ClipboardData(text: joinCode));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Join code copied')),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Join code copied')));
           },
           child: Container(
             padding: const EdgeInsets.symmetric(

@@ -39,9 +39,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   Future<void> _submit(String bucketId) async {
     if (!_formKey.currentState!.validate()) return;
     if (_category == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pick a category')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Pick a category')));
       return;
     }
 
@@ -55,9 +55,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text(e is AppException
-                    ? e.message
-                    : 'Receipt upload failed')),
+              content: Text(
+                e is AppException ? e.message : 'Receipt upload failed',
+              ),
+            ),
           );
         }
       } finally {
@@ -81,9 +82,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       final error = ref.read(expenseControllerProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error is AppException
-              ? error.message
-              : 'Could not add expense.'),
+          content: Text(
+            error is AppException ? error.message : 'Could not add expense.',
+          ),
         ),
       );
     }
@@ -92,8 +93,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     final bucketId = ref.watch(activeBucketIdProvider);
-    final busy =
-        ref.watch(expenseControllerProvider).isLoading || _uploading;
+    final busy = ref.watch(expenseControllerProvider).isLoading || _uploading;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Add expense')),
@@ -114,14 +114,15 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         prefixIcon: Icons.currency_rupee_rounded,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                         ],
                         validator: Validators.amount,
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      Text('Category',
-                          style: Theme.of(context).textTheme.labelLarge),
+                      Text(
+                        'Category',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
                       const SizedBox(height: AppSpacing.xs),
                       CategoryPicker(
                         selectedId: _category?.id,
@@ -135,13 +136,14 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         prefixIcon: Icons.notes_rounded,
                       ),
                       const SizedBox(height: AppSpacing.lg),
-                      Text('Receipt (optional)',
-                          style: Theme.of(context).textTheme.labelLarge),
+                      Text(
+                        'Receipt (optional)',
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
                       const SizedBox(height: AppSpacing.xs),
                       ReceiptImagePicker(
                         localPath: _receiptLocalPath,
-                        onPicked: (p) =>
-                            setState(() => _receiptLocalPath = p),
+                        onPicked: (p) => setState(() => _receiptLocalPath = p),
                         onCleared: () =>
                             setState(() => _receiptLocalPath = null),
                       ),
@@ -156,7 +158,9 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         'The amount is deducted from the current active week.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: context.brand.textSecondary, fontSize: 12),
+                          color: context.brand.textSecondary,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),

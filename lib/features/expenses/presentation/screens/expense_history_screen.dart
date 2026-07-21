@@ -25,7 +25,8 @@ class ExpenseHistoryScreen extends ConsumerWidget {
     final confirmed = await showConfirmDialog(
       context,
       title: 'Delete expense?',
-      message: 'This expense will be permanently removed. This cannot be '
+      message:
+          'This expense will be permanently removed. This cannot be '
           'undone.',
       confirmLabel: 'Delete',
       destructive: true,
@@ -41,7 +42,8 @@ class ExpenseHistoryScreen extends ConsumerWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              error is AppException ? error.message : 'Delete failed.'),
+            error is AppException ? error.message : 'Delete failed.',
+          ),
         ),
       );
     }
@@ -81,7 +83,8 @@ class ExpenseHistoryScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.xs),
               itemBuilder: (context, index) {
                 final expense = sorted[index];
-                final canEdit = userId != null &&
+                final canEdit =
+                    userId != null &&
                     ownerId != null &&
                     expense.canEdit(userId: userId, ownerId: ownerId);
                 return Dismissible(
@@ -101,9 +104,9 @@ class ExpenseHistoryScreen extends ConsumerWidget {
                         : null,
                   ),
                 ).animate().fadeIn(
-                      delay: AppDurations.listStagger * (index % 8),
-                      duration: AppDurations.fast,
-                    );
+                  delay: AppDurations.listStagger * (index % 8),
+                  duration: AppDurations.fast,
+                );
               },
             );
           },
@@ -120,8 +123,10 @@ class ExpenseHistoryScreen extends ConsumerWidget {
         color: Theme.of(context).colorScheme.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
-      child: Icon(Icons.delete_outline,
-          color: Theme.of(context).colorScheme.error),
+      child: Icon(
+        Icons.delete_outline,
+        color: Theme.of(context).colorScheme.error,
+      ),
     );
   }
 }

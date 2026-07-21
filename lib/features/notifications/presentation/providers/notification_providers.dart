@@ -6,18 +6,18 @@ import '../../data/datasources/notification_remote_datasource.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../services/local_notification_service.dart';
 
-final localNotificationServiceProvider =
-    Provider<LocalNotificationService>((ref) {
+final localNotificationServiceProvider = Provider<LocalNotificationService>((
+  ref,
+) {
   return LocalNotificationService(FlutterLocalNotificationsPlugin());
 });
 
 final notificationRemoteDataSourceProvider =
     Provider<NotificationRemoteDataSource>((ref) {
-  return NotificationRemoteDataSource(ref.watch(supabaseClientProvider));
-});
+      return NotificationRemoteDataSource(ref.watch(supabaseClientProvider));
+    });
 
-final notificationsProvider =
-    StreamProvider<List<AppNotification>>((ref) {
+final notificationsProvider = StreamProvider<List<AppNotification>>((ref) {
   final bucketId = ref.watch(activeBucketIdProvider);
   if (bucketId == null) return Stream.value(const []);
   return ref
@@ -27,7 +27,8 @@ final notificationsProvider =
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
   final userId = ref.watch(currentUserIdProvider);
-  final notifications = ref.watch(notificationsProvider).valueOrNull ?? const [];
+  final notifications =
+      ref.watch(notificationsProvider).valueOrNull ?? const [];
   if (userId == null) return 0;
   return notifications.where((n) => !n.isReadBy(userId)).length;
 });

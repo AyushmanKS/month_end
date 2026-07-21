@@ -57,8 +57,10 @@ class MonthlyOverviewRing extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(bucket.name,
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    bucket.name,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                   _StatRow(
                     label: 'Budget',
@@ -66,8 +68,7 @@ class MonthlyOverviewRing extends StatelessWidget {
                   ),
                   _StatRow(
                     label: 'Remaining',
-                    value:
-                        CurrencyFormatter.format(bucket.remainingMainBucket),
+                    value: CurrencyFormatter.format(bucket.remainingMainBucket),
                     color: brand.success,
                   ),
                   _StatRow(

@@ -15,8 +15,7 @@ class InviteMemberScreen extends ConsumerStatefulWidget {
   const InviteMemberScreen({super.key});
 
   @override
-  ConsumerState<InviteMemberScreen> createState() =>
-      _InviteMemberScreenState();
+  ConsumerState<InviteMemberScreen> createState() => _InviteMemberScreenState();
 }
 
 class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
@@ -31,7 +30,9 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
 
   Future<void> _invite(String bucketId) async {
     if (!_formKey.currentState!.validate()) return;
-    final ok = await ref.read(bucketControllerProvider.notifier).inviteByUsername(
+    final ok = await ref
+        .read(bucketControllerProvider.notifier)
+        .inviteByUsername(
           bucketId: bucketId,
           username: _username.text.trim().toLowerCase(),
         );
@@ -39,9 +40,11 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
     final error = ref.read(bucketControllerProvider).error;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok
-            ? 'Invite sent'
-            : (error is AppException ? error.message : 'Could not invite.')),
+        content: Text(
+          ok
+              ? 'Invite sent'
+              : (error is AppException ? error.message : 'Could not invite.'),
+        ),
       ),
     );
     if (ok) _username.clear();

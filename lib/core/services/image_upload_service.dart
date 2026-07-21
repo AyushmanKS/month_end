@@ -11,7 +11,7 @@ abstract class ImageUploadService {
 
 class CloudinaryImageUploadService implements ImageUploadService {
   CloudinaryImageUploadService({http.Client? client})
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   final http.Client _client;
 
@@ -24,8 +24,9 @@ class CloudinaryImageUploadService implements ImageUploadService {
       throw const ValidationException('Cloudinary is not configured.');
     }
 
-    final uri =
-        Uri.parse('https://api.cloudinary.com/v1_1/$_cloudName/image/upload');
+    final uri = Uri.parse(
+      'https://api.cloudinary.com/v1_1/$_cloudName/image/upload',
+    );
     final request = http.MultipartRequest('POST', uri)
       ..fields['upload_preset'] = _preset
       ..files.add(await http.MultipartFile.fromPath('file', filePath));

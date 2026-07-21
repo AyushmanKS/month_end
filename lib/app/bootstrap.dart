@@ -12,44 +12,44 @@ import '../core/logging/tap_logger.dart';
 import '../features/notifications/presentation/providers/notification_providers.dart';
 
 Future<void> bootstrap(Widget Function() rootBuilder) async {
-  await runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    await _loadEnv();
-    await _initSupabase();
-    _installErrorHandlers();
+      await _loadEnv();
+      await _initSupabase();
+      _installErrorHandlers();
 
-    final container = ProviderContainer(
-      observers: [LoggingProviderObserver()],
-    );
-    try {
-      await container.read(localNotificationServiceProvider).init();
-    } catch (e, s) {
-      AppLogger.instance.w('Local notifications init failed', e);
-      unawaited(Sentry.captureException(e, stackTrace: s));
-    }
+      final container = ProviderContainer(
+        observers: [LoggingProviderObserver()],
+      );
+      try {
+        await container.read(localNotificationServiceProvider).init();
+      } catch (e, s) {
+        AppLogger.instance.w('Local notifications init failed', e);
+        unawaited(Sentry.captureException(e, stackTrace: s));
+      }
 
-    Widget appRoot() => UncontrolledProviderScope(
-          container: container,
-          child: TapLogger(child: rootBuilder()),
-        );
+      Widget appRoot() => UncontrolledProviderScope(
+        container: container,
+        child: TapLogger(child: rootBuilder()),
+      );
 
-    final sentryDsn = dotenv.maybeGet('SENTRY_DSN') ?? '';
-    if (sentryDsn.isNotEmpty && kReleaseMode) {
-      await SentryFlutter.init(
-        (options) {
+      final sentryDsn = dotenv.maybeGet('SENTRY_DSN') ?? '';
+      if (sentryDsn.isNotEmpty && kReleaseMode) {
+        await SentryFlutter.init((options) {
           options.dsn = sentryDsn;
           options.tracesSampleRate = 0.2;
-        },
-        appRunner: () => runApp(appRoot()),
-      );
-    } else {
-      runApp(appRoot());
-    }
-  }, (error, stack) {
-    AppLogger.instance.e('Uncaught zone error', error, stack);
-    unawaited(Sentry.captureException(error, stackTrace: stack));
-  });
+        }, appRunner: () => runApp(appRoot()));
+      } else {
+        runApp(appRoot());
+      }
+    },
+    (error, stack) {
+      AppLogger.instance.e('Uncaught zone error', error, stack);
+      unawaited(Sentry.captureException(error, stackTrace: stack));
+    },
+  );
 }
 
 Future<void> _loadEnv() async {
@@ -65,8 +65,9 @@ Future<void> _initSupabase() async {
   final url = dotenv.maybeGet('SUPABASE_URL') ?? '';
   final anonKey = dotenv.maybeGet('SUPABASE_ANON_KEY') ?? '';
   if (url.isEmpty || anonKey.isEmpty) {
-    AppLogger.instance
-        .w('Supabase credentials missing; app runs in disconnected mode');
+    AppLogger.instance.w(
+      'Supabase credentials missing; app runs in disconnected mode',
+    );
   }
   await Supabase.initialize(
     url: url.isEmpty ? 'https://placeholder.supabase.co' : url,
@@ -79,8 +80,9 @@ Future<void> _initSupabase() async {
 void _installErrorHandlers() {
   FlutterError.onError = (details) {
     logFlutterError(details);
-    unawaited(Sentry.captureException(details.exception,
-        stackTrace: details.stack));
+    unawaited(
+      Sentry.captureException(details.exception, stackTrace: details.stack),
+    );
   };
   PlatformDispatcher.instance.onError = (error, stack) {
     AppLogger.instance.e('PlatformDispatcher error', error, stack);

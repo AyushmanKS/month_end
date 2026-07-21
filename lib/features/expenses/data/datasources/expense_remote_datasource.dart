@@ -13,7 +13,8 @@ class ExpenseRemoteDataSource {
   ExpenseRemoteDataSource(this._client);
 
   final SupabaseClient _client;
-  final CalculateWeeklyAllocation _allocator = const CalculateWeeklyAllocation();
+  final CalculateWeeklyAllocation _allocator =
+      const CalculateWeeklyAllocation();
 
   static const String _expenses = 'expenses';
   static const String _bigExpenses = 'big_expenses';
@@ -213,31 +214,49 @@ class ExpenseRemoteDataSource {
     if (weeks.isEmpty) return null;
     for (final week in weeks) {
       final start = DateTime(
-          week.startDate.year, week.startDate.month, week.startDate.day);
+        week.startDate.year,
+        week.startDate.month,
+        week.startDate.day,
+      );
       final end = DateTime(
-          week.endDate.year, week.endDate.month, week.endDate.day, 23, 59, 59);
+        week.endDate.year,
+        week.endDate.month,
+        week.endDate.day,
+        23,
+        59,
+        59,
+      );
       if (!today.isBefore(start) && !today.isAfter(end)) return week;
     }
     return weeks.first;
   }
 
   Future<WeeklyBucket?> _fetchWeek(String weekId) async {
-    final row =
-        await _client.from(_weekly).select().eq('id', weekId).maybeSingle();
+    final row = await _client
+        .from(_weekly)
+        .select()
+        .eq('id', weekId)
+        .maybeSingle();
     return row == null ? null : WeeklyBucket.fromJson(row);
   }
 
   Future<void> _applyWeeklyDelta(WeeklyBucket week, double delta) async {
     final newSpent = week.spentAmount + delta;
-    await _client.from(_weekly).update({
-      'spent_amount': newSpent,
-      'remaining_amount': week.allocatedAmount - newSpent,
-    }).eq('id', week.id);
+    await _client
+        .from(_weekly)
+        .update({
+          'spent_amount': newSpent,
+          'remaining_amount': week.allocatedAmount - newSpent,
+        })
+        .eq('id', week.id);
   }
 
   Future<Bucket?> _applyBucketDelta(String bucketId, double delta) async {
-    final row =
-        await _client.from(_buckets).select().eq('id', bucketId).maybeSingle();
+    final row = await _client
+        .from(_buckets)
+        .select()
+        .eq('id', bucketId)
+        .maybeSingle();
     if (row == null) return null;
     final bucket = Bucket.fromJson(row);
     final updated = await _client
@@ -259,20 +278,27 @@ class ExpenseRemoteDataSource {
         .eq('bucket_id', bucket.id)
         .order('week_index');
     final weeks = rows.map(WeeklyBucket.fromJson).toList();
-    final rebalanced = _allocator(WeeklyAllocationInput(
-      remainingMainBucket: bucket.remainingMainBucket,
-      weeks: weeks,
-    ));
+    final rebalanced = _allocator(
+      WeeklyAllocationInput(
+        remainingMainBucket: bucket.remainingMainBucket,
+        weeks: weeks,
+      ),
+    );
     for (final week in rebalanced.where((w) => w.isActive)) {
-      await _client.from(_weekly).update({
-        'allocated_amount': week.allocatedAmount,
-        'remaining_amount': week.remainingAmount,
-      }).eq('id', week.id);
+      await _client
+          .from(_weekly)
+          .update({
+            'allocated_amount': week.allocatedAmount,
+            'remaining_amount': week.remainingAmount,
+          })
+          .eq('id', week.id);
     }
   }
 
   Future<void> _maybeThresholdNotification(
-      String bucketId, String? weekId) async {
+    String bucketId,
+    String? weekId,
+  ) async {
     if (weekId == null) return;
     final week = await _fetchWeek(weekId);
     if (week == null) return;

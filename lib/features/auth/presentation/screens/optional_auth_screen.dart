@@ -13,19 +13,21 @@ class OptionalAuthScreen extends ConsumerWidget {
   const OptionalAuthScreen({super.key});
 
   Future<void> _handleGoogle(BuildContext context, WidgetRef ref) async {
-    final outcome =
-        await ref.read(authControllerProvider.notifier).upgradeWithGoogle();
+    final outcome = await ref
+        .read(authControllerProvider.notifier)
+        .upgradeWithGoogle();
     switch (outcome) {
       case GoogleAuthOutcome.signedIntoExisting:
         showAppSnack('Welcome back — signed in with Google.', success: true);
       case GoogleAuthOutcome.upgraded:
-        showAppSnack('Your account is now secured with Google.',
-            success: true);
+        showAppSnack('Your account is now secured with Google.', success: true);
       case GoogleAuthOutcome.failed:
         final error = ref.read(authControllerProvider).error;
-        showAppSnack(error is AppException
-            ? error.message
-            : 'Google sign-in failed. Please try again.');
+        showAppSnack(
+          error is AppException
+              ? error.message
+              : 'Google sign-in failed. Please try again.',
+        );
     }
   }
 
@@ -65,8 +67,7 @@ class OptionalAuthScreen extends ConsumerWidget {
                 label: 'Use email & password',
                 icon: Icons.email_outlined,
                 variant: AppButtonVariant.ghost,
-                onPressed:
-                    busy ? null : () => context.push(RouteNames.signup),
+                onPressed: busy ? null : () => context.push(RouteNames.signup),
               ),
               const Spacer(),
               TextButton(

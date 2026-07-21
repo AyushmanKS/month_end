@@ -35,8 +35,7 @@ class ProfileScreen extends ConsumerWidget {
               _BackupPrompt(),
               const SizedBox(height: AppSpacing.lg),
             ],
-            Text('Appearance',
-                style: Theme.of(context).textTheme.titleLarge),
+            Text('Appearance', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: AppSpacing.xs),
             const ThemeToggleTile(),
             const SizedBox(height: AppSpacing.lg),
@@ -53,10 +52,10 @@ class ProfileScreen extends ConsumerWidget {
                   title: 'Sign out?',
                   message: anonymous
                       ? 'You are on an anonymous session. Signing out will '
-                          'permanently delete this session and its data. '
-                          'Secure your account first to keep it.'
+                            'permanently delete this session and its data. '
+                            'Secure your account first to keep it.'
                       : 'You will need to sign in again to access your buckets '
-                          'and expenses on this device.',
+                            'and expenses on this device.',
                   confirmLabel: 'Sign out',
                   destructive: true,
                   icon: Icons.logout_rounded,
@@ -92,11 +91,15 @@ class _ProfileHeader extends StatelessWidget {
         CircleAvatar(
           radius: 32,
           backgroundColor: AppColors.primary.withValues(alpha: 0.14),
-          backgroundImage:
-              user?.photoUrl != null ? NetworkImage(user!.photoUrl!) : null,
+          backgroundImage: user?.photoUrl != null
+              ? NetworkImage(user!.photoUrl!)
+              : null,
           child: user?.photoUrl == null
-              ? const Icon(Icons.person_rounded,
-                  color: AppColors.primary, size: 32)
+              ? const Icon(
+                  Icons.person_rounded,
+                  color: AppColors.primary,
+                  size: 32,
+                )
               : null,
         ),
         const SizedBox(width: AppSpacing.md),
@@ -104,12 +107,18 @@ class _ProfileHeader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(name, style: Theme.of(context).textTheme.titleLarge),
-            Text(subtitle,
-                style: TextStyle(color: context.brand.textSecondary)),
+            Text(
+              subtitle,
+              style: TextStyle(color: context.brand.textSecondary),
+            ),
             if (user?.hasUsername ?? false)
-              Text('@${user!.username}',
-                  style: const TextStyle(
-                      color: AppColors.primary, fontWeight: FontWeight.w600)),
+              Text(
+                '@${user!.username}',
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
           ],
         ),
       ],
@@ -130,8 +139,10 @@ class _BackupPrompt extends StatelessWidget {
               children: [
                 const Icon(Icons.shield_outlined, color: AppColors.accent),
                 const SizedBox(width: AppSpacing.xs),
-                Text('Back up your account',
-                    style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  'Back up your account',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.xs),

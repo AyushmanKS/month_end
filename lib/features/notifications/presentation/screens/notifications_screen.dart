@@ -64,8 +64,10 @@ class NotificationsScreen extends ConsumerWidget {
               ),
               children: [
                 if (suggestions.isNotEmpty) ...[
-                  Text('Suggestions',
-                      style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Suggestions',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: AppSpacing.xs),
                   for (final suggestion in suggestions)
                     Padding(
@@ -74,19 +76,18 @@ class NotificationsScreen extends ConsumerWidget {
                     ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
-                Text('Activity',
-                    style: Theme.of(context).textTheme.titleLarge),
+                Text('Activity', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: AppSpacing.xs),
                 for (var i = 0; i < notifications.length; i++)
                   _NotificationTile(
                     notification: notifications[i],
                     icon: _iconFor(notifications[i].type),
-                    unread: userId != null &&
-                        !notifications[i].isReadBy(userId),
+                    unread:
+                        userId != null && !notifications[i].isReadBy(userId),
                   ).animate().fadeIn(
-                        delay: AppDurations.listStagger * (i % 8),
-                        duration: AppDurations.fast,
-                      ),
+                    delay: AppDurations.listStagger * (i % 8),
+                    duration: AppDurations.fast,
+                  ),
               ],
             );
           },
@@ -124,13 +125,17 @@ class _NotificationTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(notification.message,
-                      style: Theme.of(context).textTheme.bodyMedium),
+                  Text(
+                    notification.message,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     AppDateUtils.dayYear(notification.createdAt),
                     style: TextStyle(
-                        color: context.brand.textSecondary, fontSize: 11),
+                      color: context.brand.textSecondary,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ),

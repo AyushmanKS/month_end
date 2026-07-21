@@ -46,8 +46,9 @@ class AnimatedProgressBar extends StatelessWidget {
                     width: constraints.maxWidth * animated,
                     decoration: BoxDecoration(
                       color: _colorFor(clamped),
-                      borderRadius:
-                          BorderRadius.circular(AppSpacing.radiusPill),
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.radiusPill,
+                      ),
                     ),
                   );
                 },

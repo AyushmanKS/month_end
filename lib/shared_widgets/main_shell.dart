@@ -40,7 +40,9 @@ class MainShell extends ConsumerWidget {
         items: [
           const FloatingNavItem(icon: Icons.home_rounded, label: 'Home'),
           const FloatingNavItem(
-              icon: Icons.receipt_long_rounded, label: 'Expenses'),
+            icon: Icons.receipt_long_rounded,
+            label: 'Expenses',
+          ),
           FloatingNavItem(
             icon: unread > 0
                 ? Icons.notifications_active_rounded

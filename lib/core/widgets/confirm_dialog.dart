@@ -35,8 +35,9 @@ Future<bool> showConfirmDialog(
         content: Text(
           message,
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         actionsPadding: const EdgeInsets.fromLTRB(
           AppSpacing.md,
@@ -60,7 +61,8 @@ Future<bool> showConfirmDialog(
                     backgroundColor: accent,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                        vertical: AppSpacing.sm),
+                      vertical: AppSpacing.sm,
+                    ),
                   ),
                   onPressed: () => Navigator.of(context).pop(true),
                   child: Text(confirmLabel),

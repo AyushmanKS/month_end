@@ -33,7 +33,9 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    final bucket = await ref.read(bucketControllerProvider.notifier).createBucket(
+    final bucket = await ref
+        .read(bucketControllerProvider.notifier)
+        .createBucket(
           name: _name.text.trim(),
           monthlyBudget: double.parse(_budget.text),
         );
@@ -44,9 +46,9 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
       final error = ref.read(bucketControllerProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error is AppException
-              ? error.message
-              : 'Could not create bucket.'),
+          content: Text(
+            error is AppException ? error.message : 'Could not create bucket.',
+          ),
         ),
       );
     }
@@ -75,8 +77,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                         hint: 'e.g. Flat 402',
                         prefixIcon: Icons.home_outlined,
                         textCapitalization: TextCapitalization.words,
-                        validator: (v) =>
-                            Validators.required(v, field: 'Name'),
+                        validator: (v) => Validators.required(v, field: 'Name'),
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppTextField(
@@ -86,8 +87,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                         prefixIcon: Icons.currency_rupee_rounded,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                         ],
                         validator: Validators.amount,
                       ),
@@ -113,11 +113,16 @@ class _LockedNotice extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: AppSpacing.xl),
-        Icon(Icons.lock_outline_rounded,
-            size: 56, color: context.brand.textSecondary),
+        Icon(
+          Icons.lock_outline_rounded,
+          size: 56,
+          color: context.brand.textSecondary,
+        ),
         const SizedBox(height: AppSpacing.md),
-        Text('Secure your account first',
-            style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          'Secure your account first',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: AppSpacing.xs),
         Text(
           'Creating a bucket makes you its owner, so it needs a permanent '

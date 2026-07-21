@@ -22,8 +22,9 @@ class BucketMember {
           ? DateTime.parse(json['joined_at'] as String)
           : DateTime.fromMillisecondsSinceEpoch(0),
       name: user is Map ? user['name'] as String? : json['name'] as String?,
-      photoUrl:
-          user is Map ? user['photo_url'] as String? : json['photo_url'] as String?,
+      photoUrl: user is Map
+          ? user['photo_url'] as String?
+          : json['photo_url'] as String?,
     );
   }
 }

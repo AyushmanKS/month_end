@@ -25,8 +25,9 @@ class WeeklyBucket {
 
   bool get isActive => status == WeeklyBucketStatus.active;
 
-  double get progress =>
-      allocatedAmount <= 0 ? 0 : (spentAmount / allocatedAmount).clamp(0.0, 1.0);
+  double get progress => allocatedAmount <= 0
+      ? 0
+      : (spentAmount / allocatedAmount).clamp(0.0, 1.0);
 
   bool get isOverThreshold => progress >= 0.8;
   bool get isOverBudget => spentAmount > allocatedAmount;

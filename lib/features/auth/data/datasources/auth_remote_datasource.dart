@@ -79,10 +79,7 @@ class AuthRemoteDataSource {
     try {
       AppLogger.instance.i('OAuth link: launching ${provider.name}');
       final launched = await _auth
-          .linkIdentity(
-            provider,
-            redirectTo: kIsWeb ? null : _oauthRedirect,
-          )
+          .linkIdentity(provider, redirectTo: kIsWeb ? null : _oauthRedirect)
           .timeout(const Duration(seconds: 30));
       AppLogger.instance.i('OAuth link: browser launched=$launched');
     } catch (e, s) {
@@ -94,10 +91,7 @@ class AuthRemoteDataSource {
     try {
       AppLogger.instance.i('OAuth sign-in: launching ${provider.name}');
       final launched = await _auth
-          .signInWithOAuth(
-            provider,
-            redirectTo: kIsWeb ? null : _oauthRedirect,
-          )
+          .signInWithOAuth(provider, redirectTo: kIsWeb ? null : _oauthRedirect)
           .timeout(const Duration(seconds: 30));
       AppLogger.instance.i('OAuth sign-in: browser launched=$launched');
     } catch (e, s) {
@@ -134,18 +128,23 @@ class AuthRemoteDataSource {
         );
         AppLogger.instance.i('Google native: identity linked');
         final user = await _syncProfile(
-            _requireUser(currentAuthUser), AuthType.google);
+          _requireUser(currentAuthUser),
+          AuthType.google,
+        );
         return (user, false);
       } on AuthApiException catch (e) {
         if (e.code != 'identity_already_exists') rethrow;
-        AppLogger.instance
-            .i('Google native: already linked, signing into existing account');
+        AppLogger.instance.i(
+          'Google native: already linked, signing into existing account',
+        );
         final response = await _auth.signInWithIdToken(
           provider: OAuthProvider.google,
           idToken: idToken,
         );
         final user = await _syncProfile(
-            _requireUser(response.user), AuthType.google);
+          _requireUser(response.user),
+          AuthType.google,
+        );
         return (user, true);
       }
     } catch (e, s) {

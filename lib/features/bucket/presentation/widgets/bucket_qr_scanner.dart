@@ -66,24 +66,23 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
         child: _resolving
             ? _buildResolving(context)
             : controller == null
-                ? _buildUnavailable(context)
-                : Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      MobileScanner(
-                          controller: controller, onDetect: _onDetect),
-                      IgnorePointer(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: AppColors.primary, width: 3),
-                            borderRadius:
-                                BorderRadius.circular(AppSpacing.radiusMd),
-                          ),
+            ? _buildUnavailable(context)
+            : Stack(
+                fit: StackFit.expand,
+                children: [
+                  MobileScanner(controller: controller, onDetect: _onDetect),
+                  IgnorePointer(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: AppColors.primary, width: 3),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMd,
                         ),
                       ),
-                    ],
+                    ),
                   ),
+                ],
+              ),
       ),
     );
   }
@@ -110,8 +109,11 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.no_photography_outlined,
-              size: 48, color: scheme.onSurfaceVariant),
+          Icon(
+            Icons.no_photography_outlined,
+            size: 48,
+            color: scheme.onSurfaceVariant,
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(
             'Camera scanning is not available on the iOS Simulator.\n'

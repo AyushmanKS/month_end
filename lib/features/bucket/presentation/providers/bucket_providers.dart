@@ -8,8 +8,7 @@ import '../../domain/entities/bucket_member.dart';
 import '../../domain/entities/weekly_bucket.dart';
 import '../../domain/repositories/bucket_repository.dart';
 
-final bucketRemoteDataSourceProvider =
-    Provider<BucketRemoteDataSource>((ref) {
+final bucketRemoteDataSourceProvider = Provider<BucketRemoteDataSource>((ref) {
   return BucketRemoteDataSource(ref.watch(supabaseClientProvider));
 });
 
@@ -34,15 +33,13 @@ final activeBucketProvider = StreamProvider<Bucket?>((ref) {
   return ref.watch(bucketRepositoryProvider).watchBucket(id);
 });
 
-final weeklyBucketsProvider =
-    StreamProvider<List<WeeklyBucket>>((ref) {
+final weeklyBucketsProvider = StreamProvider<List<WeeklyBucket>>((ref) {
   final id = ref.watch(activeBucketIdProvider);
   if (id == null) return Stream.value(const []);
   return ref.watch(bucketRepositoryProvider).watchWeeklyBuckets(id);
 });
 
-final bucketMembersProvider =
-    FutureProvider<List<BucketMember>>((ref) async {
+final bucketMembersProvider = FutureProvider<List<BucketMember>>((ref) async {
   final id = ref.watch(activeBucketIdProvider);
   if (id == null) return const [];
   return ref.watch(bucketRepositoryProvider).fetchMembers(id);
@@ -61,8 +58,10 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
   }) async {
     state = const AsyncValue.loading();
     try {
-      final bucket =
-          await _repo.createBucket(name: name, monthlyBudget: monthlyBudget);
+      final bucket = await _repo.createBucket(
+        name: name,
+        monthlyBudget: monthlyBudget,
+      );
       _ref.invalidate(myBucketsProvider);
       _ref.read(activeBucketIdProvider.notifier).state = bucket.id;
       state = AsyncValue.data(bucket);
@@ -127,5 +126,5 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
 
 final bucketControllerProvider =
     StateNotifierProvider<BucketController, AsyncValue<Bucket?>>((ref) {
-  return BucketController(ref);
-});
+      return BucketController(ref);
+    });

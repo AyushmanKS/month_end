@@ -8,8 +8,9 @@ import '../../data/repositories/expense_repository_impl.dart';
 import '../../domain/entities/expense.dart';
 import '../../domain/repositories/expense_repository.dart';
 
-final expenseRemoteDataSourceProvider =
-    Provider<ExpenseRemoteDataSource>((ref) {
+final expenseRemoteDataSourceProvider = Provider<ExpenseRemoteDataSource>((
+  ref,
+) {
   return ExpenseRemoteDataSource(ref.watch(supabaseClientProvider));
 });
 
@@ -40,14 +41,15 @@ class ExpenseController extends StateNotifier<AsyncValue<void>> {
     required String? categoryId,
     String? note,
     String? receiptImageUrl,
-  }) =>
-      _run(() => _repo.addExpense(
-            bucketId: bucketId,
-            amount: amount,
-            categoryId: categoryId,
-            note: note,
-            receiptImageUrl: receiptImageUrl,
-          ));
+  }) => _run(
+    () => _repo.addExpense(
+      bucketId: bucketId,
+      amount: amount,
+      categoryId: categoryId,
+      note: note,
+      receiptImageUrl: receiptImageUrl,
+    ),
+  );
 
   Future<bool> editExpense({
     required String expenseId,
@@ -55,14 +57,15 @@ class ExpenseController extends StateNotifier<AsyncValue<void>> {
     String? categoryId,
     String? note,
     String? receiptImageUrl,
-  }) =>
-      _run(() => _repo.editExpense(
-            expenseId: expenseId,
-            amount: amount,
-            categoryId: categoryId,
-            note: note,
-            receiptImageUrl: receiptImageUrl,
-          ));
+  }) => _run(
+    () => _repo.editExpense(
+      expenseId: expenseId,
+      amount: amount,
+      categoryId: categoryId,
+      note: note,
+      receiptImageUrl: receiptImageUrl,
+    ),
+  );
 
   Future<bool> deleteExpense(String expenseId) =>
       _run(() => _repo.deleteExpense(expenseId));
@@ -71,12 +74,9 @@ class ExpenseController extends StateNotifier<AsyncValue<void>> {
     required String bucketId,
     required String title,
     required double amount,
-  }) =>
-      _run(() => _repo.addBigExpense(
-            bucketId: bucketId,
-            title: title,
-            amount: amount,
-          ));
+  }) => _run(
+    () => _repo.addBigExpense(bucketId: bucketId, title: title, amount: amount),
+  );
 
   Future<bool> _run(Future<Object?> Function() action) async {
     state = const AsyncValue.loading();
@@ -94,5 +94,5 @@ class ExpenseController extends StateNotifier<AsyncValue<void>> {
 
 final expenseControllerProvider =
     StateNotifierProvider<ExpenseController, AsyncValue<void>>((ref) {
-  return ExpenseController(ref);
-});
+      return ExpenseController(ref);
+    });

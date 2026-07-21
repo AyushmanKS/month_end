@@ -26,14 +26,16 @@ void main() {
     const allocator = CalculateWeeklyAllocation();
 
     test('spreads remaining budget evenly across active weeks', () {
-      final result = allocator(WeeklyAllocationInput(
-        remainingMainBucket: 3000,
-        weeks: [
-          week(index: 0, allocated: 1000, spent: 0),
-          week(index: 1, allocated: 1000, spent: 0),
-          week(index: 2, allocated: 1000, spent: 0),
-        ],
-      ));
+      final result = allocator(
+        WeeklyAllocationInput(
+          remainingMainBucket: 3000,
+          weeks: [
+            week(index: 0, allocated: 1000, spent: 0),
+            week(index: 1, allocated: 1000, spent: 0),
+            week(index: 2, allocated: 1000, spent: 0),
+          ],
+        ),
+      );
 
       expect(result, hasLength(3));
       for (final w in result) {
@@ -42,19 +44,21 @@ void main() {
     });
 
     test('never rebalances closed weeks', () {
-      final result = allocator(WeeklyAllocationInput(
-        remainingMainBucket: 1000,
-        weeks: [
-          week(
-            index: 0,
-            allocated: 500,
-            spent: 500,
-            status: WeeklyBucketStatus.closed,
-          ),
-          week(index: 1, allocated: 500, spent: 0),
-          week(index: 2, allocated: 500, spent: 0),
-        ],
-      ));
+      final result = allocator(
+        WeeklyAllocationInput(
+          remainingMainBucket: 1000,
+          weeks: [
+            week(
+              index: 0,
+              allocated: 500,
+              spent: 500,
+              status: WeeklyBucketStatus.closed,
+            ),
+            week(index: 1, allocated: 500, spent: 0),
+            week(index: 2, allocated: 500, spent: 0),
+          ],
+        ),
+      );
 
       final closed = result.firstWhere((w) => w.weekIndex == 0);
       expect(closed.allocatedAmount, 500);
@@ -66,13 +70,15 @@ void main() {
     });
 
     test('keeps already-spent amounts inside the rebalance', () {
-      final result = allocator(WeeklyAllocationInput(
-        remainingMainBucket: 900,
-        weeks: [
-          week(index: 0, allocated: 500, spent: 100),
-          week(index: 1, allocated: 500, spent: 0),
-        ],
-      ));
+      final result = allocator(
+        WeeklyAllocationInput(
+          remainingMainBucket: 900,
+          weeks: [
+            week(index: 0, allocated: 500, spent: 100),
+            week(index: 1, allocated: 500, spent: 0),
+          ],
+        ),
+      );
 
       final total = result.fold<double>(0, (sum, w) => sum + w.allocatedAmount);
       expect(total, closeTo(1000, 0.001));

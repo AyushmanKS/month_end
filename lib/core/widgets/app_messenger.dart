@@ -22,8 +22,11 @@ void showAppSnack(String message, {bool success = false}) {
             if (success)
               const Padding(
                 padding: EdgeInsets.only(right: AppSpacing.sm),
-                child: Icon(Icons.check_circle_rounded,
-                    color: Colors.white, size: 20),
+                child: Icon(
+                  Icons.check_circle_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             Expanded(child: Text(message)),
           ],

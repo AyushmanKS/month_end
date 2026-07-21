@@ -9,7 +9,8 @@ class ThemeToggleTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(themeModeProvider);
-    final isDark = mode == ThemeMode.dark ||
+    final isDark =
+        mode == ThemeMode.dark ||
         (mode == ThemeMode.system &&
             MediaQuery.platformBrightnessOf(context) == Brightness.dark);
 
@@ -24,8 +25,10 @@ class ThemeToggleTile extends ConsumerWidget {
             Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
-              child: Text('Dark mode',
-                  style: Theme.of(context).textTheme.bodyMedium),
+              child: Text(
+                'Dark mode',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
             Switch(
               value: isDark,

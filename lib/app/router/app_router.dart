@@ -42,8 +42,7 @@ bool _isUpgraded(User user) {
   if (!user.isAnonymous) return true;
   final providers = user.appMetadata['providers'];
   if (providers is List) {
-    return providers.any(
-        (p) => p == 'google' || p == 'apple' || p == 'email');
+    return providers.any((p) => p == 'google' || p == 'apple' || p == 'email');
   }
   return false;
 }
@@ -63,7 +62,9 @@ String? _authRedirect(GoRouterState state) {
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final refresh = _AuthRefreshStream(Supabase.instance.client.auth.onAuthStateChange);
+  final refresh = _AuthRefreshStream(
+    Supabase.instance.client.auth.onAuthStateChange,
+  );
   ref.onDispose(refresh.dispose);
   return GoRouter(
     navigatorKey: _rootKey,
@@ -156,8 +157,10 @@ CustomTransitionPage<void> _fadeSlide(GoRouterState state, Widget child) {
     transitionDuration: AppDurations.pageTransition,
     child: child,
     transitionsBuilder: (context, animation, secondary, child) {
-      final curved =
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+      final curved = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+      );
       return FadeTransition(
         opacity: curved,
         child: SlideTransition(

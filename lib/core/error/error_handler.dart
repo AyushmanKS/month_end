@@ -29,8 +29,10 @@ class ErrorHandler {
         );
       }
       if (error.code == 'PGRST116') {
-        return NotFoundException('The requested item was not found.',
-            cause: error);
+        return NotFoundException(
+          'The requested item was not found.',
+          cause: error,
+        );
       }
       return UnknownException(error.message, cause: error);
     }
@@ -44,15 +46,8 @@ class ErrorHandler {
   }
 }
 
-typedef ErrorReporter = void Function(
-  Object error,
-  StackTrace stackTrace,
-);
+typedef ErrorReporter = void Function(Object error, StackTrace stackTrace);
 
 void logFlutterError(FlutterErrorDetails details) {
-  AppLogger.instance.e(
-    'FlutterError',
-    details.exception,
-    details.stack,
-  );
+  AppLogger.instance.e('FlutterError', details.exception, details.stack);
 }

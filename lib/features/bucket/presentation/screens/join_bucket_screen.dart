@@ -29,8 +29,9 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
   }
 
   Future<void> _join(String code) async {
-    final bucket =
-        await ref.read(bucketControllerProvider.notifier).joinViaCode(code);
+    final bucket = await ref
+        .read(bucketControllerProvider.notifier)
+        .joinViaCode(code);
     if (!mounted) return;
     if (bucket != null) {
       context.go(RouteNames.home);
@@ -39,7 +40,8 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              error is AppException ? error.message : 'Could not join bucket.'),
+            error is AppException ? error.message : 'Could not join bucket.',
+          ),
         ),
       );
     }
@@ -83,7 +85,8 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
                       maxLength: 6,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'[A-Za-z0-9]')),
+                          RegExp(r'[A-Za-z0-9]'),
+                        ),
                         UpperCaseTextFormatter(),
                       ],
                       validator: Validators.joinCode,

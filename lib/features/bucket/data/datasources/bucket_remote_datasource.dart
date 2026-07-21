@@ -10,7 +10,7 @@ import '../../domain/usecases/generate_join_code.dart';
 
 class BucketRemoteDataSource {
   BucketRemoteDataSource(this._client, {GenerateJoinCode? codeGenerator})
-      : _codeGenerator = codeGenerator ?? const GenerateJoinCode();
+    : _codeGenerator = codeGenerator ?? const GenerateJoinCode();
 
   final SupabaseClient _client;
   final GenerateJoinCode _codeGenerator;
@@ -107,7 +107,9 @@ class BucketRemoteDataSource {
 
   Future<void> _seedWeeklyBuckets(Bucket bucket, DateTime now) async {
     final windows = AppDateUtils.weekWindows(bucket.monthStartDate);
-    final perWeek = windows.isEmpty ? 0.0 : bucket.monthlyBudget / windows.length;
+    final perWeek = windows.isEmpty
+        ? 0.0
+        : bucket.monthlyBudget / windows.length;
     final rows = <Map<String, dynamic>>[];
     for (var i = 0; i < windows.length; i++) {
       rows.add({
@@ -233,10 +235,13 @@ class BucketRemoteDataSource {
   Future<void> persistRebalance(List<WeeklyBucket> weeks) async {
     try {
       for (final week in weeks) {
-        await _client.from(_weekly).update({
-          'allocated_amount': week.allocatedAmount,
-          'remaining_amount': week.remainingAmount,
-        }).eq('id', week.id);
+        await _client
+            .from(_weekly)
+            .update({
+              'allocated_amount': week.allocatedAmount,
+              'remaining_amount': week.remainingAmount,
+            })
+            .eq('id', week.id);
       }
     } catch (e, s) {
       throw ErrorHandler.map(e, s);

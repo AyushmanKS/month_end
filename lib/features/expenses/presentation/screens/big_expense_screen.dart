@@ -32,7 +32,9 @@ class _BigExpenseScreenState extends ConsumerState<BigExpenseScreen> {
 
   Future<void> _submit(String bucketId) async {
     if (!_formKey.currentState!.validate()) return;
-    final ok = await ref.read(expenseControllerProvider.notifier).addBigExpense(
+    final ok = await ref
+        .read(expenseControllerProvider.notifier)
+        .addBigExpense(
           bucketId: bucketId,
           title: _title.text.trim(),
           amount: double.parse(_amount.text),
@@ -44,9 +46,11 @@ class _BigExpenseScreenState extends ConsumerState<BigExpenseScreen> {
       final error = ref.read(expenseControllerProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error is AppException
-              ? error.message
-              : 'Could not add big expense.'),
+          content: Text(
+            error is AppException
+                ? error.message
+                : 'Could not add big expense.',
+          ),
         ),
       );
     }
@@ -73,13 +77,16 @@ class _BigExpenseScreenState extends ConsumerState<BigExpenseScreen> {
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
                           color: context.brand.accent.withValues(alpha: 0.12),
-                          borderRadius:
-                              BorderRadius.circular(AppSpacing.radiusMd),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusMd,
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.bolt_rounded,
-                                color: context.brand.accent),
+                            Icon(
+                              Icons.bolt_rounded,
+                              color: context.brand.accent,
+                            ),
                             const SizedBox(width: AppSpacing.xs),
                             Expanded(
                               child: Text(
@@ -109,8 +116,7 @@ class _BigExpenseScreenState extends ConsumerState<BigExpenseScreen> {
                         prefixIcon: Icons.currency_rupee_rounded,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9.]')),
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                         ],
                         validator: Validators.amount,
                       ),

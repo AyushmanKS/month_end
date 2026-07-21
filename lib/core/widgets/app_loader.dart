@@ -38,8 +38,11 @@ class AppErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded,
-                size: 48, color: AppColors.danger),
+            const Icon(
+              Icons.cloud_off_rounded,
+              size: 48,
+              color: AppColors.danger,
+            ),
             const SizedBox(height: AppSpacing.md),
             Text(
               message,
@@ -77,7 +80,11 @@ class AppEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 56, color: AppColors.primary.withValues(alpha: 0.6)),
+            Icon(
+              icon,
+              size: 56,
+              color: AppColors.primary.withValues(alpha: 0.6),
+            ),
             const SizedBox(height: AppSpacing.md),
             Text(title, style: Theme.of(context).textTheme.titleLarge),
             if (subtitle != null) ...[

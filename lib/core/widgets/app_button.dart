@@ -92,8 +92,7 @@ class _AppButtonState extends State<AppButton> {
                   : null,
             ),
             child: Row(
-              mainAxisSize:
-                  widget.expand ? MainAxisSize.max : MainAxisSize.min,
+              mainAxisSize: widget.expand ? MainAxisSize.max : MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (widget.isLoading)

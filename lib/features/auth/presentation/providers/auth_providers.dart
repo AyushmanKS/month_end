@@ -44,8 +44,9 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     }
   }
 
-  Future<bool> upgradeWithEmail(String email, String password) =>
-      _run(() => _repository.upgradeWithEmail(email: email, password: password));
+  Future<bool> upgradeWithEmail(String email, String password) => _run(
+    () => _repository.upgradeWithEmail(email: email, password: password),
+  );
 
   Future<bool> signUpWithEmail(String email, String password) =>
       _run(() => _repository.signUpWithEmail(email: email, password: password));
@@ -92,5 +93,5 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, AsyncValue<AppUser?>>((ref) {
-  return AuthController(ref.watch(authRepositoryProvider));
-});
+      return AuthController(ref.watch(authRepositoryProvider));
+    });

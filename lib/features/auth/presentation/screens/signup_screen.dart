@@ -47,9 +47,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       final error = ref.read(authControllerProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(error is AppException
-              ? error.message
-              : ErrorHandler.userMessage(error ?? '')),
+          content: Text(
+            error is AppException
+                ? error.message
+                : ErrorHandler.userMessage(error ?? ''),
+          ),
         ),
       );
     }
@@ -98,11 +100,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 TextButton(
                   onPressed: busy
                       ? null
-                      : () =>
-                          setState(() => _existingAccount = !_existingAccount),
-                  child: Text(_existingAccount
-                      ? 'New here? Create an account'
-                      : 'Already have an account? Sign in'),
+                      : () => setState(
+                          () => _existingAccount = !_existingAccount,
+                        ),
+                  child: Text(
+                    _existingAccount
+                        ? 'New here? Create an account'
+                        : 'Already have an account? Sign in',
+                  ),
                 ),
               ],
             ),

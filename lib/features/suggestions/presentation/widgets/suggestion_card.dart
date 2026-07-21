@@ -39,8 +39,10 @@ class SuggestionCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (category != null)
-                    Text(category.name,
-                        style: Theme.of(context).textTheme.labelLarge),
+                    Text(
+                      category.name,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
                   Text(
                     suggestion.message,
                     style: Theme.of(context).textTheme.bodySmall,

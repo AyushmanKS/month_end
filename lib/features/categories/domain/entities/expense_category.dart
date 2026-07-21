@@ -29,11 +29,11 @@ class ExpenseCategory {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'icon': iconKey,
-        'is_preset': isPreset,
-      };
+    'id': id,
+    'name': name,
+    'icon': iconKey,
+    'is_preset': isPreset,
+  };
 }
 
 const Map<String, IconData> categoryIcons = {
@@ -50,15 +50,30 @@ const Map<String, IconData> categoryIcons = {
 };
 
 const List<ExpenseCategory> presetCategories = [
-  ExpenseCategory(id: 'preset_groceries', name: 'Groceries', iconKey: 'groceries'),
+  ExpenseCategory(
+    id: 'preset_groceries',
+    name: 'Groceries',
+    iconKey: 'groceries',
+  ),
   ExpenseCategory(id: 'preset_bus', name: 'Bus', iconKey: 'bus'),
-  ExpenseCategory(id: 'preset_erickshaw', name: 'E-Rickshaw', iconKey: 'erickshaw'),
+  ExpenseCategory(
+    id: 'preset_erickshaw',
+    name: 'E-Rickshaw',
+    iconKey: 'erickshaw',
+  ),
   ExpenseCategory(id: 'preset_auto', name: 'Auto', iconKey: 'auto'),
   ExpenseCategory(id: 'preset_food', name: 'Food', iconKey: 'food'),
   ExpenseCategory(id: 'preset_rent', name: 'Rent', iconKey: 'rent'),
-  ExpenseCategory(id: 'preset_utilities', name: 'Utilities', iconKey: 'utilities'),
+  ExpenseCategory(
+    id: 'preset_utilities',
+    name: 'Utilities',
+    iconKey: 'utilities',
+  ),
   ExpenseCategory(id: 'preset_shopping', name: 'Shopping', iconKey: 'shopping'),
   ExpenseCategory(
-      id: 'preset_entertainment', name: 'Entertainment', iconKey: 'entertainment'),
+    id: 'preset_entertainment',
+    name: 'Entertainment',
+    iconKey: 'entertainment',
+  ),
   ExpenseCategory(id: 'preset_other', name: 'Other', iconKey: 'other'),
 ];

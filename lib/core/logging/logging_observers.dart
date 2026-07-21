@@ -12,18 +12,21 @@ class LoggingNavigatorObserver extends NavigatorObserver {
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    AppLogger.instance.i('🧭 PUSH    ${_name(previousRoute)} → ${_name(route)}');
+    AppLogger.instance.i(
+      '🧭 PUSH    ${_name(previousRoute)} → ${_name(route)}',
+    );
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    AppLogger.instance.i('🧭 POP     ${_name(route)} → ${_name(previousRoute)}');
+    AppLogger.instance.i(
+      '🧭 POP     ${_name(route)} → ${_name(previousRoute)}',
+    );
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    AppLogger.instance
-        .i('🧭 REPLACE ${_name(oldRoute)} → ${_name(newRoute)}');
+    AppLogger.instance.i('🧭 REPLACE ${_name(oldRoute)} → ${_name(newRoute)}');
   }
 
   @override
@@ -53,8 +56,9 @@ class LoggingProviderObserver extends ProviderObserver {
   ) {
     final name = _name(provider);
     if (name.contains('router') || name.contains('logger')) return;
-    AppLogger.instance
-        .d('🔄 STATE $name: ${_short(previousValue)} → ${_short(newValue)}');
+    AppLogger.instance.d(
+      '🔄 STATE $name: ${_short(previousValue)} → ${_short(newValue)}',
+    );
   }
 
   @override
@@ -64,7 +68,10 @@ class LoggingProviderObserver extends ProviderObserver {
     StackTrace stackTrace,
     ProviderContainer container,
   ) {
-    AppLogger.instance
-        .e('🔥 PROVIDER FAILED ${_name(provider)}', error, stackTrace);
+    AppLogger.instance.e(
+      '🔥 PROVIDER FAILED ${_name(provider)}',
+      error,
+      stackTrace,
+    );
   }
 }

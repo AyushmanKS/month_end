@@ -66,7 +66,9 @@ class ExpenseTile extends ConsumerWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          color: brand.textSecondary, fontSize: 12),
+                        color: brand.textSecondary,
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),

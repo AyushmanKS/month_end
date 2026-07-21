@@ -25,8 +25,7 @@ class Expense {
   final String? editedByUid;
   final String? addedByName;
 
-  bool get hasReceipt =>
-      receiptImageUrl != null && receiptImageUrl!.isNotEmpty;
+  bool get hasReceipt => receiptImageUrl != null && receiptImageUrl!.isNotEmpty;
 
   bool canEdit({required String userId, required String ownerId}) =>
       addedByUid == userId || ownerId == userId;

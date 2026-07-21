@@ -4,16 +4,16 @@ import 'package:logger/logger.dart';
 
 class AppLogger {
   AppLogger._internal()
-      : _logger = Logger(
-          level: kReleaseMode ? Level.warning : Level.debug,
-          printer: PrettyPrinter(
-            methodCount: 0,
-            errorMethodCount: 6,
-            lineLength: 90,
-            colors: !kReleaseMode,
-            printEmojis: !kReleaseMode,
-          ),
-        );
+    : _logger = Logger(
+        level: kReleaseMode ? Level.warning : Level.debug,
+        printer: PrettyPrinter(
+          methodCount: 0,
+          errorMethodCount: 6,
+          lineLength: 90,
+          colors: !kReleaseMode,
+          printEmojis: !kReleaseMode,
+        ),
+      );
 
   static final AppLogger instance = AppLogger._internal();
 

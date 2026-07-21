@@ -70,8 +70,10 @@ class _BucketDashboard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('This month',
-                  style: Theme.of(context).textTheme.headlineMedium),
+              Text(
+                'This month',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               IconButton(
                 onPressed: () => context.push(RouteNames.inviteMember),
                 icon: const Icon(Icons.person_add_alt_1_rounded),
@@ -80,10 +82,7 @@ class _BucketDashboard extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           bucketAsync.when(
-            loading: () => const SizedBox(
-              height: 140,
-              child: AppLoader(),
-            ),
+            loading: () => const SizedBox(height: 140, child: AppLoader()),
             error: (e, _) => AppErrorView(message: e.toString()),
             data: (bucket) => bucket == null
                 ? const SizedBox.shrink()
@@ -93,8 +92,10 @@ class _BucketDashboard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Weekly buckets',
-                  style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                'Weekly buckets',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               TextButton.icon(
                 onPressed: () => context.push(RouteNames.bigExpense),
                 icon: const Icon(Icons.bolt_rounded, size: 18),
@@ -150,11 +151,16 @@ class _NoBucketView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.savings_outlined,
-                size: 72, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.savings_outlined,
+              size: 72,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(height: AppSpacing.md),
-            Text('Start a shared bucket',
-                style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              'Start a shared bucket',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Create a household budget or join one with a code.',

@@ -18,8 +18,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
       if (rows.isEmpty) return presetCategories;
       return rows.map(ExpenseCategory.fromJson).toList();
     } catch (e) {
-      AppLogger.instance
-          .w('Falling back to preset categories (remote unavailable)', e);
+      AppLogger.instance.w(
+        'Falling back to preset categories (remote unavailable)',
+        e,
+      );
       return presetCategories;
     }
   }

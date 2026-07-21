@@ -25,9 +25,12 @@ class NotificationRemoteDataSource {
   }) async {
     try {
       if (currentReadBy.contains(userId)) return;
-      await _client.from(_table).update({
-        'read_by': [...currentReadBy, userId],
-      }).eq('id', notificationId);
+      await _client
+          .from(_table)
+          .update({
+            'read_by': [...currentReadBy, userId],
+          })
+          .eq('id', notificationId);
     } catch (e, s) {
       throw ErrorHandler.map(e, s);
     }

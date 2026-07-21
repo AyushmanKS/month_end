@@ -22,18 +22,16 @@ class BucketRepositoryImpl implements BucketRepository {
   Future<Bucket> createBucket({
     required String name,
     required double monthlyBudget,
-  }) =>
-      _remote.createBucket(name: name, monthlyBudget: monthlyBudget);
+  }) => _remote.createBucket(name: name, monthlyBudget: monthlyBudget);
 
   @override
   Future<Bucket> updateMonthlyBudget({
     required String bucketId,
     required double monthlyBudget,
-  }) =>
-      _remote.updateMonthlyBudget(
-        bucketId: bucketId,
-        monthlyBudget: monthlyBudget,
-      );
+  }) => _remote.updateMonthlyBudget(
+    bucketId: bucketId,
+    monthlyBudget: monthlyBudget,
+  );
 
   @override
   Future<Bucket> joinBucketViaCode(String joinCode) =>
@@ -47,8 +45,7 @@ class BucketRepositoryImpl implements BucketRepository {
   Future<void> inviteMemberByUsername({
     required String bucketId,
     required String username,
-  }) =>
-      _remote.inviteMemberByUsername(bucketId: bucketId, username: username);
+  }) => _remote.inviteMemberByUsername(bucketId: bucketId, username: username);
 
   @override
   Future<List<WeeklyBucket>> fetchWeeklyBuckets(String bucketId) =>

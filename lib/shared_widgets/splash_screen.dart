@@ -57,8 +57,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     const SizedBox(height: AppSpacing.sm),
                     TextButton(
                       onPressed: _boot,
-                      child: const Text('Retry',
-                          style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        'Retry',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
