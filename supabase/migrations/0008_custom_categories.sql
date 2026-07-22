@@ -7,6 +7,7 @@ alter table categories
   add column if not exists owner_uid uuid references users(id) on delete cascade;
 
 drop policy if exists categories_select_all on categories;
+drop policy if exists categories_select_preset_or_own on categories;
 create policy categories_select_preset_or_own on categories
   for select using (is_preset or owner_uid = auth.uid());
 
