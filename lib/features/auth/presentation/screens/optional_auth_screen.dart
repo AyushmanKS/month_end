@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/app_exception.dart';
+import '../../../../core/network/connectivity_providers.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_messenger.dart';
@@ -14,6 +15,10 @@ class OptionalAuthScreen extends ConsumerWidget {
   const OptionalAuthScreen({super.key});
 
   Future<void> _handleGoogle(BuildContext context, WidgetRef ref) async {
+    if (!(ref.read(isOnlineProvider).value ?? true)) {
+      showAppSnack('Connect to the internet to secure your account.');
+      return;
+    }
     final outcome = await ref
         .read(authControllerProvider.notifier)
         .upgradeWithGoogle();

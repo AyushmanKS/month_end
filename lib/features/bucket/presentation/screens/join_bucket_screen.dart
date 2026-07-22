@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/app_exception.dart';
+import '../../../../core/network/connectivity_providers.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -31,6 +32,14 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
   }
 
   Future<void> _join(String code) async {
+    if (!(ref.read(isOnlineProvider).value ?? true)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Connect to the internet to join a bucket.'),
+        ),
+      );
+      return;
+    }
     final bucket = await ref
         .read(bucketControllerProvider.notifier)
         .joinViaCode(code);

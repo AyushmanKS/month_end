@@ -6,6 +6,7 @@ import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/error_handler.dart';
+import '../../../../core/network/connectivity_providers.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
@@ -33,6 +34,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    if (!(ref.read(isOnlineProvider).value ?? true)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connect to the internet to continue.')),
+      );
+      return;
+    }
     final controller = ref.read(authControllerProvider.notifier);
     final email = _email.text.trim();
     final password = _password.text;
