@@ -44,6 +44,12 @@ final bucketListHydratorProvider = Provider<void>((ref) {
       final server = await remote.fetchMyBuckets();
       final pending = await outbox.pendingEntityIds('bucket');
       await local.reconcileBucketList(server, pending);
+      for (final bucket in server) {
+        try {
+          final members = await remote.fetchMembers(bucket.id);
+          await local.reconcileMembers(bucket.id, members);
+        } catch (_) {}
+      }
     } catch (_) {}
   }
 
@@ -157,18 +163,7 @@ final ownedBucketsProvider = Provider<List<Bucket>>((ref) {
 
 final bucketMembersFamilyProvider =
     StreamProvider.family<List<BucketMember>, String>((ref, bucketId) {
-      final local = ref.read(bucketLocalDataSourceProvider);
-      Future<void> hydrate() async {
-        try {
-          final members = await ref
-              .read(bucketRepositoryProvider)
-              .fetchMembers(bucketId);
-          await local.reconcileMembers(bucketId, members);
-        } catch (_) {}
-      }
-
-      unawaited(hydrate());
-      return local.watchMembers(bucketId);
+      return ref.watch(bucketLocalDataSourceProvider).watchMembers(bucketId);
     });
 
 final weekExpensesProvider = Provider.family<List<Expense>, String>((
