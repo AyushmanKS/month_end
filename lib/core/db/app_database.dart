@@ -160,6 +160,12 @@ class AppDatabase extends _$AppDatabase {
   }
 
   static QueryExecutor _open() {
-    return driftDatabase(name: 'month_end');
+    return driftDatabase(
+      name: 'month_end',
+      web: DriftWebOptions(
+        sqlite3Wasm: Uri.parse('sqlite3.wasm'),
+        driftWorker: Uri.parse('drift_worker.js'),
+      ),
+    );
   }
 }

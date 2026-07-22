@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../../core/logging/app_logger.dart';
 
@@ -11,6 +12,7 @@ class LocalNotificationService {
   static const String _channelName = 'Budget alerts';
 
   Future<void> init() async {
+    if (kIsWeb) return;
     if (_initialized) return;
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const darwin = DarwinInitializationSettings();
@@ -22,6 +24,7 @@ class LocalNotificationService {
   }
 
   Future<void> requestPermissions() async {
+    if (kIsWeb) return;
     await _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -39,6 +42,7 @@ class LocalNotificationService {
     required String title,
     required String body,
   }) async {
+    if (kIsWeb) return;
     await init();
     const details = NotificationDetails(
       android: AndroidNotificationDetails(
