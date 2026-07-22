@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/constants/app_colors.dart';
 import '../core/constants/app_spacing.dart';
+import '../core/network/connectivity_providers.dart';
 import '../features/auth/presentation/providers/auth_providers.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -27,6 +28,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final error = ref.watch(authControllerProvider).error;
+    final online = ref.watch(isOnlineProvider).value ?? true;
+    ref.listen<AsyncValue<bool>>(isOnlineProvider, (previous, next) {
+      final isOnline = next.value ?? false;
+      if (isOnline && ref.read(authControllerProvider).hasError) _boot();
+    });
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
@@ -51,10 +57,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   children: [
-                    const Text(
-                      'Could not connect. Check your Supabase config.',
+                    Text(
+                      online
+                          ? 'Could not connect. Please try again.'
+                          : "You're offline. Connect to the internet to get "
+                                'started — this is only needed the first time.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     TextButton(
