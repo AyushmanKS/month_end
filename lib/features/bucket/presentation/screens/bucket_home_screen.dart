@@ -113,18 +113,22 @@ class _BucketDashboard extends ConsumerWidget {
                   subtitle: 'Weekly buckets appear once a budget is set.',
                 );
               }
+              final ordered = [...weeks]..sort((a, b) {
+                if (a.isCurrent != b.isCurrent) return a.isCurrent ? -1 : 1;
+                return a.weekIndex.compareTo(b.weekIndex);
+              });
               return Column(
                 children: [
-                  for (var i = 0; i < weeks.length; i++)
+                  for (var i = 0; i < ordered.length; i++)
                     Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                       child:
                           WeeklyBucketCard(
-                                week: weeks[i],
+                                week: ordered[i],
                                 currencyCode: currencyCode,
                                 onTap: () => context.push(
                                   RouteNames.weekDetails,
-                                  extra: weeks[i],
+                                  extra: ordered[i],
                                 ),
                               )
                               .animate()
