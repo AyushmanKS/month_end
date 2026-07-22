@@ -41,10 +41,10 @@ class MonthEndApp extends ConsumerWidget {
             ),
           ),
           child: SyncScope(
-            child: Column(
+            child: Stack(
               children: [
-                const OfflineBanner(),
-                Expanded(child: child ?? const SizedBox.shrink()),
+                Positioned.fill(child: child ?? const SizedBox.shrink()),
+                const Positioned.fill(child: OfflineOverlay()),
               ],
             ),
           ),

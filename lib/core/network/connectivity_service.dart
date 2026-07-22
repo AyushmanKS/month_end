@@ -22,7 +22,7 @@ class ConnectivityService {
     _started = true;
     unawaited(_check());
     _subscription = _connectivity.onConnectivityChanged.listen(
-      (_) => unawaited(_check()),
+      (results) => unawaited(_check(results)),
     );
   }
 
@@ -37,8 +37,15 @@ class ConnectivityService {
     }
   }
 
-  Future<void> _check() async {
-    final online = await _hasInternet();
+  Future<bool> _isOnline(List<ConnectivityResult>? results) async {
+    final transports = results ?? await _connectivity.checkConnectivity();
+    final hasTransport = transports.any((r) => r != ConnectivityResult.none);
+    if (!hasTransport) return false;
+    return _hasInternet();
+  }
+
+  Future<void> _check([List<ConnectivityResult>? results]) async {
+    final online = await _isOnline(results);
     _emit(online);
     _retryTimer?.cancel();
     if (!online) {
@@ -50,7 +57,7 @@ class ConnectivityService {
   }
 
   Future<void> _recheck() async {
-    final online = await _hasInternet();
+    final online = await _isOnline(null);
     if (online) _retryTimer?.cancel();
     _emit(online);
   }
