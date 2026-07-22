@@ -97,7 +97,10 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                BucketQrDisplay(joinCode: bucket.joinCode),
+                BucketQrDisplay(
+                  joinCode: bucket.joinCode,
+                  bucketName: bucket.name,
+                ),
                 const SizedBox(height: AppSpacing.xl),
                 const Divider(),
                 const SizedBox(height: AppSpacing.md),

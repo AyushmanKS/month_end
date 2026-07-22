@@ -87,10 +87,16 @@ class _BucketDashboard extends ConsumerWidget {
                 'Weekly buckets',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              TextButton.icon(
+              FilledButton.tonalIcon(
                 onPressed: () => context.push(RouteNames.bigExpense),
                 icon: const Icon(Icons.bolt_rounded, size: 18),
                 label: const Text('Big expense'),
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
+                ),
               ),
             ],
           ),
