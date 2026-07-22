@@ -143,9 +143,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                                   '${Currencies.byCode(_currency).name} '
                                   '(${Currencies.symbolFor(_currency)})',
                                 ),
-                                trailing: const AppIcon(
-                                  AppAssets.chevronRight,
-                                ),
+                                trailing: const AppIcon(AppAssets.chevronRight),
                                 onTap: _pickCurrency,
                               ),
                             ),
@@ -171,11 +169,7 @@ class _LockedNotice extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: AppSpacing.xl),
-        AppIcon(
-          AppAssets.lock,
-          size: 56,
-          color: context.brand.textSecondary,
-        ),
+        AppIcon(AppAssets.lock, size: 56, color: context.brand.textSecondary),
         const SizedBox(height: AppSpacing.md),
         Text(
           'Secure your account first',

@@ -51,10 +51,7 @@ class MainShell extends ConsumerWidget {
         },
         items: [
           const FloatingNavItem(icon: AppAssets.home, label: 'Home'),
-          const FloatingNavItem(
-            icon: AppAssets.receipt,
-            label: 'Expenses',
-          ),
+          const FloatingNavItem(icon: AppAssets.receipt, label: 'Expenses'),
           FloatingNavItem(
             icon: unread > 0
                 ? AppAssets.notificationsActive

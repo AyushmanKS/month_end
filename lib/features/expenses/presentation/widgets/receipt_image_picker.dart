@@ -55,7 +55,11 @@ class ReceiptImagePicker extends StatelessWidget {
               child: CircleAvatar(
                 radius: 16,
                 backgroundColor: Colors.black54,
-                child: const AppIcon(AppAssets.close, size: 18, color: Colors.white),
+                child: const AppIcon(
+                  AppAssets.close,
+                  size: 18,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

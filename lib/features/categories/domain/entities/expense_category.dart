@@ -1,6 +1,5 @@
 import '../../../../core/constants/app_assets.dart';
 
-
 class ExpenseCategory {
   const ExpenseCategory({
     required this.id,

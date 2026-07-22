@@ -52,7 +52,9 @@ class AppTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             counterText: '',
-            prefixIcon: prefixIcon != null ? AppIcon(prefixIcon!, size: 20) : null,
+            prefixIcon: prefixIcon != null
+                ? AppIcon(prefixIcon!, size: 20)
+                : null,
           ),
         ),
       ],
