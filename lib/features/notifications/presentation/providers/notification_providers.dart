@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import '../../../../core/db/database_provider.dart';
 import '../../../../core/sync/outbox_command.dart';
 import '../../../../core/sync/sync_providers.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../../../bucket/domain/entities/weekly_bucket.dart';
+import '../../data/datasources/notification_local_datasource.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../services/local_notification_service.dart';
@@ -24,11 +26,31 @@ final notificationRemoteDataSourceProvider =
       return NotificationRemoteDataSource(ref.watch(supabaseClientProvider));
     });
 
+final notificationLocalDataSourceProvider =
+    Provider<NotificationLocalDataSource>((ref) {
+      return NotificationLocalDataSource(ref.watch(appDatabaseProvider));
+    });
+
+final notificationHydratorProvider = Provider<void>((ref) {
+  final bucketId = ref.watch(activeBucketIdProvider);
+  if (bucketId == null) return;
+  final local = ref.read(notificationLocalDataSourceProvider);
+  final sub = ref
+      .read(notificationRemoteDataSourceProvider)
+      .watchForBucket(bucketId)
+      .listen(
+        (server) => unawaited(local.reconcile(bucketId, server)),
+        onError: (_) {},
+      );
+  ref.onDispose(sub.cancel);
+});
+
 final notificationsProvider = StreamProvider<List<AppNotification>>((ref) {
   final bucketId = ref.watch(activeBucketIdProvider);
   if (bucketId == null) return Stream.value(const []);
+  ref.watch(notificationHydratorProvider);
   return ref
-      .watch(notificationRemoteDataSourceProvider)
+      .watch(notificationLocalDataSourceProvider)
       .watchForBucket(bucketId);
 });
 
@@ -42,7 +64,13 @@ final unreadNotificationCountProvider = Provider<int>((ref) {
 Future<void> markNotificationsRead(WidgetRef ref) async {
   final bucketId = ref.read(activeBucketIdProvider);
   if (bucketId == null) return;
+  final userId = ref.read(currentUserIdProvider);
   try {
+    if (userId != null) {
+      await ref
+          .read(notificationLocalDataSourceProvider)
+          .markAllReadLocal(bucketId, userId);
+    }
     await ref
         .read(outboxRepositoryProvider)
         .enqueue(

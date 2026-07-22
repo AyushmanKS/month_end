@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import '../../../../core/db/app_database.dart';
 import '../../domain/entities/bucket.dart';
+import '../../domain/entities/bucket_member.dart';
 import '../../domain/entities/weekly_bucket.dart';
 
 class BucketLocalDataSource {
@@ -55,6 +56,55 @@ class BucketLocalDataSource {
     await _db
         .into(_db.weeklyBucketRows)
         .insertOnConflictUpdate(_weekCompanion(w, syncState));
+  }
+
+  Stream<List<BucketMember>> watchMembers(String bucketId) {
+    final query = _db.select(_db.bucketMemberRows)
+      ..where((t) => t.bucketId.equals(bucketId));
+    return query.watch().map((rows) => rows.map(_member).toList());
+  }
+
+  Future<void> reconcileMembers(
+    String bucketId,
+    List<BucketMember> server,
+  ) async {
+    final serverIds = server.map((m) => m.userId).toSet();
+    for (final member in server) {
+      await _db
+          .into(_db.bucketMemberRows)
+          .insertOnConflictUpdate(_memberCompanion(member));
+    }
+    final localRows = await (_db.select(
+      _db.bucketMemberRows,
+    )..where((t) => t.bucketId.equals(bucketId))).get();
+    for (final row in localRows) {
+      if (!serverIds.contains(row.userId)) {
+        await (_db.delete(_db.bucketMemberRows)..where(
+              (t) => t.bucketId.equals(bucketId) & t.userId.equals(row.userId),
+            ))
+            .go();
+      }
+    }
+  }
+
+  BucketMember _member(BucketMemberRow r) {
+    return BucketMember(
+      bucketId: r.bucketId,
+      userId: r.userId,
+      joinedAt: r.joinedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      name: r.name,
+      photoUrl: r.photoUrl,
+    );
+  }
+
+  BucketMemberRowsCompanion _memberCompanion(BucketMember m) {
+    return BucketMemberRowsCompanion.insert(
+      bucketId: m.bucketId,
+      userId: m.userId,
+      joinedAt: Value(m.joinedAt),
+      name: Value(m.name),
+      photoUrl: Value(m.photoUrl),
+    );
   }
 
   Future<void> markBucketDeleted(String id) async {

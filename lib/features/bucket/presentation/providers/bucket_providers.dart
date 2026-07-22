@@ -121,16 +121,31 @@ final bucketHydratorProvider = Provider<void>((ref) {
   ref.watch(bucketListHydratorProvider);
   ref.watch(_activeBucketHydratorProvider);
   ref.watch(_weeklyHydratorProvider);
+  ref.watch(_memberHydratorProvider);
 });
 
-final bucketMembersProvider = FutureProvider<List<BucketMember>>((ref) async {
+final _memberHydratorProvider = Provider<void>((ref) {
   final id = ref.watch(activeBucketIdProvider);
-  if (id == null) return const [];
-  try {
-    return await ref.watch(bucketRepositoryProvider).fetchMembers(id);
-  } catch (_) {
-    return const [];
+  if (id == null) return;
+  final local = ref.read(bucketLocalDataSourceProvider);
+  Future<void> hydrate() async {
+    try {
+      final members = await ref.read(bucketRepositoryProvider).fetchMembers(id);
+      await local.reconcileMembers(id, members);
+    } catch (_) {}
   }
+
+  unawaited(hydrate());
+  ref.listen<AsyncValue<bool>>(isOnlineProvider, (previous, next) {
+    if (next.value == true) unawaited(hydrate());
+  });
+});
+
+final bucketMembersProvider = StreamProvider<List<BucketMember>>((ref) {
+  final id = ref.watch(activeBucketIdProvider);
+  if (id == null) return Stream.value(const []);
+  ref.watch(_memberHydratorProvider);
+  return ref.watch(bucketLocalDataSourceProvider).watchMembers(id);
 });
 
 final ownedBucketsProvider = Provider<List<Bucket>>((ref) {

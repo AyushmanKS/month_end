@@ -15,5 +15,8 @@ final suggestionsProvider = StreamProvider.autoDispose<List<SpendSuggestion>>((
 ) {
   final bucketId = ref.watch(activeBucketIdProvider);
   if (bucketId == null) return Stream.value(const []);
-  return ref.watch(suggestionRemoteDataSourceProvider).watchForBucket(bucketId);
+  return ref
+      .watch(suggestionRemoteDataSourceProvider)
+      .watchForBucket(bucketId)
+      .handleError((Object _) {});
 });
