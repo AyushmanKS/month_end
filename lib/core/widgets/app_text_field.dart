@@ -1,3 +1,4 @@
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_spacing.dart';
@@ -24,7 +25,7 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
   final bool obscureText;
-  final IconData? prefixIcon;
+  final String? prefixIcon;
   final TextCapitalization textCapitalization;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLength;
@@ -51,7 +52,7 @@ class AppTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             counterText: '',
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon, size: 20) : null,
+            prefixIcon: prefixIcon != null ? AppIcon(prefixIcon!, size: 20) : null,
           ),
         ),
       ],

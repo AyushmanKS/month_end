@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -53,7 +55,7 @@ class ReceiptImagePicker extends StatelessWidget {
               child: CircleAvatar(
                 radius: 16,
                 backgroundColor: Colors.black54,
-                child: const Icon(Icons.close, size: 18, color: Colors.white),
+                child: const AppIcon(AppAssets.close, size: 18, color: Colors.white),
               ),
             ),
           ),
@@ -65,7 +67,7 @@ class ReceiptImagePicker extends StatelessWidget {
       children: [
         Expanded(
           child: _PickTile(
-            icon: Icons.photo_camera_outlined,
+            icon: AppAssets.photoCamera,
             label: 'Camera',
             onTap: () => _pick(ImageSource.camera),
           ),
@@ -73,7 +75,7 @@ class ReceiptImagePicker extends StatelessWidget {
         const SizedBox(width: AppSpacing.sm),
         Expanded(
           child: _PickTile(
-            icon: Icons.photo_library_outlined,
+            icon: AppAssets.photoLibrary,
             label: 'Gallery',
             onTap: () => _pick(ImageSource.gallery),
           ),
@@ -90,7 +92,7 @@ class _PickTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconData icon;
+  final String icon;
   final String label;
   final VoidCallback onTap;
 
@@ -107,7 +109,7 @@ class _PickTile extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Icon(icon, color: context.brand.textSecondary),
+            AppIcon(icon, color: context.brand.textSecondary),
             const SizedBox(height: AppSpacing.xxs),
             Text(label, style: Theme.of(context).textTheme.bodySmall),
           ],

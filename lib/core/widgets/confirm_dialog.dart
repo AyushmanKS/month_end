@@ -1,3 +1,4 @@
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
@@ -9,7 +10,7 @@ Future<bool> showConfirmDialog(
   String confirmLabel = 'Confirm',
   String cancelLabel = 'Cancel',
   bool destructive = false,
-  IconData? icon,
+  String? icon,
 }) async {
   final accent = destructive ? AppColors.danger : AppColors.primary;
   final result = await showDialog<bool>(
@@ -29,7 +30,7 @@ Future<bool> showConfirmDialog(
                   color: accent.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: accent, size: 28),
+                child: AppIcon(icon, color: accent, size: 28),
               ),
         title: Text(title, textAlign: TextAlign.center),
         content: Text(

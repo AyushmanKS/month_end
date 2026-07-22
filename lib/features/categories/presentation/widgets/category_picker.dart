@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -72,7 +74,7 @@ class _NewCategoryChip extends StatelessWidget {
         child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.add_rounded, size: 16, color: AppColors.primary),
+            AppIcon(AppAssets.add, size: 16, color: AppColors.primary),
             SizedBox(width: AppSpacing.xxs),
             Text(
               'New',
@@ -175,8 +177,8 @@ class _AddCategoryDialogState extends ConsumerState<_AddCategoryDialog> {
                         width: 1.5,
                       ),
                     ),
-                    child: Icon(
-                      categoryIcons[key],
+                    child: AppIcon(
+                      categoryIcons[key]!,
                       size: 20,
                       color: _iconKey == key ? AppColors.primary : null,
                     ),
@@ -242,7 +244,7 @@ class _CategoryChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(category.icon, size: 16, color: selected ? color : null),
+            AppIcon(category.icon, size: 16, color: selected ? color : null),
             const SizedBox(width: AppSpacing.xxs),
             Text(
               category.name,

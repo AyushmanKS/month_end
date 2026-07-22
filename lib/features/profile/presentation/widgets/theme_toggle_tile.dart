@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -22,7 +24,7 @@ class ThemeToggleTile extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
+            AppIcon(isDark ? AppAssets.darkMode : AppAssets.lightMode),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: Text(

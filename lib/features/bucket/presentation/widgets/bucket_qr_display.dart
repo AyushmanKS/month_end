@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -144,8 +146,8 @@ class _BucketQrDisplayState extends State<BucketQrDisplay> {
                     const SizedBox(width: AppSpacing.xs),
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
-                      child: Icon(
-                        _copied ? Icons.check_rounded : Icons.copy_rounded,
+                      child: AppIcon(
+                        _copied ? AppAssets.checkCircle : AppAssets.contentCopy,
                         key: ValueKey(_copied),
                         size: 18,
                         color: _copied ? AppColors.success : null,
@@ -165,7 +167,7 @@ class _BucketQrDisplayState extends State<BucketQrDisplay> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.ios_share_rounded),
+                  : const AppIcon(AppAssets.iosShare),
             ),
           ],
         ),

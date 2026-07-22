@@ -1,3 +1,5 @@
+import '../../core/constants/app_assets.dart';
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
@@ -22,8 +24,8 @@ void showAppSnack(String message, {bool success = false}) {
             if (success)
               const Padding(
                 padding: EdgeInsets.only(right: AppSpacing.sm),
-                child: Icon(
-                  Icons.check_circle_rounded,
+                child: AppIcon(
+                  AppAssets.checkCircle,
                   color: Colors.white,
                   size: 20,
                 ),

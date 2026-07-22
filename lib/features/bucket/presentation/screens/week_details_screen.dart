@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -212,7 +214,7 @@ class _HistoricalCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.history_rounded, color: brand.textSecondary),
+                AppIcon(AppAssets.history, color: brand.textSecondary),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   'Before this bucket started',
@@ -233,7 +235,7 @@ class _HistoricalCard extends StatelessWidget {
                   ? 'Enter total spent'
                   : 'Edit total spent',
               variant: AppButtonVariant.secondary,
-              icon: Icons.edit_outlined,
+              icon: AppAssets.edit,
               isLoading: busy,
               onPressed: busy ? null : onEnter,
             ),

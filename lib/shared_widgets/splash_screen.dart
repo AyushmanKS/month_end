@@ -1,3 +1,5 @@
+import '../core/widgets/app_icon.dart';
+import '../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/constants/app_colors.dart';
@@ -31,7 +33,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.savings_rounded, size: 72, color: Colors.white),
+            const AppIcon(AppAssets.savings, size: 72, color: Colors.white),
             const SizedBox(height: AppSpacing.md),
             const Text(
               'Month End',

@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +69,7 @@ class _BucketDashboard extends ConsumerWidget {
               const Flexible(child: BucketSwitcher()),
               IconButton(
                 onPressed: () => context.push(RouteNames.inviteMember),
-                icon: const Icon(Icons.person_add_alt_1_rounded),
+                icon: const AppIcon(AppAssets.personAdd),
               ),
             ],
           ),
@@ -89,7 +91,7 @@ class _BucketDashboard extends ConsumerWidget {
               ),
               FilledButton.tonalIcon(
                 onPressed: () => context.push(RouteNames.bigExpense),
-                icon: const Icon(Icons.bolt_rounded, size: 18),
+                icon: const AppIcon(AppAssets.bolt, size: 18),
                 label: const Text('Big expense'),
                 style: FilledButton.styleFrom(
                   visualDensity: VisualDensity.compact,
@@ -153,8 +155,8 @@ class _NoBucketView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.savings_outlined,
+            AppIcon(
+              AppAssets.savings,
               size: 72,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -172,13 +174,13 @@ class _NoBucketView extends StatelessWidget {
             const SizedBox(height: AppSpacing.xl),
             AppButton(
               label: 'Create a bucket',
-              icon: Icons.add_home_rounded,
+              icon: AppAssets.addHome,
               onPressed: () => context.push(RouteNames.createBucket),
             ),
             const SizedBox(height: AppSpacing.sm),
             AppButton(
               label: 'Join with a code',
-              icon: Icons.qr_code_scanner_rounded,
+              icon: AppAssets.qrCodeScanner,
               variant: AppButtonVariant.ghost,
               onPressed: () => context.push(RouteNames.joinBucket),
             ),

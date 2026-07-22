@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/analytics/chart_type_provider.dart';
@@ -363,7 +365,7 @@ class _EmptyChart extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.bar_chart_rounded, color: brand.textSecondary, size: 36),
+          AppIcon(AppAssets.barChart, color: brand.textSecondary, size: 36),
           const SizedBox(height: AppSpacing.xs),
           Text(
             'No expenses in this week yet',

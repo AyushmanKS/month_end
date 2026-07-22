@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -142,7 +144,7 @@ class _HistoricalFooter extends StatelessWidget {
     if (week.needsManualTotal) {
       return Row(
         children: [
-          Icon(Icons.edit_note_rounded, size: 18, color: brand.textSecondary),
+          AppIcon(AppAssets.editNote, size: 18, color: brand.textSecondary),
           const SizedBox(width: AppSpacing.xs),
           Expanded(
             child: Text(

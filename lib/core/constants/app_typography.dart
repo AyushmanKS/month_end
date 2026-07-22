@@ -3,18 +3,20 @@ import 'package:flutter/material.dart';
 class AppTypography {
   const AppTypography._();
 
-  static const String fontFamily = 'Roboto';
+  static const String fontFamily = 'Inter';
 
   static const TextStyle display = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.w800,
     letterSpacing: -0.5,
+    fontFeatures: [FontFeature.tabularFigures(), FontFeature.slashedZero()],
   );
 
   static const TextStyle headline = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.3,
+    fontFeatures: [FontFeature.tabularFigures(), FontFeature.slashedZero()],
   );
 
   static const TextStyle title = TextStyle(

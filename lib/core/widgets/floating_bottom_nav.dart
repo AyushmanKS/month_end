@@ -1,3 +1,4 @@
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_durations.dart';
@@ -6,7 +7,7 @@ import '../constants/app_spacing.dart';
 class FloatingNavItem {
   const FloatingNavItem({required this.icon, required this.label});
 
-  final IconData icon;
+  final String icon;
   final String label;
 }
 
@@ -108,7 +109,7 @@ class _NavButton extends StatelessWidget {
               AnimatedScale(
                 scale: selected ? 1.1 : 1.0,
                 duration: AppDurations.fast,
-                child: Icon(
+                child: AppIcon(
                   item.icon,
                   size: 22,
                   color: selected ? AppColors.primary : secondary,

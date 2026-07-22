@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -77,7 +78,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _email,
                   label: 'Email',
                   hint: 'you@example.com',
-                  prefixIcon: Icons.email_outlined,
+                  prefixIcon: AppAssets.email,
                   keyboardType: TextInputType.emailAddress,
                   validator: Validators.email,
                 ),
@@ -86,7 +87,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   controller: _password,
                   label: 'Password',
                   hint: 'At least 8 characters',
-                  prefixIcon: Icons.lock_outline,
+                  prefixIcon: AppAssets.lock,
                   obscureText: true,
                   validator: Validators.password,
                 ),

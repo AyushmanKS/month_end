@@ -1,3 +1,5 @@
+import '../../core/constants/app_assets.dart';
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
@@ -38,8 +40,8 @@ class AppErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.cloud_off_rounded,
+            const AppIcon(
+              AppAssets.cloudOff,
               size: 48,
               color: AppColors.danger,
             ),
@@ -65,12 +67,12 @@ class AppEmptyState extends StatelessWidget {
     super.key,
     required this.title,
     this.subtitle,
-    this.icon = Icons.inbox_rounded,
+    this.icon = AppAssets.inbox,
   });
 
   final String title;
   final String? subtitle;
-  final IconData icon;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +82,7 @@ class AppEmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            AppIcon(
               icon,
               size: 56,
               color: AppColors.primary.withValues(alpha: 0.6),

@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +32,7 @@ class ProfileScreen extends ConsumerWidget {
           'on this device.',
       confirmLabel: 'Sign out',
       destructive: true,
-      icon: Icons.logout_rounded,
+      icon: AppAssets.logout,
     );
     if (!confirmed) return;
     try {
@@ -58,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
           'undone.',
       confirmLabel: 'Delete account',
       destructive: true,
-      icon: Icons.person_off_outlined,
+      icon: AppAssets.personOff,
     );
     if (!confirmed) return;
     final ok = await ref.read(authControllerProvider.notifier).deleteAccount();
@@ -160,7 +162,7 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.sm),
                   Card(
                     child: ListTile(
-                      leading: const Icon(Icons.payments_outlined),
+                      leading: const AppIcon(AppAssets.payments),
                       title: const Text('Currency'),
                       subtitle: Text(
                         '${Currencies.byCode(currency).name} '
@@ -172,7 +174,7 @@ class ProfileScreen extends ConsumerWidget {
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.chevron_right_rounded),
+                          : const AppIcon(AppAssets.chevronRight),
                       onTap: busy ? null : () => _changeCurrency(context, ref),
                     ),
                   ),
@@ -187,7 +189,7 @@ class ProfileScreen extends ConsumerWidget {
                       AppButton(
                         label: 'Manage my buckets',
                         variant: AppButtonVariant.ghost,
-                        icon: Icons.folder_outlined,
+                        icon: AppAssets.folder,
                         onPressed: () => context.push(RouteNames.manageBuckets),
                       ),
                       const SizedBox(height: AppSpacing.sm),
@@ -196,14 +198,14 @@ class ProfileScreen extends ConsumerWidget {
                       AppButton(
                         label: 'Sign out',
                         variant: AppButtonVariant.ghost,
-                        icon: Icons.logout_rounded,
+                        icon: AppAssets.logout,
                         onPressed: () => _signOut(context, ref),
                       ),
                       const SizedBox(height: AppSpacing.sm),
                       AppButton(
                         label: 'Delete account',
                         variant: AppButtonVariant.ghost,
-                        icon: Icons.person_off_outlined,
+                        icon: AppAssets.personOff,
                         onPressed: () =>
                             _deleteAccount(context, ref, ownsBuckets),
                       ),
@@ -240,8 +242,8 @@ class _ProfileHeader extends StatelessWidget {
               ? NetworkImage(user!.photoUrl!)
               : null,
           child: user?.photoUrl == null
-              ? const Icon(
-                  Icons.person_rounded,
+              ? const AppIcon(
+                  AppAssets.profile,
                   color: AppColors.primary,
                   size: 32,
                 )
@@ -282,7 +284,7 @@ class _BackupPrompt extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.shield_outlined, color: AppColors.accent),
+                const AppIcon(AppAssets.shield, color: AppColors.accent),
                 const SizedBox(width: AppSpacing.xs),
                 Text(
                   'Back up your account',

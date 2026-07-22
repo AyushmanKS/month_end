@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,7 +115,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                               controller: _name,
                               label: 'Bucket name',
                               hint: 'e.g. Flat 402',
-                              prefixIcon: Icons.home_outlined,
+                              prefixIcon: AppAssets.home,
                               textCapitalization: TextCapitalization.words,
                               validator: (v) =>
                                   Validators.required(v, field: 'Name'),
@@ -123,7 +125,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                               controller: _budget,
                               label: 'Monthly budget',
                               hint: '0',
-                              prefixIcon: Icons.currency_rupee_rounded,
+                              prefixIcon: AppAssets.currencyRupeeCircle,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
@@ -135,14 +137,14 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                             const SizedBox(height: AppSpacing.md),
                             Card(
                               child: ListTile(
-                                leading: const Icon(Icons.payments_outlined),
+                                leading: const AppIcon(AppAssets.payments),
                                 title: const Text('Currency'),
                                 subtitle: Text(
                                   '${Currencies.byCode(_currency).name} '
                                   '(${Currencies.symbolFor(_currency)})',
                                 ),
-                                trailing: const Icon(
-                                  Icons.chevron_right_rounded,
+                                trailing: const AppIcon(
+                                  AppAssets.chevronRight,
                                 ),
                                 onTap: _pickCurrency,
                               ),
@@ -169,8 +171,8 @@ class _LockedNotice extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: AppSpacing.xl),
-        Icon(
-          Icons.lock_outline_rounded,
+        AppIcon(
+          AppAssets.lock,
           size: 56,
           color: context.brand.textSecondary,
         ),

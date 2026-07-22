@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -60,14 +61,14 @@ class OptionalAuthScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.xl),
               AppButton(
                 label: 'Continue with Google',
-                icon: Icons.g_mobiledata_rounded,
+                icon: AppAssets.googleIcon,
                 isLoading: busy,
                 onPressed: busy ? null : () => _handleGoogle(context, ref),
               ),
               const SizedBox(height: AppSpacing.sm),
               AppButton(
                 label: 'Use email & password',
-                icon: Icons.email_outlined,
+                icon: AppAssets.email,
                 variant: AppButtonVariant.ghost,
                 onPressed: busy ? null : () => context.push(RouteNames.signup),
               ),

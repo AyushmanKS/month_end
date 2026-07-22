@@ -1,3 +1,5 @@
+import '../core/widgets/app_icon.dart';
+import '../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,7 +39,7 @@ class MainShell extends ConsumerWidget {
       floatingActionButton: currentIndex == 0 && hasBuckets
           ? FloatingActionButton.extended(
               onPressed: () => context.push(RouteNames.addExpense),
-              icon: const Icon(Icons.add),
+              icon: const AppIcon(AppAssets.add),
               label: const Text('Add expense'),
             )
           : null,
@@ -48,18 +50,18 @@ class MainShell extends ConsumerWidget {
           context.go(_routes[index]);
         },
         items: [
-          const FloatingNavItem(icon: Icons.home_rounded, label: 'Home'),
+          const FloatingNavItem(icon: AppAssets.home, label: 'Home'),
           const FloatingNavItem(
-            icon: Icons.receipt_long_rounded,
+            icon: AppAssets.receipt,
             label: 'Expenses',
           ),
           FloatingNavItem(
             icon: unread > 0
-                ? Icons.notifications_active_rounded
-                : Icons.notifications_rounded,
+                ? AppAssets.notificationsActive
+                : AppAssets.notifications,
             label: 'Activity',
           ),
-          const FloatingNavItem(icon: Icons.person_rounded, label: 'Profile'),
+          const FloatingNavItem(icon: AppAssets.profile, label: 'Profile'),
         ],
       ),
     );

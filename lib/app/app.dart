@@ -4,6 +4,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../core/theme/app_theme.dart';
 import '../core/theme/theme_provider.dart';
 import '../core/widgets/app_messenger.dart';
+import '../core/widgets/offline_banner.dart';
 import 'router/app_router.dart';
 
 class MonthEndApp extends ConsumerWidget {
@@ -38,7 +39,12 @@ class MonthEndApp extends ConsumerWidget {
               duration: const Duration(milliseconds: 1300),
             ),
           ),
-          child: child ?? const SizedBox.shrink(),
+          child: Column(
+            children: [
+              const OfflineBanner(),
+              Expanded(child: child ?? const SizedBox.shrink()),
+            ],
+          ),
         );
       },
     );

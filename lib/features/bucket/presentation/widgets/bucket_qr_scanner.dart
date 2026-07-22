@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -117,8 +119,8 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.no_photography_outlined,
+          AppIcon(
+            AppAssets.noPhotography,
             size: 48,
             color: scheme.onSurfaceVariant,
           ),

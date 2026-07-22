@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -54,8 +56,8 @@ class ExpenseTile extends ConsumerWidget {
                   color: AppColors.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
-                child: Icon(
-                  category?.icon ?? Icons.category_outlined,
+                child: AppIcon(
+                  category?.icon ?? AppAssets.category,
                   color: AppColors.primary,
                 ),
               ),
@@ -96,8 +98,8 @@ class ExpenseTile extends ConsumerWidget {
                       height: 40,
                       width: 40,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stack) => Icon(
-                        Icons.broken_image_outlined,
+                      errorBuilder: (context, error, stack) => AppIcon(
+                        AppAssets.brokenImage,
                         color: brand.textSecondary,
                       ),
                     ),

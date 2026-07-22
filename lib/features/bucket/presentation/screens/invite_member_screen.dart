@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -126,7 +127,7 @@ class _InviteMemberScreenState extends ConsumerState<InviteMemberScreen> {
                     controller: _username,
                     label: 'Username',
                     hint: 'alex_flat402',
-                    prefixIcon: Icons.alternate_email_rounded,
+                    prefixIcon: AppAssets.alternateEmail,
                     validator: Validators.username,
                   ),
                 ),

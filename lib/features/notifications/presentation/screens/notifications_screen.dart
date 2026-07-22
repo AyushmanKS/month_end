@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,24 +34,24 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  IconData _iconFor(AppNotificationType type) {
+  String _iconFor(AppNotificationType type) {
     switch (type) {
       case AppNotificationType.expenseAdded:
-        return Icons.add_circle_outline;
+        return AppAssets.addCircle;
       case AppNotificationType.expenseEdited:
-        return Icons.edit_outlined;
+        return AppAssets.edit;
       case AppNotificationType.expenseDeleted:
-        return Icons.delete_outline;
+        return AppAssets.delete;
       case AppNotificationType.bigExpenseAdded:
-        return Icons.bolt_outlined;
+        return AppAssets.bolt;
       case AppNotificationType.budgetThreshold:
-        return Icons.warning_amber_rounded;
+        return AppAssets.warning;
       case AppNotificationType.ownershipTransferred:
-        return Icons.swap_horiz_rounded;
+        return AppAssets.swapHorizontal;
       case AppNotificationType.memberLeft:
-        return Icons.person_off_outlined;
+        return AppAssets.personOff;
       case AppNotificationType.unknown:
-        return Icons.notifications_none_rounded;
+        return AppAssets.notificationNone;
     }
   }
 
@@ -71,7 +73,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 title: 'Nothing yet',
                 subtitle:
                     'Expenses, big spends and budget alerts will show here.',
-                icon: Icons.notifications_none_rounded,
+                icon: AppAssets.notificationNone,
               );
             }
             return ListView(
@@ -127,7 +129,7 @@ class _NotificationTile extends StatelessWidget {
   });
 
   final AppNotification notification;
-  final IconData icon;
+  final String icon;
   final bool unread;
 
   @override
@@ -140,7 +142,7 @@ class _NotificationTile extends StatelessWidget {
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-              child: Icon(icon, size: 20, color: AppColors.primary),
+              child: AppIcon(icon, size: 20, color: AppColors.primary),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(

@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -52,7 +54,7 @@ class BucketManagementScreen extends ConsumerWidget {
           'members for everyone. This cannot be undone.',
       confirmLabel: 'Delete bucket',
       destructive: true,
-      icon: Icons.delete_outline_rounded,
+      icon: AppAssets.delete,
     );
     if (!confirmed) return;
     final ok = await ref
@@ -74,7 +76,7 @@ class BucketManagementScreen extends ConsumerWidget {
           'deleted user.',
       confirmLabel: 'Delete account',
       destructive: true,
-      icon: Icons.person_off_outlined,
+      icon: AppAssets.personOff,
     );
     if (!confirmed) return;
     final ok = await ref.read(authControllerProvider.notifier).deleteAccount();
@@ -105,7 +107,7 @@ class BucketManagementScreen extends ConsumerWidget {
                       subtitle: forAccountDeletion
                           ? 'You can now delete your account.'
                           : 'Buckets you create show up here to manage.',
-                      icon: Icons.folder_open_outlined,
+                      icon: AppAssets.folderOpen,
                     )
                   : ListView(
                       padding: const EdgeInsets.all(AppSpacing.md),
@@ -181,7 +183,7 @@ class _OwnedBucketCard extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: busy ? null : onTransfer,
-                    icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                    icon: const AppIcon(AppAssets.swapHorizontal, size: 18),
                     label: const Text('Transfer'),
                   ),
                 ),
@@ -189,7 +191,7 @@ class _OwnedBucketCard extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: busy ? null : onDelete,
-                    icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                    icon: const AppIcon(AppAssets.delete, size: 18),
                     label: const Text('Delete'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Theme.of(context).colorScheme.error,
@@ -264,7 +266,7 @@ class _MemberPicker extends ConsumerWidget {
                               ? NetworkImage(member.photoUrl!)
                               : null,
                           child: member.photoUrl == null
-                              ? const Icon(Icons.person_rounded)
+                              ? const AppIcon(AppAssets.profile)
                               : null,
                         ),
                         title: Text(member.name ?? 'Member'),

@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,7 +48,7 @@ class BucketSwitcher extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: AppSpacing.xxs),
-            const Icon(Icons.keyboard_arrow_down_rounded),
+            const AppIcon(AppAssets.keyboardArrowDown),
           ],
         ),
       ),
@@ -93,15 +95,15 @@ class _BucketSheet extends ConsumerWidget {
                         backgroundColor: AppColors.primary.withValues(
                           alpha: 0.12,
                         ),
-                        child: const Icon(
-                          Icons.savings_outlined,
+                        child: const AppIcon(
+                          AppAssets.savings,
                           color: AppColors.primary,
                         ),
                       ),
                       title: Text(bucket.name),
                       trailing: bucket.id == activeId
-                          ? const Icon(
-                              Icons.check_circle_rounded,
+                          ? const AppIcon(
+                              AppAssets.checkCircle,
                               color: AppColors.primary,
                             )
                           : null,
@@ -116,7 +118,7 @@ class _BucketSheet extends ConsumerWidget {
             ),
             const Divider(height: 1),
             ListTile(
-              leading: const Icon(Icons.add_home_rounded),
+              leading: const AppIcon(AppAssets.addHome),
               title: const Text('Create new bucket'),
               onTap: () {
                 Navigator.of(context).pop();
@@ -124,7 +126,7 @@ class _BucketSheet extends ConsumerWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.qr_code_scanner_rounded),
+              leading: const AppIcon(AppAssets.qrCodeScanner),
               title: const Text('Join with a code'),
               onTap: () {
                 Navigator.of(context).pop();

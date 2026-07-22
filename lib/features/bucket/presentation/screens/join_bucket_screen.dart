@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,8 +64,8 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
           title: const Text('Join a bucket'),
           bottom: const TabBar(
             tabs: [
-              Tab(text: 'Enter code', icon: Icon(Icons.keyboard_alt_outlined)),
-              Tab(text: 'Scan QR', icon: Icon(Icons.qr_code_scanner_rounded)),
+              Tab(text: 'Enter code', icon: AppIcon(AppAssets.keyboardAlt)),
+              Tab(text: 'Scan QR', icon: AppIcon(AppAssets.qrCodeScanner)),
             ],
           ),
         ),
@@ -80,7 +82,7 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
                       controller: _code,
                       label: 'Join code',
                       hint: 'A7K9QX',
-                      prefixIcon: Icons.tag_rounded,
+                      prefixIcon: AppAssets.tag,
                       textCapitalization: TextCapitalization.characters,
                       maxLength: 6,
                       inputFormatters: [

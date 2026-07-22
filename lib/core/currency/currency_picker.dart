@@ -1,3 +1,5 @@
+import '../../core/constants/app_assets.dart';
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_spacing.dart';
@@ -64,8 +66,8 @@ class _CurrencySheet extends StatelessWidget {
                       title: Text(currency.name),
                       subtitle: Text(currency.code),
                       trailing: currency.code == selected
-                          ? const Icon(
-                              Icons.check_circle_rounded,
+                          ? const AppIcon(
+                              AppAssets.checkCircle,
                               color: AppColors.primary,
                             )
                           : null,

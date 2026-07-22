@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import '../../../../core/constants/app_assets.dart';
+
 
 class ExpenseCategory {
   const ExpenseCategory({
@@ -13,7 +14,7 @@ class ExpenseCategory {
   final String iconKey;
   final bool isPreset;
 
-  IconData get icon => categoryIcons[iconKey] ?? Icons.category_outlined;
+  String get icon => categoryIcons[iconKey] ?? AppAssets.category;
 
   bool get isLocalFallback => id.startsWith('preset_');
 
@@ -36,17 +37,17 @@ class ExpenseCategory {
   };
 }
 
-const Map<String, IconData> categoryIcons = {
-  'groceries': Icons.local_grocery_store_outlined,
-  'bus': Icons.directions_bus_outlined,
-  'erickshaw': Icons.electric_rickshaw_outlined,
-  'auto': Icons.local_taxi_outlined,
-  'food': Icons.restaurant_outlined,
-  'rent': Icons.home_outlined,
-  'utilities': Icons.bolt_outlined,
-  'shopping': Icons.shopping_bag_outlined,
-  'entertainment': Icons.movie_outlined,
-  'other': Icons.category_outlined,
+const Map<String, String> categoryIcons = {
+  'groceries': AppAssets.store,
+  'bus': AppAssets.directionsBus,
+  'erickshaw': AppAssets.electricRickshaw,
+  'auto': AppAssets.localTaxi,
+  'food': AppAssets.restaurant,
+  'rent': AppAssets.home,
+  'utilities': AppAssets.bolt,
+  'shopping': AppAssets.shoppingBag,
+  'entertainment': AppAssets.movie,
+  'other': AppAssets.category,
 };
 
 const List<ExpenseCategory> presetCategories = [

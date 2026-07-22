@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,7 +32,7 @@ class ExpenseHistoryScreen extends ConsumerWidget {
           'undone.',
       confirmLabel: 'Delete',
       destructive: true,
-      icon: Icons.delete_outline_rounded,
+      icon: AppAssets.delete,
     );
     if (!confirmed) return;
     final ok = await ref
@@ -66,7 +68,7 @@ class ExpenseHistoryScreen extends ConsumerWidget {
               return const AppEmptyState(
                 title: 'No expenses yet',
                 subtitle: 'Tap the + button on Home to add your first one.',
-                icon: Icons.receipt_long_outlined,
+                icon: AppAssets.receipt,
               );
             }
             final sorted = [...expenses]
@@ -118,8 +120,8 @@ class ExpenseHistoryScreen extends ConsumerWidget {
         color: Theme.of(context).colorScheme.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
-      child: Icon(
-        Icons.delete_outline,
+      child: AppIcon(
+        AppAssets.delete,
         color: Theme.of(context).colorScheme.error,
       ),
     );

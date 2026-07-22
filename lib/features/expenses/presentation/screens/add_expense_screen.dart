@@ -1,3 +1,4 @@
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -117,7 +118,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         controller: _amount,
                         label: 'Amount',
                         hint: '0',
-                        prefixIcon: Icons.currency_rupee_rounded,
+                        prefixIcon: AppAssets.currencyRupeeCircle,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
@@ -139,7 +140,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                         controller: _note,
                         label: 'Note (optional)',
                         hint: 'What was it for?',
-                        prefixIcon: Icons.notes_rounded,
+                        prefixIcon: AppAssets.notes,
                       ),
                       const SizedBox(height: AppSpacing.lg),
                       Text(

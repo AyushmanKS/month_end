@@ -1,3 +1,4 @@
+import '../../core/widgets/app_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import '../constants/app_colors.dart';
@@ -20,7 +21,7 @@ class AppButton extends StatefulWidget {
   final String label;
   final VoidCallback? onPressed;
   final AppButtonVariant variant;
-  final IconData? icon;
+  final String? icon;
   final bool isLoading;
   final bool expand;
 
@@ -112,7 +113,7 @@ class _AppButtonState extends State<AppButton> {
                     )
                   else ...[
                     if (widget.icon != null) ...[
-                      Icon(widget.icon, size: 18, color: foreground),
+                      AppIcon(widget.icon!, size: 18, color: foreground),
                       const SizedBox(width: AppSpacing.xs),
                     ],
                     Text(

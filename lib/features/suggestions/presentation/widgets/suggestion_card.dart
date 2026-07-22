@@ -1,3 +1,5 @@
+import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -16,8 +18,8 @@ class SuggestionCard extends ConsumerWidget {
     final category = ref.watch(categoryByIdProvider(suggestion.categoryId));
     final color = suggestion.isIncrease ? brand.warning : brand.success;
     final icon = suggestion.isIncrease
-        ? Icons.trending_up_rounded
-        : Icons.trending_down_rounded;
+        ? AppAssets.trendingUp
+        : AppAssets.trendingDown;
 
     return Card(
       child: Padding(
@@ -31,7 +33,7 @@ class SuggestionCard extends ConsumerWidget {
                 color: color.withValues(alpha: 0.14),
                 borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
               ),
-              child: Icon(icon, color: color),
+              child: AppIcon(icon, color: color),
             ),
             const SizedBox(width: AppSpacing.sm),
             Expanded(
