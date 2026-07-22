@@ -33,6 +33,7 @@ class MainShell extends ConsumerWidget {
     final unread = ref.watch(unreadNotificationCountProvider);
     final hasBuckets = ref.watch(myBucketsProvider).value?.isNotEmpty ?? false;
     ref.watch(thresholdWatcherProvider);
+    ref.watch(bucketHydratorProvider);
     ref.watch(expenseHydratorProvider);
 
     return Scaffold(
