@@ -20,7 +20,8 @@ final bucketRepositoryProvider = Provider<BucketRepository>((ref) {
 });
 
 final myBucketsProvider = FutureProvider<List<Bucket>>((ref) async {
-  ref.watch(authStateChangesProvider);
+  final uid = ref.watch(currentUserIdProvider);
+  if (uid == null) return const [];
   return ref.watch(bucketRepositoryProvider).fetchMyBuckets();
 });
 
