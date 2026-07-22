@@ -20,8 +20,12 @@ class MonthEndApp extends ConsumerWidget {
       title: 'Month End',
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.lightTheme.copyWith(
+        scaffoldBackgroundColor: Colors.transparent,
+      ),
+      darkTheme: AppTheme.darkTheme.copyWith(
+        scaffoldBackgroundColor: Colors.transparent,
+      ),
       themeMode: themeMode,
       routerConfig: router,
       builder: (context, child) {
@@ -43,6 +47,7 @@ class MonthEndApp extends ConsumerWidget {
           child: SyncScope(
             child: Stack(
               children: [
+                const Positioned.fill(child: OfflineBackground()),
                 Positioned.fill(child: child ?? const SizedBox.shrink()),
                 const Positioned.fill(child: OfflineOverlay()),
               ],

@@ -146,6 +146,19 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+  Future<void> clearAll() async {
+    await batch((b) {
+      b.deleteWhere(buckets, (_) => const Constant(true));
+      b.deleteWhere(weeklyBucketRows, (_) => const Constant(true));
+      b.deleteWhere(expenses, (_) => const Constant(true));
+      b.deleteWhere(bigExpenses, (_) => const Constant(true));
+      b.deleteWhere(bucketMemberRows, (_) => const Constant(true));
+      b.deleteWhere(categories, (_) => const Constant(true));
+      b.deleteWhere(notificationRows, (_) => const Constant(true));
+      b.deleteWhere(outbox, (_) => const Constant(true));
+    });
+  }
+
   static QueryExecutor _open() {
     return driftDatabase(name: 'month_end');
   }

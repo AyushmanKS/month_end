@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import '../../../../core/db/app_database.dart';
+import '../../../../core/db/database_provider.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -29,9 +31,11 @@ final currentAppUserProvider = Provider<AppUser?>((ref) {
 });
 
 class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
-  AuthController(this._repository) : super(const AsyncValue.data(null));
+  AuthController(this._repository, this._db)
+    : super(const AsyncValue.data(null));
 
   final AuthRepository _repository;
+  final AppDatabase _db;
 
   Future<AppUser?> ensureSignedIn() async {
     state = const AsyncValue.loading();
@@ -76,6 +80,7 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
 
   Future<void> signOut() async {
     await _repository.signOut();
+    await _db.clearAll();
     state = const AsyncValue.data(null);
   }
 
@@ -83,6 +88,7 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     state = const AsyncValue.loading();
     try {
       await _repository.deleteAccount();
+      await _db.clearAll();
       state = const AsyncValue.data(null);
       return true;
     } catch (e, s) {
@@ -106,5 +112,8 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
 
 final authControllerProvider =
     StateNotifierProvider<AuthController, AsyncValue<AppUser?>>((ref) {
-      return AuthController(ref.watch(authRepositoryProvider));
+      return AuthController(
+        ref.watch(authRepositoryProvider),
+        ref.watch(appDatabaseProvider),
+      );
     });

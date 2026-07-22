@@ -9,6 +9,7 @@ import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/currency/currency.dart';
 import '../../../../core/currency/currency_picker.dart';
 import '../../../../core/currency/fx_service.dart';
+import '../../../../core/network/connectivity_providers.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_skeletons.dart';
@@ -24,6 +25,10 @@ class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
+    if (!(ref.read(isOnlineProvider).value ?? true)) {
+      showAppSnack('Connect to the internet to sign out.');
+      return;
+    }
     final confirmed = await showConfirmDialog(
       context,
       title: 'Sign out?',
@@ -47,6 +52,10 @@ class ProfileScreen extends ConsumerWidget {
     WidgetRef ref,
     bool ownsBuckets,
   ) async {
+    if (!(ref.read(isOnlineProvider).value ?? true)) {
+      showAppSnack('Connect to the internet to delete your account.');
+      return;
+    }
     if (ownsBuckets) {
       context.push(RouteNames.manageBuckets, extra: true);
       return;
