@@ -95,17 +95,20 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     ),
                   const SizedBox(height: AppSpacing.lg),
                 ],
-                Text('Activity', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: AppSpacing.xs),
                 for (var i = 0; i < notifications.length; i++)
-                  _NotificationTile(
-                    notification: notifications[i],
-                    icon: _iconFor(notifications[i].type),
-                    unread:
-                        userId != null && !notifications[i].isReadBy(userId),
-                  ).animate().fadeIn(
-                    delay: AppDurations.listStagger * (i % 8),
-                    duration: AppDurations.fast,
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                    child:
+                        _NotificationTile(
+                          notification: notifications[i],
+                          icon: _iconFor(notifications[i].type),
+                          unread:
+                              userId != null &&
+                              !notifications[i].isReadBy(userId),
+                        ).animate().fadeIn(
+                          delay: AppDurations.listStagger * (i % 8),
+                          duration: AppDurations.fast,
+                        ),
                   ),
               ],
             );

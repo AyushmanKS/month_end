@@ -40,6 +40,10 @@ final activeBucketProvider = StreamProvider<Bucket?>((ref) {
   return ref.watch(bucketRepositoryProvider).watchBucket(id);
 });
 
+final activeCurrencyProvider = Provider<String>((ref) {
+  return ref.watch(activeBucketProvider).value?.currency ?? 'INR';
+});
+
 final weeklyBucketsProvider = StreamProvider<List<WeeklyBucket>>((ref) {
   final id = ref.watch(activeBucketIdProvider);
   if (id == null) return Stream.value(const []);
@@ -82,12 +86,14 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
   Future<Bucket?> createBucket({
     required String name,
     required double monthlyBudget,
+    String currency = 'INR',
   }) async {
     state = const AsyncValue.loading();
     try {
       final bucket = await _repo.createBucket(
         name: name,
         monthlyBudget: monthlyBudget,
+        currency: currency,
       );
       _ref.invalidate(myBucketsProvider);
       _ref.read(selectedBucketIdProvider.notifier).state = bucket.id;
@@ -160,6 +166,29 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
       _ref.invalidate(myBucketsProvider);
       _ref.invalidate(bucketMembersProvider);
       _ref.invalidate(bucketMembersFamilyProvider(bucketId));
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> setBucketCurrency({
+    required String bucketId,
+    required String currency,
+    double rate = 1,
+  }) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repo.setBucketCurrency(
+        bucketId: bucketId,
+        currency: currency,
+        rate: rate,
+      );
+      _ref.invalidate(myBucketsProvider);
+      _ref.invalidate(weeklyBucketsProvider);
+      _ref.invalidate(expensesProvider);
       state = const AsyncValue.data(null);
       return true;
     } catch (e, s) {

@@ -28,6 +28,11 @@ class ExpenseRemoteDataSource {
     String? receiptImageUrl,
   }) async {
     try {
+      final now = DateTime.now();
+      final localDate =
+          '${now.year.toString().padLeft(4, '0')}-'
+          '${now.month.toString().padLeft(2, '0')}-'
+          '${now.day.toString().padLeft(2, '0')}';
       final data = await _client.rpc(
         'add_expense',
         params: {
@@ -36,6 +41,8 @@ class ExpenseRemoteDataSource {
           'p_category_id': categoryId,
           'p_note': note,
           'p_receipt': receiptImageUrl,
+          'p_occurred_at': now.toUtc().toIso8601String(),
+          'p_local_date': localDate,
         },
       );
       AppLogger.instance.i('Expense added to bucket $bucketId');

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../app/router/route_names.dart';
 import '../core/widgets/floating_bottom_nav.dart';
+import '../features/bucket/presentation/providers/bucket_providers.dart';
 import '../features/notifications/presentation/providers/notification_providers.dart';
 
 class MainShell extends ConsumerWidget {
@@ -27,11 +28,19 @@ class MainShell extends ConsumerWidget {
     final location = GoRouterState.of(context).uri.path;
     final currentIndex = _indexForLocation(location);
     final unread = ref.watch(unreadNotificationCountProvider);
+    final hasBuckets = ref.watch(myBucketsProvider).value?.isNotEmpty ?? false;
     ref.watch(thresholdWatcherProvider);
 
     return Scaffold(
       extendBody: true,
       body: child,
+      floatingActionButton: currentIndex == 0 && hasBuckets
+          ? FloatingActionButton.extended(
+              onPressed: () => context.push(RouteNames.addExpense),
+              icon: const Icon(Icons.add),
+              label: const Text('Add expense'),
+            )
+          : null,
       bottomNavigationBar: FloatingBottomNav(
         currentIndex: currentIndex,
         onTap: (index) {

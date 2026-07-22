@@ -40,6 +40,7 @@ class WeekDetailsScreen extends ConsumerWidget {
     final expenses = ref.watch(weekExpensesProvider(week.id));
     final membersAsync = ref.watch(bucketMembersProvider);
     final members = membersAsync.value ?? const [];
+    final currency = ref.watch(activeCurrencyProvider);
     final busy = ref.watch(bucketControllerProvider).isLoading;
 
     return Scaffold(
@@ -55,7 +56,7 @@ class WeekDetailsScreen extends ConsumerWidget {
                   120,
                 ),
                 children: [
-                  _SummaryCard(week: week),
+                  _SummaryCard(week: week, currencyCode: currency),
                   const SizedBox(height: AppSpacing.lg),
                   if (week.isHistorical) ...[
                     _HistoricalCard(
@@ -81,6 +82,7 @@ class WeekDetailsScreen extends ConsumerWidget {
                     expenses: expenses,
                     members: members,
                     type: type,
+                    currencyCode: currency,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(
@@ -88,7 +90,11 @@ class WeekDetailsScreen extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: AppSpacing.sm),
-                  _DailyBreakdown(week: week, expenses: expenses),
+                  _DailyBreakdown(
+                    week: week,
+                    expenses: expenses,
+                    currencyCode: currency,
+                  ),
                 ],
               ),
       ),
@@ -97,9 +103,10 @@ class WeekDetailsScreen extends ConsumerWidget {
 }
 
 class _SummaryCard extends StatelessWidget {
-  const _SummaryCard({required this.week});
+  const _SummaryCard({required this.week, required this.currencyCode});
 
   final WeeklyBucket week;
+  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -120,17 +127,29 @@ class _SummaryCard extends StatelessWidget {
                 _Metric(
                   label: week.isHistorical ? 'Manual total' : 'Allocated',
                   value: week.isHistorical
-                      ? CurrencyFormatter.format(week.spentAmount)
-                      : CurrencyFormatter.format(week.allocatedAmount),
+                      ? CurrencyFormatter.format(
+                          week.spentAmount,
+                          code: currencyCode,
+                        )
+                      : CurrencyFormatter.format(
+                          week.allocatedAmount,
+                          code: currencyCode,
+                        ),
                 ),
                 _Metric(
                   label: 'Spent',
-                  value: CurrencyFormatter.format(week.spentAmount),
+                  value: CurrencyFormatter.format(
+                    week.spentAmount,
+                    code: currencyCode,
+                  ),
                 ),
                 if (!week.isHistorical)
                   _Metric(
                     label: 'Left',
-                    value: CurrencyFormatter.format(week.remainingAmount),
+                    value: CurrencyFormatter.format(
+                      week.remainingAmount,
+                      code: currencyCode,
+                    ),
                     color: week.isOverBudget ? brand.danger : brand.success,
                   ),
               ],
@@ -248,10 +267,15 @@ class _ChartSwitcher extends StatelessWidget {
 }
 
 class _DailyBreakdown extends StatelessWidget {
-  const _DailyBreakdown({required this.week, required this.expenses});
+  const _DailyBreakdown({
+    required this.week,
+    required this.expenses,
+    required this.currencyCode,
+  });
 
   final WeeklyBucket week;
   final List<Expense> expenses;
+  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -280,11 +304,8 @@ class _DailyBreakdown extends StatelessWidget {
 
     final totals = <DateTime, double>{for (final d in days) d: 0};
     for (final e in expenses) {
-      final day = DateTime(
-        e.createdAt.year,
-        e.createdAt.month,
-        e.createdAt.day,
-      );
+      final local = e.createdAt.toLocal();
+      final day = DateTime(local.year, local.month, local.day);
       if (totals.containsKey(day)) {
         totals[day] = (totals[day] ?? 0) + e.amount;
       }
@@ -301,6 +322,7 @@ class _DailyBreakdown extends StatelessWidget {
                 total: totals[day] ?? 0,
                 inactive: day.isBefore(effective),
                 brand: brand,
+                currencyCode: currencyCode,
               ),
           ],
         ),
@@ -315,12 +337,14 @@ class _DailyRow extends StatelessWidget {
     required this.total,
     required this.inactive,
     required this.brand,
+    required this.currencyCode,
   });
 
   final DateTime day;
   final double total;
   final bool inactive;
   final AppBrandColors brand;
+  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -337,7 +361,7 @@ class _DailyRow extends StatelessWidget {
               )
             : null,
         trailing: Text(
-          inactive ? '—' : CurrencyFormatter.format(total),
+          inactive ? '—' : CurrencyFormatter.format(total, code: currencyCode),
           style: TextStyle(fontWeight: FontWeight.w700, color: color),
         ),
       ),

@@ -4,11 +4,15 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/currency/currency.dart';
+import '../../../../core/currency/currency_picker.dart';
+import '../../../../core/currency/fx_service.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../core/widgets/app_messenger.dart';
+import '../../../../shared_providers/supabase_providers.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
@@ -64,6 +68,59 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _changeCurrency(BuildContext context, WidgetRef ref) async {
+    final bucket = ref.read(activeBucketProvider).value;
+    if (bucket == null) {
+      showAppSnack('Create or open a bucket to set its currency.');
+      return;
+    }
+    if (bucket.ownerId != ref.read(currentUserIdProvider)) {
+      showAppSnack('Only the bucket owner can change its currency.');
+      return;
+    }
+    final picked = await showCurrencyPicker(context, selected: bucket.currency);
+    if (picked == null || picked == bucket.currency || !context.mounted) return;
+
+    final convert = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Apply currency change'),
+        content: Text(
+          'How would you like to apply the switch to '
+          '${Currencies.byCode(picked).name}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Keep previous amounts'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Convert all'),
+          ),
+        ],
+      ),
+    );
+    if (convert == null || !context.mounted) return;
+
+    var rate = 1.0;
+    if (convert) {
+      try {
+        rate = await ref.read(fxServiceProvider).rate(bucket.currency, picked);
+      } catch (_) {
+        showAppSnack('Could not fetch the exchange rate. Try again.');
+        return;
+      }
+    }
+    final ok = await ref
+        .read(bucketControllerProvider.notifier)
+        .setBucketCurrency(bucketId: bucket.id, currency: picked, rate: rate);
+    showAppSnack(
+      ok ? 'Currency updated.' : 'Could not update the currency.',
+      success: ok,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(appUserStreamProvider);
@@ -72,6 +129,8 @@ class ProfileScreen extends ConsumerWidget {
     final isRegistered = user != null && !user.isAnonymous;
     final hasAccountActions = ownsBuckets || isRegistered;
     final resolvingUser = userAsync.isLoading && !userAsync.hasValue;
+    final currency = ref.watch(activeCurrencyProvider);
+    final busy = ref.watch(bucketControllerProvider).isLoading;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
@@ -98,6 +157,25 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   const ThemeToggleTile(),
+                  const SizedBox(height: AppSpacing.sm),
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.payments_outlined),
+                      title: const Text('Currency'),
+                      subtitle: Text(
+                        '${Currencies.byCode(currency).name} '
+                        '(${Currencies.symbolFor(currency)})',
+                      ),
+                      trailing: busy
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.chevron_right_rounded),
+                      onTap: busy ? null : () => _changeCurrency(context, ref),
+                    ),
+                  ),
                   const SizedBox(height: AppSpacing.lg),
                   if (hasAccountActions) ...[
                     Text(

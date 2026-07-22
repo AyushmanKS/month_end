@@ -25,6 +25,7 @@ class ExpenseTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final category = ref.watch(categoryByIdProvider(expense.categoryId));
     final brand = context.brand;
+    final currency = ref.watch(activeCurrencyProvider);
     final members = ref.watch(bucketMembersProvider).value ?? const [];
     String? creatorName;
     if (expense.addedByUid.isEmpty) {
@@ -73,7 +74,7 @@ class ExpenseTile extends ConsumerWidget {
                         if (expense.note != null && expense.note!.isNotEmpty)
                           expense.note!,
                         if (creatorName != null) 'by $creatorName',
-                        AppDateUtils.day(expense.createdAt),
+                        AppDateUtils.day(expense.createdAt.toLocal()),
                       ].join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -105,7 +106,7 @@ class ExpenseTile extends ConsumerWidget {
                 const SizedBox(width: AppSpacing.xs),
               ],
               Text(
-                CurrencyFormatter.format(expense.amount),
+                CurrencyFormatter.format(expense.amount, code: currency),
                 style: const TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 15,

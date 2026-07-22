@@ -8,6 +8,7 @@ class Bucket {
     required this.monthStartDate,
     required this.remainingMainBucket,
     required this.createdAt,
+    this.currency = 'INR',
   });
 
   final String id;
@@ -18,6 +19,7 @@ class Bucket {
   final DateTime monthStartDate;
   final double remainingMainBucket;
   final DateTime createdAt;
+  final String currency;
 
   double get spentSoFar => monthlyBudget - remainingMainBucket;
 
@@ -31,6 +33,7 @@ class Bucket {
     double? monthlyBudget,
     double? remainingMainBucket,
     DateTime? monthStartDate,
+    String? currency,
   }) {
     return Bucket(
       id: id,
@@ -41,6 +44,7 @@ class Bucket {
       monthStartDate: monthStartDate ?? this.monthStartDate,
       remainingMainBucket: remainingMainBucket ?? this.remainingMainBucket,
       createdAt: createdAt,
+      currency: currency ?? this.currency,
     );
   }
 
@@ -56,6 +60,7 @@ class Bucket {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
           : DateTime.fromMillisecondsSinceEpoch(0),
+      currency: json['currency'] as String? ?? 'INR',
     );
   }
 

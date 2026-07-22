@@ -37,6 +37,21 @@ class WeeklyBucket {
 
   int get activeDays => endDate.difference(effectiveStartDate).inDays + 1;
 
+  bool get isFuture {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    return start.isAfter(today);
+  }
+
+  bool get isCurrent {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final end = DateTime(endDate.year, endDate.month, endDate.day);
+    return !today.isBefore(start) && !today.isAfter(end);
+  }
+
   double get progress => allocatedAmount <= 0
       ? 0
       : (spentAmount / allocatedAmount).clamp(0.0, 1.0);

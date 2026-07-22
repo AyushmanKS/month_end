@@ -68,11 +68,36 @@ class BucketRemoteDataSource {
   Future<Bucket> createBucket({
     required String name,
     required double monthlyBudget,
+    String currency = 'INR',
   }) async {
     try {
       final data = await _client.rpc(
         'create_bucket',
-        params: {'p_name': name, 'p_budget': monthlyBudget},
+        params: {
+          'p_name': name,
+          'p_budget': monthlyBudget,
+          'p_currency': currency,
+        },
+      );
+      return Bucket.fromJson(Map<String, dynamic>.from(data as Map));
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
+  Future<Bucket> setBucketCurrency({
+    required String bucketId,
+    required String currency,
+    double rate = 1,
+  }) async {
+    try {
+      final data = await _client.rpc(
+        'set_bucket_currency',
+        params: {
+          'p_bucket_id': bucketId,
+          'p_currency': currency,
+          'p_rate': rate,
+        },
       );
       return Bucket.fromJson(Map<String, dynamic>.from(data as Map));
     } catch (e, s) {

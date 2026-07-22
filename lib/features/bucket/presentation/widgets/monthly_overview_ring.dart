@@ -64,16 +64,25 @@ class MonthlyOverviewRing extends StatelessWidget {
                   const SizedBox(height: AppSpacing.xs),
                   _StatRow(
                     label: 'Budget',
-                    value: CurrencyFormatter.format(bucket.monthlyBudget),
+                    value: CurrencyFormatter.format(
+                      bucket.monthlyBudget,
+                      code: bucket.currency,
+                    ),
                   ),
                   _StatRow(
                     label: 'Remaining',
-                    value: CurrencyFormatter.format(bucket.remainingMainBucket),
+                    value: CurrencyFormatter.format(
+                      bucket.remainingMainBucket,
+                      code: bucket.currency,
+                    ),
                     color: brand.success,
                   ),
                   _StatRow(
                     label: 'Spent',
-                    value: CurrencyFormatter.format(bucket.spentSoFar),
+                    value: CurrencyFormatter.format(
+                      bucket.spentSoFar,
+                      code: bucket.currency,
+                    ),
                     color: brand.accent,
                   ),
                 ],

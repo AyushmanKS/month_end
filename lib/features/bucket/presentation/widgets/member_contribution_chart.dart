@@ -30,12 +30,14 @@ class MemberContributionChart extends StatelessWidget {
     required this.expenses,
     required this.members,
     required this.type,
+    required this.currencyCode,
   });
 
   final WeeklyBucket week;
   final List<Expense> expenses;
   final List<BucketMember> members;
   final AppChartType type;
+  final String currencyCode;
 
   Color _colorFor(String uid, int index) {
     if (uid.isEmpty) return const Color(0xFF8A9AA8);
@@ -116,7 +118,7 @@ class MemberContributionChart extends StatelessWidget {
           },
         ),
         const SizedBox(height: AppSpacing.md),
-        _Legend(contributions: contributions),
+        _Legend(contributions: contributions, currencyCode: currencyCode),
       ],
     );
   }
@@ -137,11 +139,8 @@ class MemberContributionChart extends StatelessWidget {
       result[day] = <String, double>{};
     }
     for (final expense in expenses) {
-      final day = DateTime(
-        expense.createdAt.year,
-        expense.createdAt.month,
-        expense.createdAt.day,
-      );
+      final local = expense.createdAt.toLocal();
+      final day = DateTime(local.year, local.month, local.day);
       final bucket = result[day];
       if (bucket == null) continue;
       bucket[expense.addedByUid] =
@@ -316,9 +315,10 @@ class MemberContributionChart extends StatelessWidget {
 }
 
 class _Legend extends StatelessWidget {
-  const _Legend({required this.contributions});
+  const _Legend({required this.contributions, required this.currencyCode});
 
   final List<MemberContribution> contributions;
+  final String currencyCode;
 
   @override
   Widget build(BuildContext context) {
@@ -340,7 +340,7 @@ class _Legend extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                '${c.name} · ${CurrencyFormatter.format(c.total)}',
+                '${c.name} · ${CurrencyFormatter.format(c.total, code: currencyCode)}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

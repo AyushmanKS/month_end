@@ -12,6 +12,13 @@ abstract class BucketRepository {
   Future<Bucket> createBucket({
     required String name,
     required double monthlyBudget,
+    String currency,
+  });
+
+  Future<Bucket> setBucketCurrency({
+    required String bucketId,
+    required String currency,
+    double rate,
   });
 
   Future<Bucket> updateMonthlyBudget({

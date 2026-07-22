@@ -22,7 +22,23 @@ class BucketRepositoryImpl implements BucketRepository {
   Future<Bucket> createBucket({
     required String name,
     required double monthlyBudget,
-  }) => _remote.createBucket(name: name, monthlyBudget: monthlyBudget);
+    String currency = 'INR',
+  }) => _remote.createBucket(
+    name: name,
+    monthlyBudget: monthlyBudget,
+    currency: currency,
+  );
+
+  @override
+  Future<Bucket> setBucketCurrency({
+    required String bucketId,
+    required String currency,
+    double rate = 1,
+  }) => _remote.setBucketCurrency(
+    bucketId: bucketId,
+    currency: currency,
+    rate: rate,
+  );
 
   @override
   Future<Bucket> updateMonthlyBudget({

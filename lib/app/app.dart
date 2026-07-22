@@ -22,12 +22,25 @@ class MonthEndApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       routerConfig: router,
-      builder: (context, child) => SkeletonizerConfig(
-        data: const SkeletonizerConfigData(
-          effect: ShimmerEffect(duration: Duration(milliseconds: 1100)),
-        ),
-        child: child ?? const SizedBox.shrink(),
-      ),
+      builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return SkeletonizerConfig(
+          data: SkeletonizerConfigData(
+            effect: ShimmerEffect(
+              baseColor: isDark
+                  ? const Color(0xFF1F2C38)
+                  : const Color(0xFFE6ECF1),
+              highlightColor: isDark
+                  ? const Color(0xFF33475A)
+                  : const Color(0xFFF9FBFC),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              duration: const Duration(milliseconds: 1300),
+            ),
+          ),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
   }
 }

@@ -34,16 +34,6 @@ class BucketHomeScreen extends ConsumerWidget {
           },
         ),
       ),
-      floatingActionButton: bucketsAsync.maybeWhen(
-        data: (buckets) => buckets.isEmpty
-            ? null
-            : FloatingActionButton.extended(
-                onPressed: () => context.push(RouteNames.addExpense),
-                icon: const Icon(Icons.add),
-                label: const Text('Add expense'),
-              ),
-        orElse: () => null,
-      ),
     );
   }
 }
@@ -55,6 +45,7 @@ class _BucketDashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final bucketAsync = ref.watch(activeBucketProvider);
     final weeksAsync = ref.watch(weeklyBucketsProvider);
+    final currencyCode = ref.watch(activeCurrencyProvider);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -124,6 +115,7 @@ class _BucketDashboard extends ConsumerWidget {
                       child:
                           WeeklyBucketCard(
                                 week: weeks[i],
+                                currencyCode: currencyCode,
                                 onTap: () => context.push(
                                   RouteNames.weekDetails,
                                   extra: weeks[i],

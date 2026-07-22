@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/currency/currency.dart';
+import '../../../../core/currency/currency_picker.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/validators.dart';
@@ -24,12 +26,18 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
   final _formKey = GlobalKey<FormState>();
   final _name = TextEditingController();
   final _budget = TextEditingController();
+  String _currency = Currencies.localeDefault();
 
   @override
   void dispose() {
     _name.dispose();
     _budget.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickCurrency() async {
+    final code = await showCurrencyPicker(context, selected: _currency);
+    if (code != null && mounted) setState(() => _currency = code);
   }
 
   Future<void> _submit() async {
@@ -39,6 +47,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
         .createBucket(
           name: _name.text.trim(),
           monthlyBudget: double.parse(_budget.text),
+          currency: _currency,
         );
     if (!mounted) return;
     if (bucket != null) {
@@ -122,6 +131,21 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                                 ),
                               ],
                               validator: Validators.amount,
+                            ),
+                            const SizedBox(height: AppSpacing.md),
+                            Card(
+                              child: ListTile(
+                                leading: const Icon(Icons.payments_outlined),
+                                title: const Text('Currency'),
+                                subtitle: Text(
+                                  '${Currencies.byCode(_currency).name} '
+                                  '(${Currencies.symbolFor(_currency)})',
+                                ),
+                                trailing: const Icon(
+                                  Icons.chevron_right_rounded,
+                                ),
+                                onTap: _pickCurrency,
+                              ),
                             ),
                             const SizedBox(height: AppSpacing.xl),
                             AppButton(
