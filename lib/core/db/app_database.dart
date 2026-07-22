@@ -10,6 +10,7 @@ mixin SyncColumns on Table {
   DateTimeColumn get serverUpdatedAt => dateTime().nullable()();
 }
 
+@DataClassName('BucketRow')
 class Buckets extends Table with SyncColumns {
   TextColumn get id => text()();
   TextColumn get name => text().withDefault(const Constant(''))();
@@ -42,6 +43,7 @@ class WeeklyBucketRows extends Table with SyncColumns {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('ExpenseRow')
 class Expenses extends Table with SyncColumns {
   TextColumn get id => text()();
   TextColumn get bucketId => text()();
@@ -58,6 +60,7 @@ class Expenses extends Table with SyncColumns {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('BigExpenseRow')
 class BigExpenses extends Table with SyncColumns {
   TextColumn get id => text()();
   TextColumn get bucketId => text()();
@@ -81,6 +84,7 @@ class BucketMemberRows extends Table with SyncColumns {
   Set<Column> get primaryKey => {bucketId, userId};
 }
 
+@DataClassName('CategoryRow')
 class Categories extends Table with SyncColumns {
   TextColumn get id => text()();
   TextColumn get name => text().withDefault(const Constant(''))();

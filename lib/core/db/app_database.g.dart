@@ -3,7 +3,7 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $BucketsTable extends Buckets with TableInfo<$BucketsTable, Bucket> {
+class $BucketsTable extends Buckets with TableInfo<$BucketsTable, BucketRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -182,7 +182,7 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, Bucket> {
   static const String $name = 'buckets';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Bucket> instance, {
+    Insertable<BucketRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -292,9 +292,9 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, Bucket> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Bucket map(Map<String, dynamic> data, {String? tablePrefix}) {
+  BucketRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Bucket(
+    return BucketRow(
       syncState: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_state'],
@@ -356,7 +356,7 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, Bucket> {
   }
 }
 
-class Bucket extends DataClass implements Insertable<Bucket> {
+class BucketRow extends DataClass implements Insertable<BucketRow> {
   final String syncState;
   final bool deletedLocal;
   final DateTime? updatedAtLocal;
@@ -370,7 +370,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
   final double remainingMainBucket;
   final String currency;
   final DateTime? createdAt;
-  const Bucket({
+  const BucketRow({
     required this.syncState,
     required this.deletedLocal,
     this.updatedAtLocal,
@@ -434,12 +434,12 @@ class Bucket extends DataClass implements Insertable<Bucket> {
     );
   }
 
-  factory Bucket.fromJson(
+  factory BucketRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Bucket(
+    return BucketRow(
       syncState: serializer.fromJson<String>(json['syncState']),
       deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
       updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
@@ -477,7 +477,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
     };
   }
 
-  Bucket copyWith({
+  BucketRow copyWith({
     String? syncState,
     bool? deletedLocal,
     Value<DateTime?> updatedAtLocal = const Value.absent(),
@@ -491,7 +491,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
     double? remainingMainBucket,
     String? currency,
     Value<DateTime?> createdAt = const Value.absent(),
-  }) => Bucket(
+  }) => BucketRow(
     syncState: syncState ?? this.syncState,
     deletedLocal: deletedLocal ?? this.deletedLocal,
     updatedAtLocal: updatedAtLocal.present
@@ -510,8 +510,8 @@ class Bucket extends DataClass implements Insertable<Bucket> {
     currency: currency ?? this.currency,
     createdAt: createdAt.present ? createdAt.value : this.createdAt,
   );
-  Bucket copyWithCompanion(BucketsCompanion data) {
-    return Bucket(
+  BucketRow copyWithCompanion(BucketsCompanion data) {
+    return BucketRow(
       syncState: data.syncState.present ? data.syncState.value : this.syncState,
       deletedLocal: data.deletedLocal.present
           ? data.deletedLocal.value
@@ -542,7 +542,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
 
   @override
   String toString() {
-    return (StringBuffer('Bucket(')
+    return (StringBuffer('BucketRow(')
           ..write('syncState: $syncState, ')
           ..write('deletedLocal: $deletedLocal, ')
           ..write('updatedAtLocal: $updatedAtLocal, ')
@@ -579,7 +579,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Bucket &&
+      (other is BucketRow &&
           other.syncState == this.syncState &&
           other.deletedLocal == this.deletedLocal &&
           other.updatedAtLocal == this.updatedAtLocal &&
@@ -595,7 +595,7 @@ class Bucket extends DataClass implements Insertable<Bucket> {
           other.createdAt == this.createdAt);
 }
 
-class BucketsCompanion extends UpdateCompanion<Bucket> {
+class BucketsCompanion extends UpdateCompanion<BucketRow> {
   final Value<String> syncState;
   final Value<bool> deletedLocal;
   final Value<DateTime?> updatedAtLocal;
@@ -644,7 +644,7 @@ class BucketsCompanion extends UpdateCompanion<Bucket> {
   }) : id = Value(id),
        ownerId = Value(ownerId),
        monthStartDate = Value(monthStartDate);
-  static Insertable<Bucket> custom({
+  static Insertable<BucketRow> custom({
     Expression<String>? syncState,
     Expression<bool>? deletedLocal,
     Expression<DateTime>? updatedAtLocal,
@@ -1665,7 +1665,8 @@ class WeeklyBucketRowsCompanion extends UpdateCompanion<WeeklyBucketRow> {
   }
 }
 
-class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
+class $ExpensesTable extends Expenses
+    with TableInfo<$ExpensesTable, ExpenseRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1849,7 +1850,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   static const String $name = 'expenses';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Expense> instance, {
+    Insertable<ExpenseRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1965,9 +1966,9 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Expense map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ExpenseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Expense(
+    return ExpenseRow(
       syncState: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_state'],
@@ -2033,7 +2034,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   }
 }
 
-class Expense extends DataClass implements Insertable<Expense> {
+class ExpenseRow extends DataClass implements Insertable<ExpenseRow> {
   final String syncState;
   final bool deletedLocal;
   final DateTime? updatedAtLocal;
@@ -2048,7 +2049,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   final String? receiptImageUrl;
   final DateTime createdAt;
   final String? editedByUid;
-  const Expense({
+  const ExpenseRow({
     required this.syncState,
     required this.deletedLocal,
     this.updatedAtLocal,
@@ -2129,12 +2130,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     );
   }
 
-  factory Expense.fromJson(
+  factory ExpenseRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Expense(
+    return ExpenseRow(
       syncState: serializer.fromJson<String>(json['syncState']),
       deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
       updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
@@ -2172,7 +2173,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     };
   }
 
-  Expense copyWith({
+  ExpenseRow copyWith({
     String? syncState,
     bool? deletedLocal,
     Value<DateTime?> updatedAtLocal = const Value.absent(),
@@ -2187,7 +2188,7 @@ class Expense extends DataClass implements Insertable<Expense> {
     Value<String?> receiptImageUrl = const Value.absent(),
     DateTime? createdAt,
     Value<String?> editedByUid = const Value.absent(),
-  }) => Expense(
+  }) => ExpenseRow(
     syncState: syncState ?? this.syncState,
     deletedLocal: deletedLocal ?? this.deletedLocal,
     updatedAtLocal: updatedAtLocal.present
@@ -2209,8 +2210,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     createdAt: createdAt ?? this.createdAt,
     editedByUid: editedByUid.present ? editedByUid.value : this.editedByUid,
   );
-  Expense copyWithCompanion(ExpensesCompanion data) {
-    return Expense(
+  ExpenseRow copyWithCompanion(ExpensesCompanion data) {
+    return ExpenseRow(
       syncState: data.syncState.present ? data.syncState.value : this.syncState,
       deletedLocal: data.deletedLocal.present
           ? data.deletedLocal.value
@@ -2244,7 +2245,7 @@ class Expense extends DataClass implements Insertable<Expense> {
 
   @override
   String toString() {
-    return (StringBuffer('Expense(')
+    return (StringBuffer('ExpenseRow(')
           ..write('syncState: $syncState, ')
           ..write('deletedLocal: $deletedLocal, ')
           ..write('updatedAtLocal: $updatedAtLocal, ')
@@ -2283,7 +2284,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Expense &&
+      (other is ExpenseRow &&
           other.syncState == this.syncState &&
           other.deletedLocal == this.deletedLocal &&
           other.updatedAtLocal == this.updatedAtLocal &&
@@ -2300,7 +2301,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.editedByUid == this.editedByUid);
 }
 
-class ExpensesCompanion extends UpdateCompanion<Expense> {
+class ExpensesCompanion extends UpdateCompanion<ExpenseRow> {
   final Value<String> syncState;
   final Value<bool> deletedLocal;
   final Value<DateTime?> updatedAtLocal;
@@ -2352,7 +2353,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   }) : id = Value(id),
        bucketId = Value(bucketId),
        createdAt = Value(createdAt);
-  static Insertable<Expense> custom({
+  static Insertable<ExpenseRow> custom({
     Expression<String>? syncState,
     Expression<bool>? deletedLocal,
     Expression<DateTime>? updatedAtLocal,
@@ -2499,7 +2500,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
 }
 
 class $BigExpensesTable extends BigExpenses
-    with TableInfo<$BigExpensesTable, BigExpense> {
+    with TableInfo<$BigExpensesTable, BigExpenseRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -2638,7 +2639,7 @@ class $BigExpensesTable extends BigExpenses
   static const String $name = 'big_expenses';
   @override
   VerificationContext validateIntegrity(
-    Insertable<BigExpense> instance, {
+    Insertable<BigExpenseRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -2722,9 +2723,9 @@ class $BigExpensesTable extends BigExpenses
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  BigExpense map(Map<String, dynamic> data, {String? tablePrefix}) {
+  BigExpenseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return BigExpense(
+    return BigExpenseRow(
       syncState: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_state'],
@@ -2774,7 +2775,7 @@ class $BigExpensesTable extends BigExpenses
   }
 }
 
-class BigExpense extends DataClass implements Insertable<BigExpense> {
+class BigExpenseRow extends DataClass implements Insertable<BigExpenseRow> {
   final String syncState;
   final bool deletedLocal;
   final DateTime? updatedAtLocal;
@@ -2785,7 +2786,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
   final String title;
   final double amount;
   final DateTime? createdAt;
-  const BigExpense({
+  const BigExpenseRow({
     required this.syncState,
     required this.deletedLocal,
     this.updatedAtLocal,
@@ -2840,12 +2841,12 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
     );
   }
 
-  factory BigExpense.fromJson(
+  factory BigExpenseRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return BigExpense(
+    return BigExpenseRow(
       syncState: serializer.fromJson<String>(json['syncState']),
       deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
       updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
@@ -2875,7 +2876,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
     };
   }
 
-  BigExpense copyWith({
+  BigExpenseRow copyWith({
     String? syncState,
     bool? deletedLocal,
     Value<DateTime?> updatedAtLocal = const Value.absent(),
@@ -2886,7 +2887,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
     String? title,
     double? amount,
     Value<DateTime?> createdAt = const Value.absent(),
-  }) => BigExpense(
+  }) => BigExpenseRow(
     syncState: syncState ?? this.syncState,
     deletedLocal: deletedLocal ?? this.deletedLocal,
     updatedAtLocal: updatedAtLocal.present
@@ -2902,8 +2903,8 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
     amount: amount ?? this.amount,
     createdAt: createdAt.present ? createdAt.value : this.createdAt,
   );
-  BigExpense copyWithCompanion(BigExpensesCompanion data) {
-    return BigExpense(
+  BigExpenseRow copyWithCompanion(BigExpensesCompanion data) {
+    return BigExpenseRow(
       syncState: data.syncState.present ? data.syncState.value : this.syncState,
       deletedLocal: data.deletedLocal.present
           ? data.deletedLocal.value
@@ -2927,7 +2928,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
 
   @override
   String toString() {
-    return (StringBuffer('BigExpense(')
+    return (StringBuffer('BigExpenseRow(')
           ..write('syncState: $syncState, ')
           ..write('deletedLocal: $deletedLocal, ')
           ..write('updatedAtLocal: $updatedAtLocal, ')
@@ -2958,7 +2959,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is BigExpense &&
+      (other is BigExpenseRow &&
           other.syncState == this.syncState &&
           other.deletedLocal == this.deletedLocal &&
           other.updatedAtLocal == this.updatedAtLocal &&
@@ -2971,7 +2972,7 @@ class BigExpense extends DataClass implements Insertable<BigExpense> {
           other.createdAt == this.createdAt);
 }
 
-class BigExpensesCompanion extends UpdateCompanion<BigExpense> {
+class BigExpensesCompanion extends UpdateCompanion<BigExpenseRow> {
   final Value<String> syncState;
   final Value<bool> deletedLocal;
   final Value<DateTime?> updatedAtLocal;
@@ -3010,7 +3011,7 @@ class BigExpensesCompanion extends UpdateCompanion<BigExpense> {
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        bucketId = Value(bucketId);
-  static Insertable<BigExpense> custom({
+  static Insertable<BigExpenseRow> custom({
     Expression<String>? syncState,
     Expression<bool>? deletedLocal,
     Expression<DateTime>? updatedAtLocal,
@@ -3709,7 +3710,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
 }
 
 class $CategoriesTable extends Categories
-    with TableInfo<$CategoriesTable, Category> {
+    with TableInfo<$CategoriesTable, CategoryRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -3841,7 +3842,7 @@ class $CategoriesTable extends Categories
   static const String $name = 'categories';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Category> instance, {
+    Insertable<CategoryRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -3914,9 +3915,9 @@ class $CategoriesTable extends Categories
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
+  CategoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Category(
+    return CategoryRow(
       syncState: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}sync_state'],
@@ -3962,7 +3963,7 @@ class $CategoriesTable extends Categories
   }
 }
 
-class Category extends DataClass implements Insertable<Category> {
+class CategoryRow extends DataClass implements Insertable<CategoryRow> {
   final String syncState;
   final bool deletedLocal;
   final DateTime? updatedAtLocal;
@@ -3972,7 +3973,7 @@ class Category extends DataClass implements Insertable<Category> {
   final String iconKey;
   final bool isPreset;
   final String? ownerUid;
-  const Category({
+  const CategoryRow({
     required this.syncState,
     required this.deletedLocal,
     this.updatedAtLocal,
@@ -4024,12 +4025,12 @@ class Category extends DataClass implements Insertable<Category> {
     );
   }
 
-  factory Category.fromJson(
+  factory CategoryRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Category(
+    return CategoryRow(
       syncState: serializer.fromJson<String>(json['syncState']),
       deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
       updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
@@ -4057,7 +4058,7 @@ class Category extends DataClass implements Insertable<Category> {
     };
   }
 
-  Category copyWith({
+  CategoryRow copyWith({
     String? syncState,
     bool? deletedLocal,
     Value<DateTime?> updatedAtLocal = const Value.absent(),
@@ -4067,7 +4068,7 @@ class Category extends DataClass implements Insertable<Category> {
     String? iconKey,
     bool? isPreset,
     Value<String?> ownerUid = const Value.absent(),
-  }) => Category(
+  }) => CategoryRow(
     syncState: syncState ?? this.syncState,
     deletedLocal: deletedLocal ?? this.deletedLocal,
     updatedAtLocal: updatedAtLocal.present
@@ -4082,8 +4083,8 @@ class Category extends DataClass implements Insertable<Category> {
     isPreset: isPreset ?? this.isPreset,
     ownerUid: ownerUid.present ? ownerUid.value : this.ownerUid,
   );
-  Category copyWithCompanion(CategoriesCompanion data) {
-    return Category(
+  CategoryRow copyWithCompanion(CategoriesCompanion data) {
+    return CategoryRow(
       syncState: data.syncState.present ? data.syncState.value : this.syncState,
       deletedLocal: data.deletedLocal.present
           ? data.deletedLocal.value
@@ -4104,7 +4105,7 @@ class Category extends DataClass implements Insertable<Category> {
 
   @override
   String toString() {
-    return (StringBuffer('Category(')
+    return (StringBuffer('CategoryRow(')
           ..write('syncState: $syncState, ')
           ..write('deletedLocal: $deletedLocal, ')
           ..write('updatedAtLocal: $updatedAtLocal, ')
@@ -4133,7 +4134,7 @@ class Category extends DataClass implements Insertable<Category> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Category &&
+      (other is CategoryRow &&
           other.syncState == this.syncState &&
           other.deletedLocal == this.deletedLocal &&
           other.updatedAtLocal == this.updatedAtLocal &&
@@ -4145,7 +4146,7 @@ class Category extends DataClass implements Insertable<Category> {
           other.ownerUid == this.ownerUid);
 }
 
-class CategoriesCompanion extends UpdateCompanion<Category> {
+class CategoriesCompanion extends UpdateCompanion<CategoryRow> {
   final Value<String> syncState;
   final Value<bool> deletedLocal;
   final Value<DateTime?> updatedAtLocal;
@@ -4180,7 +4181,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     this.ownerUid = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id);
-  static Insertable<Category> custom({
+  static Insertable<CategoryRow> custom({
     Expression<String>? syncState,
     Expression<bool>? deletedLocal,
     Expression<DateTime>? updatedAtLocal,
@@ -5939,14 +5940,14 @@ class $$BucketsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $BucketsTable,
-          Bucket,
+          BucketRow,
           $$BucketsTableFilterComposer,
           $$BucketsTableOrderingComposer,
           $$BucketsTableAnnotationComposer,
           $$BucketsTableCreateCompanionBuilder,
           $$BucketsTableUpdateCompanionBuilder,
-          (Bucket, BaseReferences<_$AppDatabase, $BucketsTable, Bucket>),
-          Bucket,
+          (BucketRow, BaseReferences<_$AppDatabase, $BucketsTable, BucketRow>),
+          BucketRow,
           PrefetchHooks Function()
         > {
   $$BucketsTableTableManager(_$AppDatabase db, $BucketsTable table)
@@ -6036,14 +6037,14 @@ typedef $$BucketsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $BucketsTable,
-      Bucket,
+      BucketRow,
       $$BucketsTableFilterComposer,
       $$BucketsTableOrderingComposer,
       $$BucketsTableAnnotationComposer,
       $$BucketsTableCreateCompanionBuilder,
       $$BucketsTableUpdateCompanionBuilder,
-      (Bucket, BaseReferences<_$AppDatabase, $BucketsTable, Bucket>),
-      Bucket,
+      (BucketRow, BaseReferences<_$AppDatabase, $BucketsTable, BucketRow>),
+      BucketRow,
       PrefetchHooks Function()
     >;
 typedef $$WeeklyBucketRowsTableCreateCompanionBuilder =
@@ -6724,14 +6725,17 @@ class $$ExpensesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ExpensesTable,
-          Expense,
+          ExpenseRow,
           $$ExpensesTableFilterComposer,
           $$ExpensesTableOrderingComposer,
           $$ExpensesTableAnnotationComposer,
           $$ExpensesTableCreateCompanionBuilder,
           $$ExpensesTableUpdateCompanionBuilder,
-          (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-          Expense,
+          (
+            ExpenseRow,
+            BaseReferences<_$AppDatabase, $ExpensesTable, ExpenseRow>,
+          ),
+          ExpenseRow,
           PrefetchHooks Function()
         > {
   $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
@@ -6825,14 +6829,14 @@ typedef $$ExpensesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ExpensesTable,
-      Expense,
+      ExpenseRow,
       $$ExpensesTableFilterComposer,
       $$ExpensesTableOrderingComposer,
       $$ExpensesTableAnnotationComposer,
       $$ExpensesTableCreateCompanionBuilder,
       $$ExpensesTableUpdateCompanionBuilder,
-      (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-      Expense,
+      (ExpenseRow, BaseReferences<_$AppDatabase, $ExpensesTable, ExpenseRow>),
+      ExpenseRow,
       PrefetchHooks Function()
     >;
 typedef $$BigExpensesTableCreateCompanionBuilder =
@@ -7037,17 +7041,17 @@ class $$BigExpensesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $BigExpensesTable,
-          BigExpense,
+          BigExpenseRow,
           $$BigExpensesTableFilterComposer,
           $$BigExpensesTableOrderingComposer,
           $$BigExpensesTableAnnotationComposer,
           $$BigExpensesTableCreateCompanionBuilder,
           $$BigExpensesTableUpdateCompanionBuilder,
           (
-            BigExpense,
-            BaseReferences<_$AppDatabase, $BigExpensesTable, BigExpense>,
+            BigExpenseRow,
+            BaseReferences<_$AppDatabase, $BigExpensesTable, BigExpenseRow>,
           ),
-          BigExpense,
+          BigExpenseRow,
           PrefetchHooks Function()
         > {
   $$BigExpensesTableTableManager(_$AppDatabase db, $BigExpensesTable table)
@@ -7125,17 +7129,17 @@ typedef $$BigExpensesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $BigExpensesTable,
-      BigExpense,
+      BigExpenseRow,
       $$BigExpensesTableFilterComposer,
       $$BigExpensesTableOrderingComposer,
       $$BigExpensesTableAnnotationComposer,
       $$BigExpensesTableCreateCompanionBuilder,
       $$BigExpensesTableUpdateCompanionBuilder,
       (
-        BigExpense,
-        BaseReferences<_$AppDatabase, $BigExpensesTable, BigExpense>,
+        BigExpenseRow,
+        BaseReferences<_$AppDatabase, $BigExpensesTable, BigExpenseRow>,
       ),
-      BigExpense,
+      BigExpenseRow,
       PrefetchHooks Function()
     >;
 typedef $$BucketMemberRowsTableCreateCompanionBuilder =
@@ -7611,14 +7615,17 @@ class $$CategoriesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $CategoriesTable,
-          Category,
+          CategoryRow,
           $$CategoriesTableFilterComposer,
           $$CategoriesTableOrderingComposer,
           $$CategoriesTableAnnotationComposer,
           $$CategoriesTableCreateCompanionBuilder,
           $$CategoriesTableUpdateCompanionBuilder,
-          (Category, BaseReferences<_$AppDatabase, $CategoriesTable, Category>),
-          Category,
+          (
+            CategoryRow,
+            BaseReferences<_$AppDatabase, $CategoriesTable, CategoryRow>,
+          ),
+          CategoryRow,
           PrefetchHooks Function()
         > {
   $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
@@ -7692,14 +7699,17 @@ typedef $$CategoriesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $CategoriesTable,
-      Category,
+      CategoryRow,
       $$CategoriesTableFilterComposer,
       $$CategoriesTableOrderingComposer,
       $$CategoriesTableAnnotationComposer,
       $$CategoriesTableCreateCompanionBuilder,
       $$CategoriesTableUpdateCompanionBuilder,
-      (Category, BaseReferences<_$AppDatabase, $CategoriesTable, Category>),
-      Category,
+      (
+        CategoryRow,
+        BaseReferences<_$AppDatabase, $CategoriesTable, CategoryRow>,
+      ),
+      CategoryRow,
       PrefetchHooks Function()
     >;
 typedef $$NotificationRowsTableCreateCompanionBuilder =
