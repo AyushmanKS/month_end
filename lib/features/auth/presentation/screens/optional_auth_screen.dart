@@ -29,6 +29,8 @@ class OptionalAuthScreen extends ConsumerWidget {
       case GoogleAuthOutcome.upgraded:
         if (context.mounted) context.go(RouteNames.home);
         showAppSnack('Your account is now secured with Google.', success: true);
+      case GoogleAuthOutcome.canceled:
+        break;
       case GoogleAuthOutcome.failed:
         final error = ref.read(authControllerProvider).error;
         showAppSnack(

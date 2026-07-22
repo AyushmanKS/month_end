@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/db/app_database.dart';
 import '../../../../core/db/database_provider.dart';
+import '../../../../core/error/app_exception.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
@@ -9,7 +10,7 @@ import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-enum GoogleAuthOutcome { upgraded, signedIntoExisting, failed }
+enum GoogleAuthOutcome { upgraded, signedIntoExisting, canceled, failed }
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSource(ref.watch(supabaseClientProvider));
@@ -68,7 +69,12 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
           ? GoogleAuthOutcome.signedIntoExisting
           : GoogleAuthOutcome.upgraded;
     } catch (e, s) {
-      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      final mapped = ErrorHandler.map(e, s);
+      if (mapped is CanceledException) {
+        state = const AsyncValue.data(null);
+        return GoogleAuthOutcome.canceled;
+      }
+      state = AsyncValue.error(mapped, s);
       return GoogleAuthOutcome.failed;
     }
   }

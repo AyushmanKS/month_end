@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'app_exception.dart';
 import '../logging/app_logger.dart';
@@ -7,6 +8,12 @@ class ErrorHandler {
   const ErrorHandler._();
 
   static AppException map(Object error, [StackTrace? stackTrace]) {
+    if (error is CanceledException) return error;
+    if (error is GoogleSignInException &&
+        error.code == GoogleSignInExceptionCode.canceled) {
+      return const CanceledException();
+    }
+
     AppLogger.instance.e('Handled error', error, stackTrace);
 
     if (error is AppException) return error;

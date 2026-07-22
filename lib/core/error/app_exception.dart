@@ -35,3 +35,7 @@ class ValidationException extends AppException {
 class UnknownException extends AppException {
   const UnknownException(super.message, {super.cause});
 }
+
+class CanceledException extends AppException {
+  const CanceledException() : super('Cancelled');
+}
