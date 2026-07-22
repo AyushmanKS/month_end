@@ -30,6 +30,7 @@ class Bucket {
 
   Bucket copyWith({
     String? name,
+    String? ownerId,
     double? monthlyBudget,
     double? remainingMainBucket,
     DateTime? monthStartDate,
@@ -38,7 +39,7 @@ class Bucket {
     return Bucket(
       id: id,
       name: name ?? this.name,
-      ownerId: ownerId,
+      ownerId: ownerId ?? this.ownerId,
       joinCode: joinCode,
       monthlyBudget: monthlyBudget ?? this.monthlyBudget,
       monthStartDate: monthStartDate ?? this.monthStartDate,

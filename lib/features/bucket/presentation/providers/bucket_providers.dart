@@ -156,8 +156,19 @@ final ownedBucketsProvider = Provider<List<Bucket>>((ref) {
 });
 
 final bucketMembersFamilyProvider =
-    FutureProvider.family<List<BucketMember>, String>((ref, bucketId) async {
-      return ref.watch(bucketRepositoryProvider).fetchMembers(bucketId);
+    StreamProvider.family<List<BucketMember>, String>((ref, bucketId) {
+      final local = ref.read(bucketLocalDataSourceProvider);
+      Future<void> hydrate() async {
+        try {
+          final members = await ref
+              .read(bucketRepositoryProvider)
+              .fetchMembers(bucketId);
+          await local.reconcileMembers(bucketId, members);
+        } catch (_) {}
+      }
+
+      unawaited(hydrate());
+      return local.watchMembers(bucketId);
     });
 
 final weekExpensesProvider = Provider.family<List<Expense>, String>((
@@ -278,6 +289,7 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
       bucketId: bucketId,
       op: OutboxOp.bucketTransfer,
       payload: {'newOwner': newOwnerId},
+      optimistic: (b) => b.copyWith(ownerId: newOwnerId),
     );
   }
 
