@@ -52,8 +52,19 @@ class AppTextField extends StatelessWidget {
           decoration: InputDecoration(
             hintText: hint,
             counterText: '',
+            prefixIconConstraints: const BoxConstraints(
+              minWidth: 0,
+              minHeight: 0,
+            ),
             prefixIcon: prefixIcon != null
-                ? AppIcon(prefixIcon!, size: 20)
+                ? Padding(
+                    padding: const EdgeInsets.only(left: 14, right: 10),
+                    child: AppIcon(
+                      prefixIcon!,
+                      size: 22,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  )
                 : null,
           ),
         ),

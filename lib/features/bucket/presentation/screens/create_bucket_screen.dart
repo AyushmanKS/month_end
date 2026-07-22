@@ -115,7 +115,7 @@ class _CreateBucketScreenState extends ConsumerState<CreateBucketScreen> {
                               controller: _name,
                               label: 'Bucket name',
                               hint: 'e.g. Flat 402',
-                              prefixIcon: AppAssets.home,
+                              prefixIcon: AppAssets.savings,
                               textCapitalization: TextCapitalization.words,
                               validator: (v) =>
                                   Validators.required(v, field: 'Name'),
