@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../core/constants/app_durations.dart';
 import '../../core/logging/logging_observers.dart';
 import '../../features/auth/presentation/screens/optional_auth_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
@@ -84,36 +83,36 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteNames.optionalAuth,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const OptionalAuthScreen()),
+            _slidePage(state, const OptionalAuthScreen()),
       ),
       GoRoute(
         path: RouteNames.signup,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const SignupScreen()),
+            _slidePage(state, const SignupScreen()),
       ),
       GoRoute(
         path: RouteNames.createBucket,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const CreateBucketScreen()),
+            _slidePage(state, const CreateBucketScreen()),
       ),
       GoRoute(
         path: RouteNames.joinBucket,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const JoinBucketScreen()),
+            _slidePage(state, const JoinBucketScreen()),
       ),
       GoRoute(
         path: RouteNames.inviteMember,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const InviteMemberScreen()),
+            _slidePage(state, const InviteMemberScreen()),
       ),
       GoRoute(
         path: RouteNames.manageBuckets,
         parentNavigatorKey: _rootKey,
-        pageBuilder: (context, state) => _fadeSlide(
+        pageBuilder: (context, state) => _slidePage(
           state,
           BucketManagementScreen(
             forAccountDeletion: state.extra as bool? ?? false,
@@ -124,18 +123,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteNames.addExpense,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const AddExpenseScreen()),
+            _slidePage(state, const AddExpenseScreen()),
       ),
       GoRoute(
         path: RouteNames.bigExpense,
         parentNavigatorKey: _rootKey,
         pageBuilder: (context, state) =>
-            _fadeSlide(state, const BigExpenseScreen()),
+            _slidePage(state, const BigExpenseScreen()),
       ),
       GoRoute(
         path: RouteNames.weekDetails,
         parentNavigatorKey: _rootKey,
-        pageBuilder: (context, state) => _fadeSlide(
+        pageBuilder: (context, state) => _slidePage(
           state,
           WeekDetailsScreen(week: state.extra as WeeklyBucket),
         ),
@@ -171,28 +170,11 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-CustomTransitionPage<void> _fadeSlide(GoRouterState state, Widget child) {
-  return CustomTransitionPage(
+Page<void> _slidePage(GoRouterState state, Widget child) {
+  return CupertinoPage<void>(
     key: state.pageKey,
     name: state.uri.path,
-    transitionDuration: AppDurations.pageTransition,
     child: child,
-    transitionsBuilder: (context, animation, secondary, child) {
-      final curved = CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOutCubic,
-      );
-      return FadeTransition(
-        opacity: curved,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.04),
-            end: Offset.zero,
-          ).animate(curved),
-          child: child,
-        ),
-      );
-    },
   );
 }
 
