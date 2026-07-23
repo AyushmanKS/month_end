@@ -71,6 +71,11 @@ class _BucketDashboard extends ConsumerWidget {
               const Flexible(child: BucketSwitcher()),
               const MemberCountChip(),
               IconButton(
+                tooltip: 'Activity history',
+                onPressed: () => context.push(RouteNames.bucketActivity),
+                icon: const AppIcon(AppAssets.history),
+              ),
+              IconButton(
                 onPressed: () async {
                   if (await ensureAuthenticated(
                     context,

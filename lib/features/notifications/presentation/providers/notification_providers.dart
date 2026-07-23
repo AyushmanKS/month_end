@@ -90,9 +90,7 @@ final inboxProvider = StreamProvider<List<UserNotification>>((ref) {
 
 final unreadInboxCountProvider = Provider<int>((ref) {
   final inbox = ref.watch(inboxProvider).value ?? const [];
-  return inbox
-      .where((n) => n.isUnread && n.type != 'join_requested')
-      .length;
+  return inbox.where((n) => n.isUnread && n.type != 'join_requested').length;
 });
 
 Future<void> markInboxRead(WidgetRef ref, String id) async {

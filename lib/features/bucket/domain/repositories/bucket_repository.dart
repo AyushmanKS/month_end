@@ -35,6 +35,10 @@ abstract class BucketRepository {
 
   Future<void> deleteBucket(String bucketId);
 
+  Future<List<Bucket>> fetchDeletedBuckets();
+
+  Future<Bucket> restoreBucket(String bucketId);
+
   Future<List<BucketMember>> fetchMembers(String bucketId);
 
   Future<void> inviteMemberByUsername({

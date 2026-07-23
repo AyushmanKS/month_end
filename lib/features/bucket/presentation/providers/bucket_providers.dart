@@ -346,6 +346,69 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
     }
   }
 
+  Future<bool> removeMember({
+    required String bucketId,
+    required String userId,
+  }) async {
+    try {
+      await _local.removeMemberLocal(bucketId, userId);
+      await _outbox.enqueue(
+        OutboxCommand(
+          id: _uuid.v4(),
+          op: OutboxOp.memberRemove,
+          entity: 'member',
+          entityId: bucketId,
+          payload: {'userId': userId},
+        ),
+        actor: _uid,
+      );
+      _kickSync();
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> leaveBucket(String bucketId) async {
+    try {
+      await _local.markBucketDeleted(bucketId);
+      if (_ref.read(selectedBucketIdProvider) == bucketId) {
+        _ref.read(selectedBucketIdProvider.notifier).state = null;
+      }
+      await _outbox.enqueue(
+        OutboxCommand(
+          id: _uuid.v4(),
+          op: OutboxOp.bucketLeave,
+          entity: 'bucket',
+          entityId: bucketId,
+          priority: 20,
+          payload: const {},
+        ),
+        actor: _uid,
+      );
+      _kickSync();
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
+  Future<bool> restoreBucket(String bucketId) async {
+    state = const AsyncValue.loading();
+    try {
+      final bucket = await _repo.restoreBucket(bucketId);
+      await _local.upsertBucketLocal(bucket, syncState: 'synced');
+      _ref.read(selectedBucketIdProvider.notifier).state = bucket.id;
+      state = const AsyncValue.data(null);
+      return true;
+    } catch (e, s) {
+      state = AsyncValue.error(ErrorHandler.map(e, s), s);
+      return false;
+    }
+  }
+
   Future<bool> deleteBucket(String bucketId) async {
     state = const AsyncValue.loading();
     try {
@@ -415,3 +478,14 @@ final bucketControllerProvider =
     StateNotifierProvider<BucketController, AsyncValue<Bucket?>>((ref) {
       return BucketController(ref);
     });
+
+final deletedBucketsProvider = FutureProvider.autoDispose<List<Bucket>>((
+  ref,
+) async {
+  if (!(ref.watch(isOnlineProvider).value ?? true)) return const [];
+  try {
+    return await ref.read(bucketRepositoryProvider).fetchDeletedBuckets();
+  } catch (_) {
+    return const [];
+  }
+});

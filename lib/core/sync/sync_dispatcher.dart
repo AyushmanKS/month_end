@@ -51,6 +51,21 @@ class SupabaseSyncDispatcher implements SyncDispatcher {
           'delete_bucket',
           params: {'p_bucket_id': row.entityId},
         );
+      case OutboxOp.bucketRestore:
+        await _client.rpc(
+          'restore_bucket',
+          params: {'p_bucket_id': row.entityId},
+        );
+      case OutboxOp.memberRemove:
+        await _client.rpc(
+          'remove_member',
+          params: {'p_bucket_id': row.entityId, 'p_user_id': p['userId']},
+        );
+      case OutboxOp.bucketLeave:
+        await _client.rpc(
+          'leave_bucket',
+          params: {'p_bucket_id': row.entityId},
+        );
       case OutboxOp.weekSetManualTotal:
         await _client.rpc(
           'set_week_manual_total',

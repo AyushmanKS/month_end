@@ -14,6 +14,7 @@ class RouteNames {
   static const String joinBucket = '/bucket/join';
   static const String inviteMember = '/bucket/invite';
   static const String manageBuckets = '/bucket/manage';
+  static const String bucketActivity = '/bucket/activity';
 
   static const String addExpense = '/expense/add';
   static const String bigExpense = '/expense/big';

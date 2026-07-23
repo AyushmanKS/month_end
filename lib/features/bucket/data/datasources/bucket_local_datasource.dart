@@ -107,6 +107,12 @@ class BucketLocalDataSource {
     );
   }
 
+  Future<void> removeMemberLocal(String bucketId, String userId) async {
+    await (_db.delete(_db.bucketMemberRows)
+          ..where((t) => t.bucketId.equals(bucketId) & t.userId.equals(userId)))
+        .go();
+  }
+
   Future<void> markBucketDeleted(String id) async {
     await (_db.update(_db.buckets)..where((t) => t.id.equals(id))).write(
       const BucketsCompanion(

@@ -12,6 +12,7 @@ import '../../features/bucket/presentation/screens/bucket_home_screen.dart';
 import '../../features/bucket/presentation/screens/create_bucket_screen.dart';
 import '../../features/bucket/presentation/screens/join_bucket_screen.dart';
 import '../../features/bucket/presentation/screens/bucket_management_screen.dart';
+import '../../features/bucket/presentation/screens/bucket_activity_screen.dart';
 import '../../features/bucket/presentation/screens/invite_member_screen.dart';
 import '../../features/bucket/presentation/screens/week_details_screen.dart';
 import '../../features/bucket/domain/entities/weekly_bucket.dart';
@@ -119,6 +120,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             forAccountDeletion: state.extra as bool? ?? false,
           ),
         ),
+      ),
+      GoRoute(
+        path: RouteNames.bucketActivity,
+        parentNavigatorKey: _rootKey,
+        pageBuilder: (context, state) =>
+            _slidePage(state, const BucketActivityScreen()),
       ),
       GoRoute(
         path: RouteNames.addExpense,

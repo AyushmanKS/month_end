@@ -5,6 +5,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/widgets/app_icon.dart';
+import '../../../../core/widgets/app_messenger.dart';
+import '../../../../core/widgets/confirm_dialog.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../domain/entities/bucket_member.dart';
 import '../providers/bucket_providers.dart';
@@ -16,13 +18,21 @@ class MemberCountChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final members = ref.watch(bucketMembersProvider).value ?? const [];
     if (members.isEmpty) return const SizedBox.shrink();
-    final ownerId = ref.watch(activeBucketProvider).value?.ownerId;
+    final bucket = ref.watch(activeBucketProvider).value;
+    final ownerId = bucket?.ownerId;
     final currentUid = ref.watch(currentUserIdProvider);
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        onTap: () => _showMembers(context, members, ownerId, currentUid),
+        onTap: () => _showMembers(
+          context,
+          ref,
+          members,
+          ownerId,
+          currentUid,
+          bucket?.id,
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.sm,
@@ -51,12 +61,44 @@ class MemberCountChip extends ConsumerWidget {
     );
   }
 
+  Future<void> _leave(
+    BuildContext context,
+    WidgetRef ref,
+    String bucketId,
+  ) async {
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Leave this bucket?',
+      message:
+          'You will lose access to its budget and expenses. You can rejoin '
+          'later with a new request.',
+      confirmLabel: 'Leave',
+      destructive: true,
+      icon: AppAssets.logout,
+    );
+    if (!confirmed) return;
+    final ok = await ref
+        .read(bucketControllerProvider.notifier)
+        .leaveBucket(bucketId);
+    showAppSnack(
+      ok ? 'You left the bucket.' : 'Could not leave the bucket.',
+      success: ok,
+    );
+  }
+
   void _showMembers(
     BuildContext context,
+    WidgetRef ref,
     List<BucketMember> members,
     String? ownerId,
     String? currentUid,
+    String? bucketId,
   ) {
+    final canLeave =
+        currentUid != null &&
+        ownerId != null &&
+        currentUid != ownerId &&
+        bucketId != null;
     final ordered = [...members]
       ..sort((a, b) {
         final aOwner = a.userId == ownerId;
@@ -145,6 +187,25 @@ class MemberCountChip extends ConsumerWidget {
                   },
                 ),
               ),
+              if (canLeave) ...[
+                const Divider(height: 1),
+                ListTile(
+                  leading: AppIcon(
+                    AppAssets.logout,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  title: Text(
+                    'Leave bucket',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _leave(context, ref, bucketId);
+                  },
+                ),
+              ],
               const SizedBox(height: AppSpacing.sm),
             ],
           ),

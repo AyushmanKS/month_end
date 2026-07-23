@@ -46,12 +46,26 @@ class BucketManagementScreen extends ConsumerWidget {
     WidgetRef ref,
     Bucket bucket,
   ) async {
+    final members =
+        ref.read(bucketMembersFamilyProvider(bucket.id)).value ?? const [];
+    if (members.length > 1) {
+      await showModalBottomSheet<void>(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        builder: (_) => _MultiMemberDeleteSheet(
+          bucket: bucket,
+          onTransfer: () => _transfer(context, ref, bucket),
+        ),
+      );
+      return;
+    }
     final confirmed = await showConfirmDialog(
       context,
       title: 'Delete “${bucket.name}”?',
       message:
-          'This permanently deletes the bucket, its weeks, expenses and '
-          'members for everyone. This cannot be undone.',
+          'This moves the bucket to Recently deleted. You can restore it '
+          'within 30 days; after that it is permanently removed.',
       confirmLabel: 'Delete bucket',
       destructive: true,
       icon: AppAssets.delete,
@@ -60,8 +74,20 @@ class BucketManagementScreen extends ConsumerWidget {
     final ok = await ref
         .read(bucketControllerProvider.notifier)
         .deleteBucket(bucket.id);
+    ref.invalidate(deletedBucketsProvider);
     showAppSnack(
-      ok ? 'Bucket deleted.' : 'Could not delete the bucket.',
+      ok ? 'Bucket moved to Recently deleted.' : 'Could not delete the bucket.',
+      success: ok,
+    );
+  }
+
+  Future<void> _restore(BuildContext context, WidgetRef ref, Bucket b) async {
+    final ok = await ref
+        .read(bucketControllerProvider.notifier)
+        .restoreBucket(b.id);
+    ref.invalidate(deletedBucketsProvider);
+    showAppSnack(
+      ok ? '“${b.name}” restored.' : 'Could not restore the bucket.',
       success: ok,
     );
   }
@@ -90,6 +116,9 @@ class BucketManagementScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final owned = ref.watch(ownedBucketsProvider);
     final busy = ref.watch(bucketControllerProvider).isLoading;
+    final deleted = forAccountDeletion
+        ? const <Bucket>[]
+        : (ref.watch(deletedBucketsProvider).value ?? const <Bucket>[]);
 
     return Scaffold(
       appBar: AppBar(
@@ -99,7 +128,7 @@ class BucketManagementScreen extends ConsumerWidget {
         child: Column(
           children: [
             Expanded(
-              child: owned.isEmpty
+              child: owned.isEmpty && deleted.isEmpty
                   ? AppEmptyState(
                       title: forAccountDeletion
                           ? 'All buckets resolved'
@@ -133,6 +162,28 @@ class BucketManagementScreen extends ConsumerWidget {
                             onTransfer: () => _transfer(context, ref, bucket),
                             onDelete: () => _delete(context, ref, bucket),
                           ),
+                        if (deleted.isNotEmpty) ...[
+                          const SizedBox(height: AppSpacing.lg),
+                          Text(
+                            'Recently deleted',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                          for (final bucket in deleted)
+                            Card(
+                              child: ListTile(
+                                leading: const AppIcon(AppAssets.delete),
+                                title: Text(bucket.name),
+                                subtitle: const Text('Restore within 30 days'),
+                                trailing: TextButton(
+                                  onPressed: busy
+                                      ? null
+                                      : () => _restore(context, ref, bucket),
+                                  child: const Text('Restore'),
+                                ),
+                              ),
+                            ),
+                        ],
                       ],
                     ),
             ),
@@ -147,6 +198,111 @@ class BucketManagementScreen extends ConsumerWidget {
                       ? () => _deleteAccount(context, ref)
                       : null,
                 ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MultiMemberDeleteSheet extends ConsumerWidget {
+  const _MultiMemberDeleteSheet({
+    required this.bucket,
+    required this.onTransfer,
+  });
+
+  final Bucket bucket;
+  final VoidCallback onTransfer;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final members = ref.watch(bucketMembersFamilyProvider(bucket.id));
+    final busy = ref.watch(bucketControllerProvider).isLoading;
+    final ownerId = bucket.ownerId;
+    final others = (members.value ?? const [])
+        .where((m) => m.userId != ownerId)
+        .toList();
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              others.isEmpty ? 'Ready to delete' : 'Remove members first',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              others.isEmpty
+                  ? 'You are the only member left. You can delete this bucket '
+                        'now — it moves to Recently deleted for 30 days.'
+                  : 'A shared bucket can only be deleted when you are its sole '
+                        'member. Remove everyone, or transfer ownership instead.',
+              style: TextStyle(color: context.brand.textSecondary),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            for (final member in others)
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: CircleAvatar(
+                  backgroundImage: member.photoUrl != null
+                      ? NetworkImage(member.photoUrl!)
+                      : null,
+                  child: member.photoUrl == null
+                      ? const AppIcon(AppAssets.profile)
+                      : null,
+                ),
+                title: Text(member.name ?? 'Member'),
+                trailing: TextButton(
+                  onPressed: busy
+                      ? null
+                      : () => ref
+                            .read(bucketControllerProvider.notifier)
+                            .removeMember(
+                              bucketId: bucket.id,
+                              userId: member.userId,
+                            ),
+                  child: const Text('Remove'),
+                ),
+              ),
+            const SizedBox(height: AppSpacing.md),
+            if (others.isEmpty)
+              AppButton(
+                label: 'Delete bucket',
+                variant: AppButtonVariant.secondary,
+                isLoading: busy,
+                onPressed: busy
+                    ? null
+                    : () async {
+                        final ok = await ref
+                            .read(bucketControllerProvider.notifier)
+                            .deleteBucket(bucket.id);
+                        if (context.mounted) Navigator.of(context).pop();
+                        showAppSnack(
+                          ok
+                              ? 'Bucket moved to Recently deleted.'
+                              : 'Could not delete the bucket.',
+                          success: ok,
+                        );
+                      },
+              )
+            else
+              AppButton(
+                label: 'Transfer ownership instead',
+                variant: AppButtonVariant.ghost,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onTransfer();
+                },
               ),
           ],
         ),
