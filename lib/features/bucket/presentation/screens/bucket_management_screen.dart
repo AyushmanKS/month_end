@@ -41,6 +41,22 @@ class BucketManagementScreen extends ConsumerWidget {
     );
   }
 
+  void _openMultiMemberSheet(
+    BuildContext context,
+    WidgetRef ref,
+    Bucket bucket,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) => _MultiMemberDeleteSheet(
+        bucket: bucket,
+        onTransfer: () => _transfer(context, ref, bucket),
+      ),
+    );
+  }
+
   Future<void> _delete(
     BuildContext context,
     WidgetRef ref,
@@ -49,15 +65,7 @@ class BucketManagementScreen extends ConsumerWidget {
     final members =
         ref.read(bucketMembersFamilyProvider(bucket.id)).value ?? const [];
     if (members.length > 1) {
-      await showModalBottomSheet<void>(
-        context: context,
-        showDragHandle: true,
-        isScrollControlled: true,
-        builder: (_) => _MultiMemberDeleteSheet(
-          bucket: bucket,
-          onTransfer: () => _transfer(context, ref, bucket),
-        ),
-      );
+      _openMultiMemberSheet(context, ref, bucket);
       return;
     }
     final confirmed = await showConfirmDialog(
@@ -70,15 +78,22 @@ class BucketManagementScreen extends ConsumerWidget {
       destructive: true,
       icon: AppAssets.delete,
     );
-    if (!confirmed) return;
-    final ok = await ref
+    if (!confirmed || !context.mounted) return;
+    final outcome = await ref
         .read(bucketControllerProvider.notifier)
         .deleteBucket(bucket.id);
-    ref.invalidate(deletedBucketsProvider);
-    showAppSnack(
-      ok ? 'Bucket moved to Recently deleted.' : 'Could not delete the bucket.',
-      success: ok,
-    );
+    if (!context.mounted) return;
+    switch (outcome) {
+      case BucketDeleteOutcome.deleted:
+        ref.invalidate(deletedBucketsProvider);
+        showAppSnack('Bucket moved to Recently deleted.', success: true);
+      case BucketDeleteOutcome.hasMembers:
+        _openMultiMemberSheet(context, ref, bucket);
+      case BucketDeleteOutcome.offline:
+        showAppSnack('Connect to the internet to delete a bucket.');
+      case BucketDeleteOutcome.failed:
+        showAppSnack('Could not delete the bucket.');
+    }
   }
 
   Future<void> _restore(BuildContext context, WidgetRef ref, Bucket b) async {
@@ -283,16 +298,27 @@ class _MultiMemberDeleteSheet extends ConsumerWidget {
                 onPressed: busy
                     ? null
                     : () async {
-                        final ok = await ref
+                        final outcome = await ref
                             .read(bucketControllerProvider.notifier)
                             .deleteBucket(bucket.id);
-                        if (context.mounted) Navigator.of(context).pop();
-                        showAppSnack(
-                          ok
-                              ? 'Bucket moved to Recently deleted.'
-                              : 'Could not delete the bucket.',
-                          success: ok,
-                        );
+                        if (!context.mounted) return;
+                        switch (outcome) {
+                          case BucketDeleteOutcome.deleted:
+                            Navigator.of(context).pop();
+                            ref.invalidate(deletedBucketsProvider);
+                            showAppSnack(
+                              'Bucket moved to Recently deleted.',
+                              success: true,
+                            );
+                          case BucketDeleteOutcome.hasMembers:
+                            showAppSnack('Remove the remaining members first.');
+                          case BucketDeleteOutcome.offline:
+                            showAppSnack(
+                              'Connect to the internet to delete a bucket.',
+                            );
+                          case BucketDeleteOutcome.failed:
+                            showAppSnack('Could not delete the bucket.');
+                        }
                       },
               )
             else

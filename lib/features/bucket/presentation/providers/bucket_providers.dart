@@ -21,6 +21,8 @@ import '../../domain/repositories/bucket_repository.dart';
 
 const _uuid = Uuid();
 
+enum BucketDeleteOutcome { deleted, hasMembers, offline, failed }
+
 final bucketRemoteDataSourceProvider = Provider<BucketRemoteDataSource>((ref) {
   return BucketRemoteDataSource(ref.watch(supabaseClientProvider));
 });
@@ -409,30 +411,26 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
     }
   }
 
-  Future<bool> deleteBucket(String bucketId) async {
+  Future<BucketDeleteOutcome> deleteBucket(String bucketId) async {
+    if (!(_ref.read(isOnlineProvider).value ?? true)) {
+      return BucketDeleteOutcome.offline;
+    }
     state = const AsyncValue.loading();
     try {
+      await _repo.deleteBucket(bucketId);
       await _local.markBucketDeleted(bucketId);
       if (_ref.read(selectedBucketIdProvider) == bucketId) {
         _ref.read(selectedBucketIdProvider.notifier).state = null;
       }
-      await _outbox.enqueue(
-        OutboxCommand(
-          id: _uuid.v4(),
-          op: OutboxOp.bucketDelete,
-          entity: 'bucket',
-          entityId: bucketId,
-          priority: 20,
-          payload: const {},
-        ),
-        actor: _uid,
-      );
-      _kickSync();
       state = const AsyncValue.data(null);
-      return true;
+      return BucketDeleteOutcome.deleted;
     } catch (e, s) {
-      state = AsyncValue.error(ErrorHandler.map(e, s), s);
-      return false;
+      final mapped = ErrorHandler.map(e, s);
+      state = AsyncValue.error(mapped, s);
+      if (mapped.message.toLowerCase().contains('bucket_has_members')) {
+        return BucketDeleteOutcome.hasMembers;
+      }
+      return BucketDeleteOutcome.failed;
     }
   }
 
