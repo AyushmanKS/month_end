@@ -13,6 +13,7 @@ import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_skeletons.dart';
 import '../providers/bucket_providers.dart';
 import '../widgets/bucket_switcher.dart';
+import '../widgets/member_count_chip.dart';
 import '../widgets/monthly_overview_ring.dart';
 import '../widgets/weekly_bucket_card.dart';
 
@@ -67,6 +68,7 @@ class _BucketDashboard extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Flexible(child: BucketSwitcher()),
+              const MemberCountChip(),
               IconButton(
                 onPressed: () => context.push(RouteNames.inviteMember),
                 icon: const AppIcon(AppAssets.personAdd),
