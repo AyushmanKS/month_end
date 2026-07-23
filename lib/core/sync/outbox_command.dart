@@ -15,6 +15,8 @@ enum OutboxOp {
   categoryDelete,
   inviteByUsername,
   joinByCode,
+  joinRequestDecide,
+  joinRequestCancel,
   markNotificationsRead,
   profileUpdate,
 }

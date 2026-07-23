@@ -14,6 +14,8 @@ import '../../../../core/widgets/app_skeletons.dart';
 import '../../../../shared_providers/supabase_providers.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_providers.dart';
+import '../../../bucket/domain/entities/join_request.dart';
+import '../../../bucket/presentation/providers/join_request_providers.dart';
 import '../../../suggestions/presentation/providers/suggestion_providers.dart';
 import '../../../suggestions/presentation/widgets/suggestion_card.dart';
 
@@ -50,6 +52,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         return AppAssets.swapHorizontal;
       case AppNotificationType.memberLeft:
         return AppAssets.personOff;
+      case AppNotificationType.joinRequested:
+        return AppAssets.personAdd;
+      case AppNotificationType.memberJoined:
+        return AppAssets.personAdd;
       case AppNotificationType.unknown:
         return AppAssets.notificationNone;
     }
@@ -59,6 +65,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
     final suggestions = ref.watch(suggestionsProvider).value ?? const [];
+    final joinRequests =
+        ref.watch(incomingJoinRequestsProvider).value ?? const [];
     final userId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
@@ -68,7 +76,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           loading: () => const NotificationsSkeleton(),
           error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
           data: (notifications) {
-            if (notifications.isEmpty && suggestions.isEmpty) {
+            if (notifications.isEmpty &&
+                suggestions.isEmpty &&
+                joinRequests.isEmpty) {
               return const AppEmptyState(
                 title: 'Nothing yet',
                 subtitle:
@@ -84,6 +94,19 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 120,
               ),
               children: [
+                if (joinRequests.isNotEmpty) ...[
+                  Text(
+                    'Join requests',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  for (final request in joinRequests)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
+                      child: _JoinRequestCard(request: request),
+                    ),
+                  const SizedBox(height: AppSpacing.lg),
+                ],
                 if (suggestions.isNotEmpty) ...[
                   Text(
                     'Suggestions',
@@ -115,6 +138,91 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _JoinRequestCard extends ConsumerStatefulWidget {
+  const _JoinRequestCard({required this.request});
+
+  final JoinRequest request;
+
+  @override
+  ConsumerState<_JoinRequestCard> createState() => _JoinRequestCardState();
+}
+
+class _JoinRequestCardState extends ConsumerState<_JoinRequestCard> {
+  bool _busy = false;
+
+  Future<void> _decide(bool accept) async {
+    setState(() => _busy = true);
+    await ref
+        .read(joinRequestControllerProvider.notifier)
+        .decide(requestId: widget.request.id, accept: accept);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final request = widget.request;
+    final name = request.requesterName ?? 'Someone';
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  backgroundImage: request.requesterPhoto != null
+                      ? NetworkImage(request.requesterPhoto!)
+                      : null,
+                  child: request.requesterPhoto == null
+                      ? const AppIcon(
+                          AppAssets.personAdd,
+                          size: 20,
+                          color: AppColors.primary,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    '$name wants to join',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: _busy ? null : () => _decide(false),
+                    icon: const AppIcon(AppAssets.close, size: 18),
+                    label: const Text('Decline'),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: FilledButton.icon(
+                    onPressed: _busy ? null : () => _decide(true),
+                    icon: const AppIcon(
+                      AppAssets.checkCircle,
+                      size: 18,
+                      color: Colors.white,
+                    ),
+                    label: const Text('Accept'),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

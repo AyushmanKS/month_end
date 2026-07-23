@@ -6,6 +6,8 @@ enum AppNotificationType {
   budgetThreshold,
   ownershipTransferred,
   memberLeft,
+  joinRequested,
+  memberJoined,
   unknown,
 }
 
@@ -60,6 +62,10 @@ class AppNotification {
         return AppNotificationType.ownershipTransferred;
       case 'member_left':
         return AppNotificationType.memberLeft;
+      case 'join_requested':
+        return AppNotificationType.joinRequested;
+      case 'member_joined':
+        return AppNotificationType.memberJoined;
       default:
         return AppNotificationType.unknown;
     }

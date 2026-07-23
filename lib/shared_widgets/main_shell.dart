@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../app/router/route_names.dart';
 import '../core/widgets/floating_bottom_nav.dart';
 import '../features/bucket/presentation/providers/bucket_providers.dart';
+import '../features/bucket/presentation/providers/join_request_providers.dart';
 import '../features/expenses/presentation/providers/expense_providers.dart';
 import '../features/notifications/presentation/providers/notification_providers.dart';
 
@@ -35,6 +36,7 @@ class MainShell extends ConsumerWidget {
     ref.watch(thresholdWatcherProvider);
     ref.watch(bucketHydratorProvider);
     ref.watch(expenseHydratorProvider);
+    ref.watch(joinRequestHydratorProvider);
 
     return Scaffold(
       extendBody: true,

@@ -109,6 +109,22 @@ class NotificationRows extends Table with SyncColumns {
   Set<Column> get primaryKey => {id};
 }
 
+@DataClassName('JoinRequestRow')
+class JoinRequestRows extends Table with SyncColumns {
+  TextColumn get id => text()();
+  TextColumn get bucketId => text()();
+  TextColumn get bucketName => text().withDefault(const Constant(''))();
+  TextColumn get requesterUid => text()();
+  TextColumn get requesterName => text().nullable()();
+  TextColumn get requesterPhoto => text().nullable()();
+  TextColumn get status => text().withDefault(const Constant('pending'))();
+  DateTimeColumn get createdAt => dateTime().nullable()();
+  DateTimeColumn get decidedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 class Outbox extends Table {
   TextColumn get id => text()();
   TextColumn get entity => text()();
@@ -136,6 +152,7 @@ class Outbox extends Table {
     BucketMemberRows,
     Categories,
     NotificationRows,
+    JoinRequestRows,
     Outbox,
   ],
 )
@@ -144,12 +161,16 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
-    onUpgrade: (m, from, to) async {},
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.createTable(joinRequestRows);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
@@ -164,6 +185,7 @@ class AppDatabase extends _$AppDatabase {
       b.deleteWhere(bucketMemberRows, (_) => const Constant(true));
       b.deleteWhere(categories, (_) => const Constant(true));
       b.deleteWhere(notificationRows, (_) => const Constant(true));
+      b.deleteWhere(joinRequestRows, (_) => const Constant(true));
       b.deleteWhere(outbox, (_) => const Constant(true));
     });
   }

@@ -115,6 +115,16 @@ class SupabaseSyncDispatcher implements SyncDispatcher {
           'join_bucket_with_code',
           params: {'p_code': p['code']},
         );
+      case OutboxOp.joinRequestDecide:
+        await _client.rpc(
+          'decide_join_request',
+          params: {'p_request_id': row.entityId, 'p_accept': p['accept']},
+        );
+      case OutboxOp.joinRequestCancel:
+        await _client.rpc(
+          'cancel_join_request',
+          params: {'p_request_id': row.entityId},
+        );
       case OutboxOp.markNotificationsRead:
         await _client.rpc(
           'mark_notifications_read',

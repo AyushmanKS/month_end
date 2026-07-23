@@ -11,7 +11,7 @@ import '../../../../core/network/connectivity_providers.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_text_field.dart';
-import '../providers/bucket_providers.dart';
+import '../providers/join_request_providers.dart';
 import '../widgets/bucket_qr_scanner.dart';
 
 class JoinBucketScreen extends ConsumerStatefulWidget {
@@ -31,41 +31,46 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
     super.dispose();
   }
 
-  Future<void> _join(String code) async {
+  void _snack(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _request(String code) async {
     if (!(ref.read(isOnlineProvider).value ?? true)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Connect to the internet to join a bucket.'),
-        ),
-      );
+      _snack('Connect to the internet to request to join a bucket.');
       return;
     }
-    final bucket = await ref
-        .read(bucketControllerProvider.notifier)
-        .joinViaCode(code);
+    final outcome = await ref
+        .read(joinRequestControllerProvider.notifier)
+        .requestJoin(code);
     if (!mounted) return;
-    if (bucket != null) {
-      context.go(RouteNames.home);
-    } else {
-      final error = ref.read(bucketControllerProvider).error;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            error is AppException ? error.message : 'Could not join bucket.',
-          ),
-        ),
-      );
+    switch (outcome) {
+      case JoinRequestOutcome.pending:
+        _snack('Request sent. You will get in once the owner approves.');
+        context.go(RouteNames.home);
+      case JoinRequestOutcome.alreadyMember:
+        _snack("You're already a member of this bucket.");
+        context.go(RouteNames.home);
+      case JoinRequestOutcome.notFound:
+        _snack('No bucket found for that code.');
+      case JoinRequestOutcome.failed:
+        final error = ref.read(joinRequestControllerProvider).error;
+        _snack(
+          error is AppException ? error.message : 'Could not send the request.',
+        );
     }
   }
 
   void _submitCode() {
     if (!_formKey.currentState!.validate()) return;
-    _join(_code.text.trim().toUpperCase());
+    _request(_code.text.trim().toUpperCase());
   }
 
   @override
   Widget build(BuildContext context) {
-    final busy = ref.watch(bucketControllerProvider).isLoading;
+    final busy = ref.watch(joinRequestControllerProvider).isLoading;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -104,7 +109,7 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
                     ),
                     const SizedBox(height: AppSpacing.lg),
                     AppButton(
-                      label: 'Join bucket',
+                      label: 'Request to join',
                       isLoading: busy,
                       onPressed: busy ? null : _submitCode,
                     ),
@@ -124,7 +129,7 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
                   Expanded(
                     child: BucketQrScanner(
                       onDetected: (code) {
-                        if (!busy) _join(code);
+                        if (!busy) _request(code);
                       },
                     ),
                   ),

@@ -4957,6 +4957,799 @@ class NotificationRowsCompanion extends UpdateCompanion<NotificationRow> {
   }
 }
 
+class $JoinRequestRowsTable extends JoinRequestRows
+    with TableInfo<$JoinRequestRowsTable, JoinRequestRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JoinRequestRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('synced'),
+  );
+  static const VerificationMeta _deletedLocalMeta = const VerificationMeta(
+    'deletedLocal',
+  );
+  @override
+  late final GeneratedColumn<bool> deletedLocal = GeneratedColumn<bool>(
+    'deleted_local',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted_local" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtLocalMeta = const VerificationMeta(
+    'updatedAtLocal',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtLocal =
+      GeneratedColumn<DateTime>(
+        'updated_at_local',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bucketIdMeta = const VerificationMeta(
+    'bucketId',
+  );
+  @override
+  late final GeneratedColumn<String> bucketId = GeneratedColumn<String>(
+    'bucket_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bucketNameMeta = const VerificationMeta(
+    'bucketName',
+  );
+  @override
+  late final GeneratedColumn<String> bucketName = GeneratedColumn<String>(
+    'bucket_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _requesterUidMeta = const VerificationMeta(
+    'requesterUid',
+  );
+  @override
+  late final GeneratedColumn<String> requesterUid = GeneratedColumn<String>(
+    'requester_uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _requesterNameMeta = const VerificationMeta(
+    'requesterName',
+  );
+  @override
+  late final GeneratedColumn<String> requesterName = GeneratedColumn<String>(
+    'requester_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _requesterPhotoMeta = const VerificationMeta(
+    'requesterPhoto',
+  );
+  @override
+  late final GeneratedColumn<String> requesterPhoto = GeneratedColumn<String>(
+    'requester_photo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('pending'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _decidedAtMeta = const VerificationMeta(
+    'decidedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> decidedAt = GeneratedColumn<DateTime>(
+    'decided_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    bucketId,
+    bucketName,
+    requesterUid,
+    requesterName,
+    requesterPhoto,
+    status,
+    createdAt,
+    decidedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'join_request_rows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<JoinRequestRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('deleted_local')) {
+      context.handle(
+        _deletedLocalMeta,
+        deletedLocal.isAcceptableOrUnknown(
+          data['deleted_local']!,
+          _deletedLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at_local')) {
+      context.handle(
+        _updatedAtLocalMeta,
+        updatedAtLocal.isAcceptableOrUnknown(
+          data['updated_at_local']!,
+          _updatedAtLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('bucket_id')) {
+      context.handle(
+        _bucketIdMeta,
+        bucketId.isAcceptableOrUnknown(data['bucket_id']!, _bucketIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bucketIdMeta);
+    }
+    if (data.containsKey('bucket_name')) {
+      context.handle(
+        _bucketNameMeta,
+        bucketName.isAcceptableOrUnknown(data['bucket_name']!, _bucketNameMeta),
+      );
+    }
+    if (data.containsKey('requester_uid')) {
+      context.handle(
+        _requesterUidMeta,
+        requesterUid.isAcceptableOrUnknown(
+          data['requester_uid']!,
+          _requesterUidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_requesterUidMeta);
+    }
+    if (data.containsKey('requester_name')) {
+      context.handle(
+        _requesterNameMeta,
+        requesterName.isAcceptableOrUnknown(
+          data['requester_name']!,
+          _requesterNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('requester_photo')) {
+      context.handle(
+        _requesterPhotoMeta,
+        requesterPhoto.isAcceptableOrUnknown(
+          data['requester_photo']!,
+          _requesterPhotoMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('decided_at')) {
+      context.handle(
+        _decidedAtMeta,
+        decidedAt.isAcceptableOrUnknown(data['decided_at']!, _decidedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  JoinRequestRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return JoinRequestRow(
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      deletedLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted_local'],
+      )!,
+      updatedAtLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_local'],
+      ),
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      bucketId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bucket_id'],
+      )!,
+      bucketName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bucket_name'],
+      )!,
+      requesterUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requester_uid'],
+      )!,
+      requesterName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requester_name'],
+      ),
+      requesterPhoto: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requester_photo'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      ),
+      decidedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}decided_at'],
+      ),
+    );
+  }
+
+  @override
+  $JoinRequestRowsTable createAlias(String alias) {
+    return $JoinRequestRowsTable(attachedDatabase, alias);
+  }
+}
+
+class JoinRequestRow extends DataClass implements Insertable<JoinRequestRow> {
+  final String syncState;
+  final bool deletedLocal;
+  final DateTime? updatedAtLocal;
+  final DateTime? serverUpdatedAt;
+  final String id;
+  final String bucketId;
+  final String bucketName;
+  final String requesterUid;
+  final String? requesterName;
+  final String? requesterPhoto;
+  final String status;
+  final DateTime? createdAt;
+  final DateTime? decidedAt;
+  const JoinRequestRow({
+    required this.syncState,
+    required this.deletedLocal,
+    this.updatedAtLocal,
+    this.serverUpdatedAt,
+    required this.id,
+    required this.bucketId,
+    required this.bucketName,
+    required this.requesterUid,
+    this.requesterName,
+    this.requesterPhoto,
+    required this.status,
+    this.createdAt,
+    this.decidedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_state'] = Variable<String>(syncState);
+    map['deleted_local'] = Variable<bool>(deletedLocal);
+    if (!nullToAbsent || updatedAtLocal != null) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal);
+    }
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['bucket_id'] = Variable<String>(bucketId);
+    map['bucket_name'] = Variable<String>(bucketName);
+    map['requester_uid'] = Variable<String>(requesterUid);
+    if (!nullToAbsent || requesterName != null) {
+      map['requester_name'] = Variable<String>(requesterName);
+    }
+    if (!nullToAbsent || requesterPhoto != null) {
+      map['requester_photo'] = Variable<String>(requesterPhoto);
+    }
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<DateTime>(createdAt);
+    }
+    if (!nullToAbsent || decidedAt != null) {
+      map['decided_at'] = Variable<DateTime>(decidedAt);
+    }
+    return map;
+  }
+
+  JoinRequestRowsCompanion toCompanion(bool nullToAbsent) {
+    return JoinRequestRowsCompanion(
+      syncState: Value(syncState),
+      deletedLocal: Value(deletedLocal),
+      updatedAtLocal: updatedAtLocal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAtLocal),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      id: Value(id),
+      bucketId: Value(bucketId),
+      bucketName: Value(bucketName),
+      requesterUid: Value(requesterUid),
+      requesterName: requesterName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requesterName),
+      requesterPhoto: requesterPhoto == null && nullToAbsent
+          ? const Value.absent()
+          : Value(requesterPhoto),
+      status: Value(status),
+      createdAt: createdAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdAt),
+      decidedAt: decidedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decidedAt),
+    );
+  }
+
+  factory JoinRequestRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return JoinRequestRow(
+      syncState: serializer.fromJson<String>(json['syncState']),
+      deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
+      updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      bucketId: serializer.fromJson<String>(json['bucketId']),
+      bucketName: serializer.fromJson<String>(json['bucketName']),
+      requesterUid: serializer.fromJson<String>(json['requesterUid']),
+      requesterName: serializer.fromJson<String?>(json['requesterName']),
+      requesterPhoto: serializer.fromJson<String?>(json['requesterPhoto']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+      decidedAt: serializer.fromJson<DateTime?>(json['decidedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncState': serializer.toJson<String>(syncState),
+      'deletedLocal': serializer.toJson<bool>(deletedLocal),
+      'updatedAtLocal': serializer.toJson<DateTime?>(updatedAtLocal),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'id': serializer.toJson<String>(id),
+      'bucketId': serializer.toJson<String>(bucketId),
+      'bucketName': serializer.toJson<String>(bucketName),
+      'requesterUid': serializer.toJson<String>(requesterUid),
+      'requesterName': serializer.toJson<String?>(requesterName),
+      'requesterPhoto': serializer.toJson<String?>(requesterPhoto),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<DateTime?>(createdAt),
+      'decidedAt': serializer.toJson<DateTime?>(decidedAt),
+    };
+  }
+
+  JoinRequestRow copyWith({
+    String? syncState,
+    bool? deletedLocal,
+    Value<DateTime?> updatedAtLocal = const Value.absent(),
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    String? id,
+    String? bucketId,
+    String? bucketName,
+    String? requesterUid,
+    Value<String?> requesterName = const Value.absent(),
+    Value<String?> requesterPhoto = const Value.absent(),
+    String? status,
+    Value<DateTime?> createdAt = const Value.absent(),
+    Value<DateTime?> decidedAt = const Value.absent(),
+  }) => JoinRequestRow(
+    syncState: syncState ?? this.syncState,
+    deletedLocal: deletedLocal ?? this.deletedLocal,
+    updatedAtLocal: updatedAtLocal.present
+        ? updatedAtLocal.value
+        : this.updatedAtLocal,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    id: id ?? this.id,
+    bucketId: bucketId ?? this.bucketId,
+    bucketName: bucketName ?? this.bucketName,
+    requesterUid: requesterUid ?? this.requesterUid,
+    requesterName: requesterName.present
+        ? requesterName.value
+        : this.requesterName,
+    requesterPhoto: requesterPhoto.present
+        ? requesterPhoto.value
+        : this.requesterPhoto,
+    status: status ?? this.status,
+    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+    decidedAt: decidedAt.present ? decidedAt.value : this.decidedAt,
+  );
+  JoinRequestRow copyWithCompanion(JoinRequestRowsCompanion data) {
+    return JoinRequestRow(
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedLocal: data.deletedLocal.present
+          ? data.deletedLocal.value
+          : this.deletedLocal,
+      updatedAtLocal: data.updatedAtLocal.present
+          ? data.updatedAtLocal.value
+          : this.updatedAtLocal,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      bucketId: data.bucketId.present ? data.bucketId.value : this.bucketId,
+      bucketName: data.bucketName.present
+          ? data.bucketName.value
+          : this.bucketName,
+      requesterUid: data.requesterUid.present
+          ? data.requesterUid.value
+          : this.requesterUid,
+      requesterName: data.requesterName.present
+          ? data.requesterName.value
+          : this.requesterName,
+      requesterPhoto: data.requesterPhoto.present
+          ? data.requesterPhoto.value
+          : this.requesterPhoto,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      decidedAt: data.decidedAt.present ? data.decidedAt.value : this.decidedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JoinRequestRow(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('bucketName: $bucketName, ')
+          ..write('requesterUid: $requesterUid, ')
+          ..write('requesterName: $requesterName, ')
+          ..write('requesterPhoto: $requesterPhoto, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('decidedAt: $decidedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    bucketId,
+    bucketName,
+    requesterUid,
+    requesterName,
+    requesterPhoto,
+    status,
+    createdAt,
+    decidedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is JoinRequestRow &&
+          other.syncState == this.syncState &&
+          other.deletedLocal == this.deletedLocal &&
+          other.updatedAtLocal == this.updatedAtLocal &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.id == this.id &&
+          other.bucketId == this.bucketId &&
+          other.bucketName == this.bucketName &&
+          other.requesterUid == this.requesterUid &&
+          other.requesterName == this.requesterName &&
+          other.requesterPhoto == this.requesterPhoto &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt &&
+          other.decidedAt == this.decidedAt);
+}
+
+class JoinRequestRowsCompanion extends UpdateCompanion<JoinRequestRow> {
+  final Value<String> syncState;
+  final Value<bool> deletedLocal;
+  final Value<DateTime?> updatedAtLocal;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String> id;
+  final Value<String> bucketId;
+  final Value<String> bucketName;
+  final Value<String> requesterUid;
+  final Value<String?> requesterName;
+  final Value<String?> requesterPhoto;
+  final Value<String> status;
+  final Value<DateTime?> createdAt;
+  final Value<DateTime?> decidedAt;
+  final Value<int> rowid;
+  const JoinRequestRowsCompanion({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.bucketId = const Value.absent(),
+    this.bucketName = const Value.absent(),
+    this.requesterUid = const Value.absent(),
+    this.requesterName = const Value.absent(),
+    this.requesterPhoto = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.decidedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  JoinRequestRowsCompanion.insert({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    required String id,
+    required String bucketId,
+    this.bucketName = const Value.absent(),
+    required String requesterUid,
+    this.requesterName = const Value.absent(),
+    this.requesterPhoto = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.decidedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       bucketId = Value(bucketId),
+       requesterUid = Value(requesterUid);
+  static Insertable<JoinRequestRow> custom({
+    Expression<String>? syncState,
+    Expression<bool>? deletedLocal,
+    Expression<DateTime>? updatedAtLocal,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? id,
+    Expression<String>? bucketId,
+    Expression<String>? bucketName,
+    Expression<String>? requesterUid,
+    Expression<String>? requesterName,
+    Expression<String>? requesterPhoto,
+    Expression<String>? status,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? decidedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedLocal != null) 'deleted_local': deletedLocal,
+      if (updatedAtLocal != null) 'updated_at_local': updatedAtLocal,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (id != null) 'id': id,
+      if (bucketId != null) 'bucket_id': bucketId,
+      if (bucketName != null) 'bucket_name': bucketName,
+      if (requesterUid != null) 'requester_uid': requesterUid,
+      if (requesterName != null) 'requester_name': requesterName,
+      if (requesterPhoto != null) 'requester_photo': requesterPhoto,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+      if (decidedAt != null) 'decided_at': decidedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  JoinRequestRowsCompanion copyWith({
+    Value<String>? syncState,
+    Value<bool>? deletedLocal,
+    Value<DateTime?>? updatedAtLocal,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String>? id,
+    Value<String>? bucketId,
+    Value<String>? bucketName,
+    Value<String>? requesterUid,
+    Value<String?>? requesterName,
+    Value<String?>? requesterPhoto,
+    Value<String>? status,
+    Value<DateTime?>? createdAt,
+    Value<DateTime?>? decidedAt,
+    Value<int>? rowid,
+  }) {
+    return JoinRequestRowsCompanion(
+      syncState: syncState ?? this.syncState,
+      deletedLocal: deletedLocal ?? this.deletedLocal,
+      updatedAtLocal: updatedAtLocal ?? this.updatedAtLocal,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      id: id ?? this.id,
+      bucketId: bucketId ?? this.bucketId,
+      bucketName: bucketName ?? this.bucketName,
+      requesterUid: requesterUid ?? this.requesterUid,
+      requesterName: requesterName ?? this.requesterName,
+      requesterPhoto: requesterPhoto ?? this.requesterPhoto,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      decidedAt: decidedAt ?? this.decidedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (deletedLocal.present) {
+      map['deleted_local'] = Variable<bool>(deletedLocal.value);
+    }
+    if (updatedAtLocal.present) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (bucketId.present) {
+      map['bucket_id'] = Variable<String>(bucketId.value);
+    }
+    if (bucketName.present) {
+      map['bucket_name'] = Variable<String>(bucketName.value);
+    }
+    if (requesterUid.present) {
+      map['requester_uid'] = Variable<String>(requesterUid.value);
+    }
+    if (requesterName.present) {
+      map['requester_name'] = Variable<String>(requesterName.value);
+    }
+    if (requesterPhoto.present) {
+      map['requester_photo'] = Variable<String>(requesterPhoto.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (decidedAt.present) {
+      map['decided_at'] = Variable<DateTime>(decidedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JoinRequestRowsCompanion(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('bucketName: $bucketName, ')
+          ..write('requesterUid: $requesterUid, ')
+          ..write('requesterName: $requesterName, ')
+          ..write('requesterPhoto: $requesterPhoto, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('decidedAt: $decidedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5672,6 +6465,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $NotificationRowsTable notificationRows = $NotificationRowsTable(
     this,
   );
+  late final $JoinRequestRowsTable joinRequestRows = $JoinRequestRowsTable(
+    this,
+  );
   late final $OutboxTable outbox = $OutboxTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -5685,6 +6481,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     bucketMemberRows,
     categories,
     notificationRows,
+    joinRequestRows,
     outbox,
   ];
 }
@@ -8038,6 +8835,378 @@ typedef $$NotificationRowsTableProcessedTableManager =
       NotificationRow,
       PrefetchHooks Function()
     >;
+typedef $$JoinRequestRowsTableCreateCompanionBuilder =
+    JoinRequestRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      required String id,
+      required String bucketId,
+      Value<String> bucketName,
+      required String requesterUid,
+      Value<String?> requesterName,
+      Value<String?> requesterPhoto,
+      Value<String> status,
+      Value<DateTime?> createdAt,
+      Value<DateTime?> decidedAt,
+      Value<int> rowid,
+    });
+typedef $$JoinRequestRowsTableUpdateCompanionBuilder =
+    JoinRequestRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String> id,
+      Value<String> bucketId,
+      Value<String> bucketName,
+      Value<String> requesterUid,
+      Value<String?> requesterName,
+      Value<String?> requesterPhoto,
+      Value<String> status,
+      Value<DateTime?> createdAt,
+      Value<DateTime?> decidedAt,
+      Value<int> rowid,
+    });
+
+class $$JoinRequestRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $JoinRequestRowsTable> {
+  $$JoinRequestRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requesterUid => $composableBuilder(
+    column: $table.requesterUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requesterName => $composableBuilder(
+    column: $table.requesterName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requesterPhoto => $composableBuilder(
+    column: $table.requesterPhoto,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get decidedAt => $composableBuilder(
+    column: $table.decidedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JoinRequestRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JoinRequestRowsTable> {
+  $$JoinRequestRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requesterUid => $composableBuilder(
+    column: $table.requesterUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requesterName => $composableBuilder(
+    column: $table.requesterName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requesterPhoto => $composableBuilder(
+    column: $table.requesterPhoto,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get decidedAt => $composableBuilder(
+    column: $table.decidedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JoinRequestRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JoinRequestRowsTable> {
+  $$JoinRequestRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get bucketId =>
+      $composableBuilder(column: $table.bucketId, builder: (column) => column);
+
+  GeneratedColumn<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requesterUid => $composableBuilder(
+    column: $table.requesterUid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requesterName => $composableBuilder(
+    column: $table.requesterName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get requesterPhoto => $composableBuilder(
+    column: $table.requesterPhoto,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get decidedAt =>
+      $composableBuilder(column: $table.decidedAt, builder: (column) => column);
+}
+
+class $$JoinRequestRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JoinRequestRowsTable,
+          JoinRequestRow,
+          $$JoinRequestRowsTableFilterComposer,
+          $$JoinRequestRowsTableOrderingComposer,
+          $$JoinRequestRowsTableAnnotationComposer,
+          $$JoinRequestRowsTableCreateCompanionBuilder,
+          $$JoinRequestRowsTableUpdateCompanionBuilder,
+          (
+            JoinRequestRow,
+            BaseReferences<
+              _$AppDatabase,
+              $JoinRequestRowsTable,
+              JoinRequestRow
+            >,
+          ),
+          JoinRequestRow,
+          PrefetchHooks Function()
+        > {
+  $$JoinRequestRowsTableTableManager(
+    _$AppDatabase db,
+    $JoinRequestRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JoinRequestRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JoinRequestRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JoinRequestRowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> bucketId = const Value.absent(),
+                Value<String> bucketName = const Value.absent(),
+                Value<String> requesterUid = const Value.absent(),
+                Value<String?> requesterName = const Value.absent(),
+                Value<String?> requesterPhoto = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime?> decidedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => JoinRequestRowsCompanion(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                bucketId: bucketId,
+                bucketName: bucketName,
+                requesterUid: requesterUid,
+                requesterName: requesterName,
+                requesterPhoto: requesterPhoto,
+                status: status,
+                createdAt: createdAt,
+                decidedAt: decidedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                required String id,
+                required String bucketId,
+                Value<String> bucketName = const Value.absent(),
+                required String requesterUid,
+                Value<String?> requesterName = const Value.absent(),
+                Value<String?> requesterPhoto = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime?> decidedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => JoinRequestRowsCompanion.insert(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                bucketId: bucketId,
+                bucketName: bucketName,
+                requesterUid: requesterUid,
+                requesterName: requesterName,
+                requesterPhoto: requesterPhoto,
+                status: status,
+                createdAt: createdAt,
+                decidedAt: decidedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JoinRequestRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JoinRequestRowsTable,
+      JoinRequestRow,
+      $$JoinRequestRowsTableFilterComposer,
+      $$JoinRequestRowsTableOrderingComposer,
+      $$JoinRequestRowsTableAnnotationComposer,
+      $$JoinRequestRowsTableCreateCompanionBuilder,
+      $$JoinRequestRowsTableUpdateCompanionBuilder,
+      (
+        JoinRequestRow,
+        BaseReferences<_$AppDatabase, $JoinRequestRowsTable, JoinRequestRow>,
+      ),
+      JoinRequestRow,
+      PrefetchHooks Function()
+    >;
 typedef $$OutboxTableCreateCompanionBuilder =
     OutboxCompanion Function({
       required String id,
@@ -8387,6 +9556,8 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$NotificationRowsTableTableManager get notificationRows =>
       $$NotificationRowsTableTableManager(_db, _db.notificationRows);
+  $$JoinRequestRowsTableTableManager get joinRequestRows =>
+      $$JoinRequestRowsTableTableManager(_db, _db.joinRequestRows);
   $$OutboxTableTableManager get outbox =>
       $$OutboxTableTableManager(_db, _db.outbox);
 }
