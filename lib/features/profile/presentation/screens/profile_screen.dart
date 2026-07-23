@@ -20,6 +20,7 @@ import '../../../../shared_providers/supabase_providers.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../bucket/presentation/providers/bucket_providers.dart';
+import '../../../diagnostics/presentation/screens/diagnostics_screen.dart';
 import '../widgets/theme_toggle_tile.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -240,9 +241,14 @@ class _AppVersionLabel extends ConsumerWidget {
         .maybeWhen(data: formatAppVersion, orElse: () => '');
     if (version.isEmpty) return const SizedBox.shrink();
     return Center(
-      child: Text(
-        version,
-        style: TextStyle(color: context.brand.textSecondary, fontSize: 12),
+      child: GestureDetector(
+        onLongPress: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (_) => const DiagnosticsScreen()),
+        ),
+        child: Text(
+          version,
+          style: TextStyle(color: context.brand.textSecondary, fontSize: 12),
+        ),
       ),
     );
   }

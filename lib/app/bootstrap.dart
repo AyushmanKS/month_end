@@ -12,6 +12,7 @@ import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 import '../core/logging/logging_observers.dart';
 import '../core/logging/tap_logger.dart';
+import '../core/sync/sync_status.dart';
 import '../features/notifications/presentation/providers/notification_providers.dart';
 import '../shared_providers/supabase_providers.dart';
 
@@ -43,6 +44,17 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
         AppLogger.instance.w('Local notifications init failed', e);
         unawaited(Sentry.captureException(e, stackTrace: s));
       }
+
+      container.listen<SyncStatus>(syncStatusProvider, (previous, next) {
+        Sentry.configureScope((scope) {
+          scope.setContexts('sync', {
+            'phase': next.phase.name,
+            'completed': next.completed,
+            'total': next.total,
+            'failed': next.failed,
+          });
+        });
+      });
 
       Widget appRoot() => UncontrolledProviderScope(
         container: container,
