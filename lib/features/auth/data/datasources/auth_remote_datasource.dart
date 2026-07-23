@@ -20,6 +20,12 @@ class AuthRemoteDataSource {
 
   bool _googleInitialized = false;
 
+  String _oauthRedirectTarget() {
+    if (!kIsWeb) return _oauthRedirect;
+    final base = Uri.base;
+    return '${base.origin}${base.path}';
+  }
+
   String get _googleWebClientId =>
       dotenv.maybeGet('GOOGLE_WEB_CLIENT_ID') ?? '';
   String get _googleIosClientId =>
@@ -80,7 +86,7 @@ class AuthRemoteDataSource {
     try {
       AppLogger.instance.i('OAuth link: launching ${provider.name}');
       final launched = await _auth
-          .linkIdentity(provider, redirectTo: kIsWeb ? null : _oauthRedirect)
+          .linkIdentity(provider, redirectTo: _oauthRedirectTarget())
           .timeout(const Duration(seconds: 30));
       AppLogger.instance.i('OAuth link: browser launched=$launched');
     } catch (e, s) {
@@ -92,7 +98,7 @@ class AuthRemoteDataSource {
     try {
       AppLogger.instance.i('OAuth sign-in: launching ${provider.name}');
       final launched = await _auth
-          .signInWithOAuth(provider, redirectTo: kIsWeb ? null : _oauthRedirect)
+          .signInWithOAuth(provider, redirectTo: _oauthRedirectTarget())
           .timeout(const Duration(seconds: 30));
       AppLogger.instance.i('OAuth sign-in: browser launched=$launched');
     } catch (e, s) {
