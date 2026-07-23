@@ -45,6 +45,18 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
   final SharedPreferences _prefs;
 
   static const String _transferTokenKey = 'pending_bucket_transfer_token';
+  static const String _lastUidKey = 'last_authenticated_uid';
+
+  Future<void> _reconcileLocalForUser(String uid) async {
+    if (uid.isEmpty) return;
+    final last = _prefs.getString(_lastUidKey);
+    if (last != null && last != uid) {
+      await _db.clearAll();
+    }
+    if (last != uid) {
+      await _prefs.setString(_lastUidKey, uid);
+    }
+  }
 
   Future<void> _stageTransferIfGuest() async {
     final user = _repository.currentUser;
@@ -70,6 +82,7 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     state = const AsyncValue.loading();
     try {
       final user = await _repository.ensureSignedIn();
+      await _reconcileLocalForUser(user.id);
       state = AsyncValue.data(user);
       return user;
     } catch (e, s) {
@@ -101,6 +114,7 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
       await _stageTransferIfGuest();
       final (user, signedIntoExisting) = await _repository.upgradeWithGoogle();
       await claimPendingTransfer();
+      await _reconcileLocalForUser(user.id);
       state = AsyncValue.data(user);
       return signedIntoExisting
           ? GoogleAuthOutcome.signedIntoExisting
@@ -144,6 +158,7 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     state = const AsyncValue.loading();
     try {
       final user = await action();
+      await _reconcileLocalForUser(user.id);
       state = AsyncValue.data(user);
       return true;
     } catch (e, s) {

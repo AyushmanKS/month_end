@@ -46,7 +46,10 @@ class OutboxRepository {
   Future<Set<String>> pendingEntityIds(String entity) async {
     final rows =
         await (_db.select(_db.outbox)..where(
-              (t) => t.entity.equals(entity) & t.syncState.isNotValue('synced'),
+              (t) =>
+                  t.entity.equals(entity) &
+                  t.syncState.isNotValue('synced') &
+                  t.syncState.isNotValue('failed'),
             ))
             .get();
     return rows.map((r) => r.entityId).toSet();
