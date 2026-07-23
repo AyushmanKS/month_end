@@ -22,6 +22,7 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
 
       await _loadEnv();
       await _initSupabase();
+      if (await _recoverWebOAuthRedirect()) return;
       _installErrorHandlers();
 
       final packageInfo = await _loadPackageInfo();
@@ -88,6 +89,31 @@ Future<PackageInfo?> _loadPackageInfo() async {
     AppLogger.instance.w('Failed to read package info', e);
     unawaited(Sentry.captureException(e, stackTrace: s));
     return null;
+  }
+}
+
+Future<bool> _recoverWebOAuthRedirect() async {
+  if (!kIsWeb) return false;
+  final uri = Uri.base;
+  final params = <String, String>{...uri.queryParameters};
+  if (uri.fragment.isNotEmpty) {
+    params.addAll(Uri.splitQueryString(uri.fragment));
+  }
+  if (params['error_code'] != 'identity_already_exists') return false;
+  final redirect = '${uri.origin}${uri.path}';
+  AppLogger.instance.i(
+    'Web OAuth: identity already linked, signing into existing account',
+  );
+  try {
+    await Supabase.instance.client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: redirect,
+    );
+    return true;
+  } catch (e, s) {
+    AppLogger.instance.w('Web OAuth recovery failed', e);
+    unawaited(Sentry.captureException(e, stackTrace: s));
+    return false;
   }
 }
 
