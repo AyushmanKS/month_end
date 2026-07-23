@@ -57,9 +57,18 @@ class _JoinBucketScreenState extends ConsumerState<JoinBucketScreen> {
         _snack('No bucket found for that code.');
       case JoinRequestOutcome.failed:
         final error = ref.read(joinRequestControllerProvider).error;
-        _snack(
-          error is AppException ? error.message : 'Could not send the request.',
-        );
+        final raw = (error is AppException ? error.message : '').toLowerCase();
+        if (raw.contains('owner_not_shareable')) {
+          _snack("This bucket can't be joined yet.");
+        } else if (raw.contains('auth_required')) {
+          _snack('Sign in to join a bucket.');
+        } else {
+          _snack(
+            error is AppException
+                ? error.message
+                : 'Could not send the request.',
+          );
+        }
     }
   }
 

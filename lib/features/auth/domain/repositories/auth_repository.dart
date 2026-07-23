@@ -34,6 +34,10 @@ abstract class AuthRepository {
 
   Future<AppUser> updateProfile({String? name, String? username});
 
+  Future<String?> stageBucketTransfer();
+
+  Future<int> claimBucketTransfer(String token);
+
   Future<void> signOut();
 
   Future<void> deleteAccount();

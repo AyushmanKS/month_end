@@ -18,7 +18,9 @@ class AppUser {
   final String? username;
 
   bool get isAnonymous => authType == AuthType.anonymous;
-  bool get canCreateBucket => !isAnonymous;
+  bool get isAuthenticated => !isAnonymous;
+  bool get canCreateBucket => true;
+  bool get canShareOrJoin => !isAnonymous;
   bool get canReserveUsername => !isAnonymous;
   bool get hasUsername => username != null && username!.isNotEmpty;
 

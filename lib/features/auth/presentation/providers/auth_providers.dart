@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/db/app_database.dart';
 import '../../../../core/db/database_provider.dart';
 import '../../../../core/error/app_exception.dart';
@@ -31,12 +32,39 @@ final currentAppUserProvider = Provider<AppUser?>((ref) {
   return ref.watch(appUserStreamProvider).value;
 });
 
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  return ref.watch(appUserStreamProvider).value?.isAuthenticated ?? false;
+});
+
 class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
-  AuthController(this._repository, this._db)
+  AuthController(this._repository, this._db, this._prefs)
     : super(const AsyncValue.data(null));
 
   final AuthRepository _repository;
   final AppDatabase _db;
+  final SharedPreferences _prefs;
+
+  static const String _transferTokenKey = 'pending_bucket_transfer_token';
+
+  Future<void> _stageTransferIfGuest() async {
+    final user = _repository.currentUser;
+    if (user == null || user.isAuthenticated) return;
+    try {
+      final token = await _repository.stageBucketTransfer();
+      if (token != null) await _prefs.setString(_transferTokenKey, token);
+    } catch (_) {}
+  }
+
+  Future<void> claimPendingTransfer() async {
+    final token = _prefs.getString(_transferTokenKey);
+    if (token == null) return;
+    final user = _repository.currentUser;
+    if (user == null || user.isAnonymous) return;
+    try {
+      await _repository.claimBucketTransfer(token);
+    } catch (_) {}
+    await _prefs.remove(_transferTokenKey);
+  }
 
   Future<AppUser?> ensureSignedIn() async {
     state = const AsyncValue.loading();
@@ -50,9 +78,16 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
     }
   }
 
-  Future<bool> upgradeWithEmail(String email, String password) => _run(
-    () => _repository.upgradeWithEmail(email: email, password: password),
-  );
+  Future<bool> upgradeWithEmail(String email, String password) =>
+      _run(() async {
+        await _stageTransferIfGuest();
+        final user = await _repository.upgradeWithEmail(
+          email: email,
+          password: password,
+        );
+        await claimPendingTransfer();
+        return user;
+      });
 
   Future<bool> signUpWithEmail(String email, String password) =>
       _run(() => _repository.signUpWithEmail(email: email, password: password));
@@ -63,7 +98,9 @@ class AuthController extends StateNotifier<AsyncValue<AppUser?>> {
   Future<GoogleAuthOutcome> upgradeWithGoogle() async {
     state = const AsyncValue.loading();
     try {
+      await _stageTransferIfGuest();
       final (user, signedIntoExisting) = await _repository.upgradeWithGoogle();
+      await claimPendingTransfer();
       state = AsyncValue.data(user);
       return signedIntoExisting
           ? GoogleAuthOutcome.signedIntoExisting
@@ -121,5 +158,6 @@ final authControllerProvider =
       return AuthController(
         ref.watch(authRepositoryProvider),
         ref.watch(appDatabaseProvider),
+        ref.watch(sharedPreferencesProvider),
       );
     });

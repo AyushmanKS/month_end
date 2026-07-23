@@ -11,6 +11,7 @@ import '../../../../core/error/error_handler.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_skeletons.dart';
+import '../../../auth/presentation/widgets/auth_gate.dart';
 import '../providers/bucket_providers.dart';
 import '../widgets/bucket_switcher.dart';
 import '../widgets/member_count_chip.dart';
@@ -70,7 +71,17 @@ class _BucketDashboard extends ConsumerWidget {
               const Flexible(child: BucketSwitcher()),
               const MemberCountChip(),
               IconButton(
-                onPressed: () => context.push(RouteNames.inviteMember),
+                onPressed: () async {
+                  if (await ensureAuthenticated(
+                    context,
+                    ref,
+                    action: 'invite people',
+                  )) {
+                    if (context.mounted) {
+                      context.push(RouteNames.inviteMember);
+                    }
+                  }
+                },
                 icon: const AppIcon(AppAssets.personAdd),
               ),
             ],
@@ -151,11 +162,11 @@ class _BucketDashboard extends ConsumerWidget {
   }
 }
 
-class _NoBucketView extends StatelessWidget {
+class _NoBucketView extends ConsumerWidget {
   const _NoBucketView();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
@@ -189,7 +200,15 @@ class _NoBucketView extends StatelessWidget {
               label: 'Join with a code',
               icon: AppAssets.qrCodeScanner,
               variant: AppButtonVariant.ghost,
-              onPressed: () => context.push(RouteNames.joinBucket),
+              onPressed: () async {
+                if (await ensureAuthenticated(
+                  context,
+                  ref,
+                  action: 'join a bucket',
+                )) {
+                  if (context.mounted) context.push(RouteNames.joinBucket);
+                }
+              },
             ),
           ],
         ),

@@ -235,6 +235,27 @@ class AuthRemoteDataSource {
     }
   }
 
+  Future<String?> stageBucketTransfer() async {
+    try {
+      final token = await _client.rpc('stage_bucket_transfer');
+      return token as String?;
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
+  Future<int> claimBucketTransfer(String token) async {
+    try {
+      final count = await _client.rpc(
+        'claim_bucket_transfer',
+        params: {'p_token': token},
+      );
+      return (count as num?)?.toInt() ?? 0;
+    } catch (e, s) {
+      throw ErrorHandler.map(e, s);
+    }
+  }
+
   Future<void> signOut() async {
     try {
       await _auth.signOut();

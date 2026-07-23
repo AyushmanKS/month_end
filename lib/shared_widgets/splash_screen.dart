@@ -23,6 +23,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   Future<void> _boot() async {
     await ref.read(authControllerProvider.notifier).ensureSignedIn();
+    await ref.read(authControllerProvider.notifier).claimPendingTransfer();
   }
 
   @override

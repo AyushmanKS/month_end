@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
+import '../../../auth/presentation/widgets/auth_gate.dart';
 import '../../domain/entities/bucket.dart';
 import '../providers/bucket_providers.dart';
 
@@ -128,9 +129,15 @@ class _BucketSheet extends ConsumerWidget {
             ListTile(
               leading: const AppIcon(AppAssets.qrCodeScanner),
               title: const Text('Join with a code'),
-              onTap: () {
+              onTap: () async {
                 Navigator.of(context).pop();
-                context.push(RouteNames.joinBucket);
+                if (await ensureAuthenticated(
+                  context,
+                  ref,
+                  action: 'join a bucket',
+                )) {
+                  if (context.mounted) context.push(RouteNames.joinBucket);
+                }
               },
             ),
             const SizedBox(height: AppSpacing.sm),

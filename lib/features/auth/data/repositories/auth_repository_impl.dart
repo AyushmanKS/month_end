@@ -214,6 +214,13 @@ class AuthRepositoryImpl implements AuthRepository {
       _remote.updateProfile(name: name, username: username);
 
   @override
+  Future<String?> stageBucketTransfer() => _remote.stageBucketTransfer();
+
+  @override
+  Future<int> claimBucketTransfer(String token) =>
+      _remote.claimBucketTransfer(token);
+
+  @override
   Future<void> signOut() => _remote.signOut();
 
   @override
