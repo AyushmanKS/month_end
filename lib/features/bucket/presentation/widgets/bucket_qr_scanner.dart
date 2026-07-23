@@ -3,6 +3,7 @@ import '../../../../core/constants/app_assets.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -31,7 +32,7 @@ class _BucketQrScannerState extends State<BucketQrScanner> {
   Future<void> _resolveCamera() async {
     var available = true;
     try {
-      if (Platform.isIOS) {
+      if (!kIsWeb && Platform.isIOS) {
         final info = await DeviceInfoPlugin().iosInfo;
         available = info.isPhysicalDevice;
       }

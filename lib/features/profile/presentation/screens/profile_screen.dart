@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../app/router/route_names.dart';
+import '../../../../core/app_info/app_info_providers.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/currency/currency.dart';
@@ -220,8 +221,28 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ],
+                  const SizedBox(height: AppSpacing.xl),
+                  const _AppVersionLabel(),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+class _AppVersionLabel extends ConsumerWidget {
+  const _AppVersionLabel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final version = ref
+        .watch(packageInfoProvider)
+        .maybeWhen(data: formatAppVersion, orElse: () => '');
+    if (version.isEmpty) return const SizedBox.shrink();
+    return Center(
+      child: Text(
+        version,
+        style: TextStyle(color: context.brand.textSecondary, fontSize: 12),
       ),
     );
   }

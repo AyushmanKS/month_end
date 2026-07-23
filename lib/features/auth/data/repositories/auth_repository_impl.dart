@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
 import '../../../../core/logging/app_logger.dart';
 import '../../domain/entities/app_user.dart';
@@ -179,7 +180,13 @@ class AuthRepositoryImpl implements AuthRepository {
       currentUser ?? const AppUser(id: '', authType: AuthType.anonymous);
 
   @override
-  Future<AppUser> signInWithGoogle() => _remote.signInWithGoogleNative();
+  Future<AppUser> signInWithGoogle() async {
+    if (kIsWeb) {
+      await _remote.signInWithOAuth(OAuthProvider.google);
+      return _currentOrAnonymous();
+    }
+    return _remote.signInWithGoogleNative();
+  }
 
   @override
   Future<AppUser> signInWithApple() async {
@@ -188,7 +195,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<(AppUser, bool)> upgradeWithGoogle() => _remote.linkOrSignInGoogle();
+  Future<(AppUser, bool)> upgradeWithGoogle() async {
+    if (kIsWeb) {
+      await _remote.linkOAuthIdentity(OAuthProvider.google);
+      return (_currentOrAnonymous(), false);
+    }
+    return _remote.linkOrSignInGoogle();
+  }
 
   @override
   Future<AppUser> upgradeWithApple() async {

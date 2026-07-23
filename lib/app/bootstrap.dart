@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/app_info/app_info_providers.dart';
 import '../core/error/error_handler.dart';
 import '../core/logging/app_logger.dart';
 import '../core/logging/logging_observers.dart';
@@ -22,13 +24,20 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
       await _initSupabase();
       _installErrorHandlers();
 
+      final packageInfo = await _loadPackageInfo();
       final prefs = await SharedPreferences.getInstance();
       final container = ProviderContainer(
         observers: [LoggingProviderObserver()],
-        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          if (packageInfo != null)
+            packageInfoProvider.overrideWith((ref) async => packageInfo),
+        ],
       );
       try {
-        await container.read(localNotificationServiceProvider).init();
+        final notifications = container.read(localNotificationServiceProvider);
+        await notifications.init();
+        await notifications.requestPermissions();
       } catch (e, s) {
         AppLogger.instance.w('Local notifications init failed', e);
         unawaited(Sentry.captureException(e, stackTrace: s));
@@ -44,6 +53,11 @@ Future<void> bootstrap(Widget Function() rootBuilder) async {
         await SentryFlutter.init((options) {
           options.dsn = sentryDsn;
           options.tracesSampleRate = 0.2;
+          options.environment = kReleaseMode ? 'production' : 'development';
+          if (packageInfo != null) {
+            options.release =
+                'month_end@${packageInfo.version}+${packageInfo.buildNumber}';
+          }
         }, appRunner: () => runApp(appRoot()));
       } else {
         runApp(appRoot());
@@ -62,6 +76,18 @@ Future<void> _loadEnv() async {
     AppLogger.instance.i('Environment loaded');
   } catch (e) {
     AppLogger.instance.w('No .env file found; using placeholders', e);
+  }
+}
+
+Future<PackageInfo?> _loadPackageInfo() async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    AppLogger.instance.i('App version ${info.version}+${info.buildNumber}');
+    return info;
+  } catch (e, s) {
+    AppLogger.instance.w('Failed to read package info', e);
+    unawaited(Sentry.captureException(e, stackTrace: s));
+    return null;
   }
 }
 

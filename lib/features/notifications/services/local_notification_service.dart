@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../../../../core/logging/app_logger.dart';
+import 'web_notifier.dart' as web_notifier;
 
 class LocalNotificationService {
   LocalNotificationService(this._plugin);
@@ -24,7 +25,10 @@ class LocalNotificationService {
   }
 
   Future<void> requestPermissions() async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      await web_notifier.requestWebNotificationPermission();
+      return;
+    }
     await _plugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
@@ -42,7 +46,11 @@ class LocalNotificationService {
     required String title,
     required String body,
   }) async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      await web_notifier.showWebNotification(title: title, body: body);
+      AppLogger.instance.i('Threshold web notification fired: $title');
+      return;
+    }
     await init();
     const details = NotificationDetails(
       android: AndroidNotificationDetails(

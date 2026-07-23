@@ -1,6 +1,7 @@
 import '../../../../core/widgets/app_icon.dart';
 import '../../../../core/constants/app_assets.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_spacing.dart';
@@ -40,12 +41,19 @@ class ReceiptImagePicker extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            child: Image.file(
-              File(localPath!),
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: kIsWeb
+                ? Image.network(
+                    localPath!,
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  )
+                : Image.file(
+                    File(localPath!),
+                    height: 160,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
           ),
           Positioned(
             top: AppSpacing.xs,
