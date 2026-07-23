@@ -148,6 +148,38 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, BucketRow> {
     requiredDuringInsert: false,
     defaultValue: const Constant('INR'),
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('active'),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deletedByMeta = const VerificationMeta(
+    'deletedBy',
+  );
+  @override
+  late final GeneratedColumn<String> deletedBy = GeneratedColumn<String>(
+    'deleted_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -173,6 +205,9 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, BucketRow> {
     monthStartDate,
     remainingMainBucket,
     currency,
+    status,
+    deletedAt,
+    deletedBy,
     createdAt,
   ];
   @override
@@ -280,6 +315,24 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, BucketRow> {
         currency.isAcceptableOrUnknown(data['currency']!, _currencyMeta),
       );
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('deleted_by')) {
+      context.handle(
+        _deletedByMeta,
+        deletedBy.isAcceptableOrUnknown(data['deleted_by']!, _deletedByMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -343,6 +396,18 @@ class $BucketsTable extends Buckets with TableInfo<$BucketsTable, BucketRow> {
         DriftSqlType.string,
         data['${effectivePrefix}currency'],
       )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      deletedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_by'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -369,6 +434,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
   final String monthStartDate;
   final double remainingMainBucket;
   final String currency;
+  final String status;
+  final DateTime? deletedAt;
+  final String? deletedBy;
   final DateTime? createdAt;
   const BucketRow({
     required this.syncState,
@@ -383,6 +451,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
     required this.monthStartDate,
     required this.remainingMainBucket,
     required this.currency,
+    required this.status,
+    this.deletedAt,
+    this.deletedBy,
     this.createdAt,
   });
   @override
@@ -404,6 +475,13 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
     map['month_start_date'] = Variable<String>(monthStartDate);
     map['remaining_main_bucket'] = Variable<double>(remainingMainBucket);
     map['currency'] = Variable<String>(currency);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || deletedBy != null) {
+      map['deleted_by'] = Variable<String>(deletedBy);
+    }
     if (!nullToAbsent || createdAt != null) {
       map['created_at'] = Variable<DateTime>(createdAt);
     }
@@ -428,6 +506,13 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
       monthStartDate: Value(monthStartDate),
       remainingMainBucket: Value(remainingMainBucket),
       currency: Value(currency),
+      status: Value(status),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      deletedBy: deletedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedBy),
       createdAt: createdAt == null && nullToAbsent
           ? const Value.absent()
           : Value(createdAt),
@@ -454,6 +539,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
         json['remainingMainBucket'],
       ),
       currency: serializer.fromJson<String>(json['currency']),
+      status: serializer.fromJson<String>(json['status']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      deletedBy: serializer.fromJson<String?>(json['deletedBy']),
       createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
     );
   }
@@ -473,6 +561,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
       'monthStartDate': serializer.toJson<String>(monthStartDate),
       'remainingMainBucket': serializer.toJson<double>(remainingMainBucket),
       'currency': serializer.toJson<String>(currency),
+      'status': serializer.toJson<String>(status),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'deletedBy': serializer.toJson<String?>(deletedBy),
       'createdAt': serializer.toJson<DateTime?>(createdAt),
     };
   }
@@ -490,6 +581,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
     String? monthStartDate,
     double? remainingMainBucket,
     String? currency,
+    String? status,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> deletedBy = const Value.absent(),
     Value<DateTime?> createdAt = const Value.absent(),
   }) => BucketRow(
     syncState: syncState ?? this.syncState,
@@ -508,6 +602,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
     monthStartDate: monthStartDate ?? this.monthStartDate,
     remainingMainBucket: remainingMainBucket ?? this.remainingMainBucket,
     currency: currency ?? this.currency,
+    status: status ?? this.status,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    deletedBy: deletedBy.present ? deletedBy.value : this.deletedBy,
     createdAt: createdAt.present ? createdAt.value : this.createdAt,
   );
   BucketRow copyWithCompanion(BucketsCompanion data) {
@@ -536,6 +633,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
           ? data.remainingMainBucket.value
           : this.remainingMainBucket,
       currency: data.currency.present ? data.currency.value : this.currency,
+      status: data.status.present ? data.status.value : this.status,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      deletedBy: data.deletedBy.present ? data.deletedBy.value : this.deletedBy,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -555,6 +655,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
           ..write('monthStartDate: $monthStartDate, ')
           ..write('remainingMainBucket: $remainingMainBucket, ')
           ..write('currency: $currency, ')
+          ..write('status: $status, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deletedBy: $deletedBy, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -574,6 +677,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
     monthStartDate,
     remainingMainBucket,
     currency,
+    status,
+    deletedAt,
+    deletedBy,
     createdAt,
   );
   @override
@@ -592,6 +698,9 @@ class BucketRow extends DataClass implements Insertable<BucketRow> {
           other.monthStartDate == this.monthStartDate &&
           other.remainingMainBucket == this.remainingMainBucket &&
           other.currency == this.currency &&
+          other.status == this.status &&
+          other.deletedAt == this.deletedAt &&
+          other.deletedBy == this.deletedBy &&
           other.createdAt == this.createdAt);
 }
 
@@ -608,6 +717,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
   final Value<String> monthStartDate;
   final Value<double> remainingMainBucket;
   final Value<String> currency;
+  final Value<String> status;
+  final Value<DateTime?> deletedAt;
+  final Value<String?> deletedBy;
   final Value<DateTime?> createdAt;
   final Value<int> rowid;
   const BucketsCompanion({
@@ -623,6 +735,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
     this.monthStartDate = const Value.absent(),
     this.remainingMainBucket = const Value.absent(),
     this.currency = const Value.absent(),
+    this.status = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deletedBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -639,6 +754,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
     required String monthStartDate,
     this.remainingMainBucket = const Value.absent(),
     this.currency = const Value.absent(),
+    this.status = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.deletedBy = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -657,6 +775,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
     Expression<String>? monthStartDate,
     Expression<double>? remainingMainBucket,
     Expression<String>? currency,
+    Expression<String>? status,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? deletedBy,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
@@ -674,6 +795,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
       if (remainingMainBucket != null)
         'remaining_main_bucket': remainingMainBucket,
       if (currency != null) 'currency': currency,
+      if (status != null) 'status': status,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (deletedBy != null) 'deleted_by': deletedBy,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -692,6 +816,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
     Value<String>? monthStartDate,
     Value<double>? remainingMainBucket,
     Value<String>? currency,
+    Value<String>? status,
+    Value<DateTime?>? deletedAt,
+    Value<String?>? deletedBy,
     Value<DateTime?>? createdAt,
     Value<int>? rowid,
   }) {
@@ -708,6 +835,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
       monthStartDate: monthStartDate ?? this.monthStartDate,
       remainingMainBucket: remainingMainBucket ?? this.remainingMainBucket,
       currency: currency ?? this.currency,
+      status: status ?? this.status,
+      deletedAt: deletedAt ?? this.deletedAt,
+      deletedBy: deletedBy ?? this.deletedBy,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -754,6 +884,15 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
     if (currency.present) {
       map['currency'] = Variable<String>(currency.value);
     }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (deletedBy.present) {
+      map['deleted_by'] = Variable<String>(deletedBy.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -778,6 +917,9 @@ class BucketsCompanion extends UpdateCompanion<BucketRow> {
           ..write('monthStartDate: $monthStartDate, ')
           ..write('remainingMainBucket: $remainingMainBucket, ')
           ..write('currency: $currency, ')
+          ..write('status: $status, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('deletedBy: $deletedBy, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -3233,6 +3375,16 @@ class $BucketMemberRowsTable extends BucketMemberRows
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('member'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     syncState,
@@ -3244,6 +3396,7 @@ class $BucketMemberRowsTable extends BucketMemberRows
     joinedAt,
     name,
     photoUrl,
+    role,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3324,6 +3477,12 @@ class $BucketMemberRowsTable extends BucketMemberRows
         photoUrl.isAcceptableOrUnknown(data['photo_url']!, _photoUrlMeta),
       );
     }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    }
     return context;
   }
 
@@ -3369,6 +3528,10 @@ class $BucketMemberRowsTable extends BucketMemberRows
         DriftSqlType.string,
         data['${effectivePrefix}photo_url'],
       ),
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
     );
   }
 
@@ -3388,6 +3551,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
   final DateTime? joinedAt;
   final String? name;
   final String? photoUrl;
+  final String role;
   const BucketMemberRow({
     required this.syncState,
     required this.deletedLocal,
@@ -3398,6 +3562,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
     this.joinedAt,
     this.name,
     this.photoUrl,
+    required this.role,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3421,6 +3586,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
     if (!nullToAbsent || photoUrl != null) {
       map['photo_url'] = Variable<String>(photoUrl);
     }
+    map['role'] = Variable<String>(role);
     return map;
   }
 
@@ -3443,6 +3609,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
       photoUrl: photoUrl == null && nullToAbsent
           ? const Value.absent()
           : Value(photoUrl),
+      role: Value(role),
     );
   }
 
@@ -3461,6 +3628,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
       joinedAt: serializer.fromJson<DateTime?>(json['joinedAt']),
       name: serializer.fromJson<String?>(json['name']),
       photoUrl: serializer.fromJson<String?>(json['photoUrl']),
+      role: serializer.fromJson<String>(json['role']),
     );
   }
   @override
@@ -3476,6 +3644,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
       'joinedAt': serializer.toJson<DateTime?>(joinedAt),
       'name': serializer.toJson<String?>(name),
       'photoUrl': serializer.toJson<String?>(photoUrl),
+      'role': serializer.toJson<String>(role),
     };
   }
 
@@ -3489,6 +3658,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
     Value<DateTime?> joinedAt = const Value.absent(),
     Value<String?> name = const Value.absent(),
     Value<String?> photoUrl = const Value.absent(),
+    String? role,
   }) => BucketMemberRow(
     syncState: syncState ?? this.syncState,
     deletedLocal: deletedLocal ?? this.deletedLocal,
@@ -3503,6 +3673,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
     joinedAt: joinedAt.present ? joinedAt.value : this.joinedAt,
     name: name.present ? name.value : this.name,
     photoUrl: photoUrl.present ? photoUrl.value : this.photoUrl,
+    role: role ?? this.role,
   );
   BucketMemberRow copyWithCompanion(BucketMemberRowsCompanion data) {
     return BucketMemberRow(
@@ -3521,6 +3692,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
       joinedAt: data.joinedAt.present ? data.joinedAt.value : this.joinedAt,
       name: data.name.present ? data.name.value : this.name,
       photoUrl: data.photoUrl.present ? data.photoUrl.value : this.photoUrl,
+      role: data.role.present ? data.role.value : this.role,
     );
   }
 
@@ -3535,7 +3707,8 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
           ..write('userId: $userId, ')
           ..write('joinedAt: $joinedAt, ')
           ..write('name: $name, ')
-          ..write('photoUrl: $photoUrl')
+          ..write('photoUrl: $photoUrl, ')
+          ..write('role: $role')
           ..write(')'))
         .toString();
   }
@@ -3551,6 +3724,7 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
     joinedAt,
     name,
     photoUrl,
+    role,
   );
   @override
   bool operator ==(Object other) =>
@@ -3564,7 +3738,8 @@ class BucketMemberRow extends DataClass implements Insertable<BucketMemberRow> {
           other.userId == this.userId &&
           other.joinedAt == this.joinedAt &&
           other.name == this.name &&
-          other.photoUrl == this.photoUrl);
+          other.photoUrl == this.photoUrl &&
+          other.role == this.role);
 }
 
 class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
@@ -3577,6 +3752,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
   final Value<DateTime?> joinedAt;
   final Value<String?> name;
   final Value<String?> photoUrl;
+  final Value<String> role;
   final Value<int> rowid;
   const BucketMemberRowsCompanion({
     this.syncState = const Value.absent(),
@@ -3588,6 +3764,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
     this.joinedAt = const Value.absent(),
     this.name = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.role = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   BucketMemberRowsCompanion.insert({
@@ -3600,6 +3777,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
     this.joinedAt = const Value.absent(),
     this.name = const Value.absent(),
     this.photoUrl = const Value.absent(),
+    this.role = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : bucketId = Value(bucketId),
        userId = Value(userId);
@@ -3613,6 +3791,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
     Expression<DateTime>? joinedAt,
     Expression<String>? name,
     Expression<String>? photoUrl,
+    Expression<String>? role,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3625,6 +3804,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
       if (joinedAt != null) 'joined_at': joinedAt,
       if (name != null) 'name': name,
       if (photoUrl != null) 'photo_url': photoUrl,
+      if (role != null) 'role': role,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -3639,6 +3819,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
     Value<DateTime?>? joinedAt,
     Value<String?>? name,
     Value<String?>? photoUrl,
+    Value<String>? role,
     Value<int>? rowid,
   }) {
     return BucketMemberRowsCompanion(
@@ -3651,6 +3832,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
       joinedAt: joinedAt ?? this.joinedAt,
       name: name ?? this.name,
       photoUrl: photoUrl ?? this.photoUrl,
+      role: role ?? this.role,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -3685,6 +3867,9 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
     if (photoUrl.present) {
       map['photo_url'] = Variable<String>(photoUrl.value);
     }
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -3703,6 +3888,7 @@ class BucketMemberRowsCompanion extends UpdateCompanion<BucketMemberRow> {
           ..write('joinedAt: $joinedAt, ')
           ..write('name: $name, ')
           ..write('photoUrl: $photoUrl, ')
+          ..write('role: $role, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5750,6 +5936,1845 @@ class JoinRequestRowsCompanion extends UpdateCompanion<JoinRequestRow> {
   }
 }
 
+class $UserNotificationRowsTable extends UserNotificationRows
+    with TableInfo<$UserNotificationRowsTable, UserNotificationRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserNotificationRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('synced'),
+  );
+  static const VerificationMeta _deletedLocalMeta = const VerificationMeta(
+    'deletedLocal',
+  );
+  @override
+  late final GeneratedColumn<bool> deletedLocal = GeneratedColumn<bool>(
+    'deleted_local',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted_local" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtLocalMeta = const VerificationMeta(
+    'updatedAtLocal',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtLocal =
+      GeneratedColumn<DateTime>(
+        'updated_at_local',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recipientUidMeta = const VerificationMeta(
+    'recipientUid',
+  );
+  @override
+  late final GeneratedColumn<String> recipientUid = GeneratedColumn<String>(
+    'recipient_uid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<String> eventId = GeneratedColumn<String>(
+    'event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('unknown'),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('bucket'),
+  );
+  static const VerificationMeta _bucketIdMeta = const VerificationMeta(
+    'bucketId',
+  );
+  @override
+  late final GeneratedColumn<String> bucketId = GeneratedColumn<String>(
+    'bucket_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _bucketNameMeta = const VerificationMeta(
+    'bucketName',
+  );
+  @override
+  late final GeneratedColumn<String> bucketName = GeneratedColumn<String>(
+    'bucket_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _actorUidMeta = const VerificationMeta(
+    'actorUid',
+  );
+  @override
+  late final GeneratedColumn<String> actorUid = GeneratedColumn<String>(
+    'actor_uid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+    'body',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _metadataMeta = const VerificationMeta(
+    'metadata',
+  );
+  @override
+  late final GeneratedColumn<String> metadata = GeneratedColumn<String>(
+    'metadata',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _correlationIdMeta = const VerificationMeta(
+    'correlationId',
+  );
+  @override
+  late final GeneratedColumn<String> correlationId = GeneratedColumn<String>(
+    'correlation_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _readAtMeta = const VerificationMeta('readAt');
+  @override
+  late final GeneratedColumn<DateTime> readAt = GeneratedColumn<DateTime>(
+    'read_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    recipientUid,
+    eventId,
+    type,
+    category,
+    bucketId,
+    bucketName,
+    actorUid,
+    title,
+    body,
+    metadata,
+    correlationId,
+    createdAt,
+    readAt,
+    archivedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_notification_rows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserNotificationRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('deleted_local')) {
+      context.handle(
+        _deletedLocalMeta,
+        deletedLocal.isAcceptableOrUnknown(
+          data['deleted_local']!,
+          _deletedLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at_local')) {
+      context.handle(
+        _updatedAtLocalMeta,
+        updatedAtLocal.isAcceptableOrUnknown(
+          data['updated_at_local']!,
+          _updatedAtLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('recipient_uid')) {
+      context.handle(
+        _recipientUidMeta,
+        recipientUid.isAcceptableOrUnknown(
+          data['recipient_uid']!,
+          _recipientUidMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recipientUidMeta);
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('bucket_id')) {
+      context.handle(
+        _bucketIdMeta,
+        bucketId.isAcceptableOrUnknown(data['bucket_id']!, _bucketIdMeta),
+      );
+    }
+    if (data.containsKey('bucket_name')) {
+      context.handle(
+        _bucketNameMeta,
+        bucketName.isAcceptableOrUnknown(data['bucket_name']!, _bucketNameMeta),
+      );
+    }
+    if (data.containsKey('actor_uid')) {
+      context.handle(
+        _actorUidMeta,
+        actorUid.isAcceptableOrUnknown(data['actor_uid']!, _actorUidMeta),
+      );
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+        _bodyMeta,
+        body.isAcceptableOrUnknown(data['body']!, _bodyMeta),
+      );
+    }
+    if (data.containsKey('metadata')) {
+      context.handle(
+        _metadataMeta,
+        metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
+      );
+    }
+    if (data.containsKey('correlation_id')) {
+      context.handle(
+        _correlationIdMeta,
+        correlationId.isAcceptableOrUnknown(
+          data['correlation_id']!,
+          _correlationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('read_at')) {
+      context.handle(
+        _readAtMeta,
+        readAt.isAcceptableOrUnknown(data['read_at']!, _readAtMeta),
+      );
+    }
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserNotificationRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserNotificationRow(
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      deletedLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted_local'],
+      )!,
+      updatedAtLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_local'],
+      ),
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      recipientUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recipient_uid'],
+      )!,
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}event_id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      bucketId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bucket_id'],
+      ),
+      bucketName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bucket_name'],
+      )!,
+      actorUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actor_uid'],
+      ),
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      body: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}body'],
+      )!,
+      metadata: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata'],
+      )!,
+      correlationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correlation_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      ),
+      readAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}read_at'],
+      ),
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
+    );
+  }
+
+  @override
+  $UserNotificationRowsTable createAlias(String alias) {
+    return $UserNotificationRowsTable(attachedDatabase, alias);
+  }
+}
+
+class UserNotificationRow extends DataClass
+    implements Insertable<UserNotificationRow> {
+  final String syncState;
+  final bool deletedLocal;
+  final DateTime? updatedAtLocal;
+  final DateTime? serverUpdatedAt;
+  final String id;
+  final String recipientUid;
+  final String eventId;
+  final String type;
+  final String category;
+  final String? bucketId;
+  final String bucketName;
+  final String? actorUid;
+  final String title;
+  final String body;
+  final String metadata;
+  final String? correlationId;
+  final DateTime? createdAt;
+  final DateTime? readAt;
+  final DateTime? archivedAt;
+  const UserNotificationRow({
+    required this.syncState,
+    required this.deletedLocal,
+    this.updatedAtLocal,
+    this.serverUpdatedAt,
+    required this.id,
+    required this.recipientUid,
+    required this.eventId,
+    required this.type,
+    required this.category,
+    this.bucketId,
+    required this.bucketName,
+    this.actorUid,
+    required this.title,
+    required this.body,
+    required this.metadata,
+    this.correlationId,
+    this.createdAt,
+    this.readAt,
+    this.archivedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_state'] = Variable<String>(syncState);
+    map['deleted_local'] = Variable<bool>(deletedLocal);
+    if (!nullToAbsent || updatedAtLocal != null) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal);
+    }
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['recipient_uid'] = Variable<String>(recipientUid);
+    map['event_id'] = Variable<String>(eventId);
+    map['type'] = Variable<String>(type);
+    map['category'] = Variable<String>(category);
+    if (!nullToAbsent || bucketId != null) {
+      map['bucket_id'] = Variable<String>(bucketId);
+    }
+    map['bucket_name'] = Variable<String>(bucketName);
+    if (!nullToAbsent || actorUid != null) {
+      map['actor_uid'] = Variable<String>(actorUid);
+    }
+    map['title'] = Variable<String>(title);
+    map['body'] = Variable<String>(body);
+    map['metadata'] = Variable<String>(metadata);
+    if (!nullToAbsent || correlationId != null) {
+      map['correlation_id'] = Variable<String>(correlationId);
+    }
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<DateTime>(createdAt);
+    }
+    if (!nullToAbsent || readAt != null) {
+      map['read_at'] = Variable<DateTime>(readAt);
+    }
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    return map;
+  }
+
+  UserNotificationRowsCompanion toCompanion(bool nullToAbsent) {
+    return UserNotificationRowsCompanion(
+      syncState: Value(syncState),
+      deletedLocal: Value(deletedLocal),
+      updatedAtLocal: updatedAtLocal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAtLocal),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      id: Value(id),
+      recipientUid: Value(recipientUid),
+      eventId: Value(eventId),
+      type: Value(type),
+      category: Value(category),
+      bucketId: bucketId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bucketId),
+      bucketName: Value(bucketName),
+      actorUid: actorUid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(actorUid),
+      title: Value(title),
+      body: Value(body),
+      metadata: Value(metadata),
+      correlationId: correlationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(correlationId),
+      createdAt: createdAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdAt),
+      readAt: readAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(readAt),
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
+    );
+  }
+
+  factory UserNotificationRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserNotificationRow(
+      syncState: serializer.fromJson<String>(json['syncState']),
+      deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
+      updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      recipientUid: serializer.fromJson<String>(json['recipientUid']),
+      eventId: serializer.fromJson<String>(json['eventId']),
+      type: serializer.fromJson<String>(json['type']),
+      category: serializer.fromJson<String>(json['category']),
+      bucketId: serializer.fromJson<String?>(json['bucketId']),
+      bucketName: serializer.fromJson<String>(json['bucketName']),
+      actorUid: serializer.fromJson<String?>(json['actorUid']),
+      title: serializer.fromJson<String>(json['title']),
+      body: serializer.fromJson<String>(json['body']),
+      metadata: serializer.fromJson<String>(json['metadata']),
+      correlationId: serializer.fromJson<String?>(json['correlationId']),
+      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+      readAt: serializer.fromJson<DateTime?>(json['readAt']),
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncState': serializer.toJson<String>(syncState),
+      'deletedLocal': serializer.toJson<bool>(deletedLocal),
+      'updatedAtLocal': serializer.toJson<DateTime?>(updatedAtLocal),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'id': serializer.toJson<String>(id),
+      'recipientUid': serializer.toJson<String>(recipientUid),
+      'eventId': serializer.toJson<String>(eventId),
+      'type': serializer.toJson<String>(type),
+      'category': serializer.toJson<String>(category),
+      'bucketId': serializer.toJson<String?>(bucketId),
+      'bucketName': serializer.toJson<String>(bucketName),
+      'actorUid': serializer.toJson<String?>(actorUid),
+      'title': serializer.toJson<String>(title),
+      'body': serializer.toJson<String>(body),
+      'metadata': serializer.toJson<String>(metadata),
+      'correlationId': serializer.toJson<String?>(correlationId),
+      'createdAt': serializer.toJson<DateTime?>(createdAt),
+      'readAt': serializer.toJson<DateTime?>(readAt),
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+    };
+  }
+
+  UserNotificationRow copyWith({
+    String? syncState,
+    bool? deletedLocal,
+    Value<DateTime?> updatedAtLocal = const Value.absent(),
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    String? id,
+    String? recipientUid,
+    String? eventId,
+    String? type,
+    String? category,
+    Value<String?> bucketId = const Value.absent(),
+    String? bucketName,
+    Value<String?> actorUid = const Value.absent(),
+    String? title,
+    String? body,
+    String? metadata,
+    Value<String?> correlationId = const Value.absent(),
+    Value<DateTime?> createdAt = const Value.absent(),
+    Value<DateTime?> readAt = const Value.absent(),
+    Value<DateTime?> archivedAt = const Value.absent(),
+  }) => UserNotificationRow(
+    syncState: syncState ?? this.syncState,
+    deletedLocal: deletedLocal ?? this.deletedLocal,
+    updatedAtLocal: updatedAtLocal.present
+        ? updatedAtLocal.value
+        : this.updatedAtLocal,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    id: id ?? this.id,
+    recipientUid: recipientUid ?? this.recipientUid,
+    eventId: eventId ?? this.eventId,
+    type: type ?? this.type,
+    category: category ?? this.category,
+    bucketId: bucketId.present ? bucketId.value : this.bucketId,
+    bucketName: bucketName ?? this.bucketName,
+    actorUid: actorUid.present ? actorUid.value : this.actorUid,
+    title: title ?? this.title,
+    body: body ?? this.body,
+    metadata: metadata ?? this.metadata,
+    correlationId: correlationId.present
+        ? correlationId.value
+        : this.correlationId,
+    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+    readAt: readAt.present ? readAt.value : this.readAt,
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+  );
+  UserNotificationRow copyWithCompanion(UserNotificationRowsCompanion data) {
+    return UserNotificationRow(
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedLocal: data.deletedLocal.present
+          ? data.deletedLocal.value
+          : this.deletedLocal,
+      updatedAtLocal: data.updatedAtLocal.present
+          ? data.updatedAtLocal.value
+          : this.updatedAtLocal,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      recipientUid: data.recipientUid.present
+          ? data.recipientUid.value
+          : this.recipientUid,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      type: data.type.present ? data.type.value : this.type,
+      category: data.category.present ? data.category.value : this.category,
+      bucketId: data.bucketId.present ? data.bucketId.value : this.bucketId,
+      bucketName: data.bucketName.present
+          ? data.bucketName.value
+          : this.bucketName,
+      actorUid: data.actorUid.present ? data.actorUid.value : this.actorUid,
+      title: data.title.present ? data.title.value : this.title,
+      body: data.body.present ? data.body.value : this.body,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      correlationId: data.correlationId.present
+          ? data.correlationId.value
+          : this.correlationId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      readAt: data.readAt.present ? data.readAt.value : this.readAt,
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserNotificationRow(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('recipientUid: $recipientUid, ')
+          ..write('eventId: $eventId, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('bucketName: $bucketName, ')
+          ..write('actorUid: $actorUid, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('metadata: $metadata, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('readAt: $readAt, ')
+          ..write('archivedAt: $archivedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    recipientUid,
+    eventId,
+    type,
+    category,
+    bucketId,
+    bucketName,
+    actorUid,
+    title,
+    body,
+    metadata,
+    correlationId,
+    createdAt,
+    readAt,
+    archivedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserNotificationRow &&
+          other.syncState == this.syncState &&
+          other.deletedLocal == this.deletedLocal &&
+          other.updatedAtLocal == this.updatedAtLocal &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.id == this.id &&
+          other.recipientUid == this.recipientUid &&
+          other.eventId == this.eventId &&
+          other.type == this.type &&
+          other.category == this.category &&
+          other.bucketId == this.bucketId &&
+          other.bucketName == this.bucketName &&
+          other.actorUid == this.actorUid &&
+          other.title == this.title &&
+          other.body == this.body &&
+          other.metadata == this.metadata &&
+          other.correlationId == this.correlationId &&
+          other.createdAt == this.createdAt &&
+          other.readAt == this.readAt &&
+          other.archivedAt == this.archivedAt);
+}
+
+class UserNotificationRowsCompanion
+    extends UpdateCompanion<UserNotificationRow> {
+  final Value<String> syncState;
+  final Value<bool> deletedLocal;
+  final Value<DateTime?> updatedAtLocal;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String> id;
+  final Value<String> recipientUid;
+  final Value<String> eventId;
+  final Value<String> type;
+  final Value<String> category;
+  final Value<String?> bucketId;
+  final Value<String> bucketName;
+  final Value<String?> actorUid;
+  final Value<String> title;
+  final Value<String> body;
+  final Value<String> metadata;
+  final Value<String?> correlationId;
+  final Value<DateTime?> createdAt;
+  final Value<DateTime?> readAt;
+  final Value<DateTime?> archivedAt;
+  final Value<int> rowid;
+  const UserNotificationRowsCompanion({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.recipientUid = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.category = const Value.absent(),
+    this.bucketId = const Value.absent(),
+    this.bucketName = const Value.absent(),
+    this.actorUid = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.correlationId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserNotificationRowsCompanion.insert({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    required String id,
+    required String recipientUid,
+    this.eventId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.category = const Value.absent(),
+    this.bucketId = const Value.absent(),
+    this.bucketName = const Value.absent(),
+    this.actorUid = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.correlationId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.readAt = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       recipientUid = Value(recipientUid);
+  static Insertable<UserNotificationRow> custom({
+    Expression<String>? syncState,
+    Expression<bool>? deletedLocal,
+    Expression<DateTime>? updatedAtLocal,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? id,
+    Expression<String>? recipientUid,
+    Expression<String>? eventId,
+    Expression<String>? type,
+    Expression<String>? category,
+    Expression<String>? bucketId,
+    Expression<String>? bucketName,
+    Expression<String>? actorUid,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? metadata,
+    Expression<String>? correlationId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? readAt,
+    Expression<DateTime>? archivedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedLocal != null) 'deleted_local': deletedLocal,
+      if (updatedAtLocal != null) 'updated_at_local': updatedAtLocal,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (id != null) 'id': id,
+      if (recipientUid != null) 'recipient_uid': recipientUid,
+      if (eventId != null) 'event_id': eventId,
+      if (type != null) 'type': type,
+      if (category != null) 'category': category,
+      if (bucketId != null) 'bucket_id': bucketId,
+      if (bucketName != null) 'bucket_name': bucketName,
+      if (actorUid != null) 'actor_uid': actorUid,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (metadata != null) 'metadata': metadata,
+      if (correlationId != null) 'correlation_id': correlationId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (readAt != null) 'read_at': readAt,
+      if (archivedAt != null) 'archived_at': archivedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserNotificationRowsCompanion copyWith({
+    Value<String>? syncState,
+    Value<bool>? deletedLocal,
+    Value<DateTime?>? updatedAtLocal,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String>? id,
+    Value<String>? recipientUid,
+    Value<String>? eventId,
+    Value<String>? type,
+    Value<String>? category,
+    Value<String?>? bucketId,
+    Value<String>? bucketName,
+    Value<String?>? actorUid,
+    Value<String>? title,
+    Value<String>? body,
+    Value<String>? metadata,
+    Value<String?>? correlationId,
+    Value<DateTime?>? createdAt,
+    Value<DateTime?>? readAt,
+    Value<DateTime?>? archivedAt,
+    Value<int>? rowid,
+  }) {
+    return UserNotificationRowsCompanion(
+      syncState: syncState ?? this.syncState,
+      deletedLocal: deletedLocal ?? this.deletedLocal,
+      updatedAtLocal: updatedAtLocal ?? this.updatedAtLocal,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      id: id ?? this.id,
+      recipientUid: recipientUid ?? this.recipientUid,
+      eventId: eventId ?? this.eventId,
+      type: type ?? this.type,
+      category: category ?? this.category,
+      bucketId: bucketId ?? this.bucketId,
+      bucketName: bucketName ?? this.bucketName,
+      actorUid: actorUid ?? this.actorUid,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      metadata: metadata ?? this.metadata,
+      correlationId: correlationId ?? this.correlationId,
+      createdAt: createdAt ?? this.createdAt,
+      readAt: readAt ?? this.readAt,
+      archivedAt: archivedAt ?? this.archivedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (deletedLocal.present) {
+      map['deleted_local'] = Variable<bool>(deletedLocal.value);
+    }
+    if (updatedAtLocal.present) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (recipientUid.present) {
+      map['recipient_uid'] = Variable<String>(recipientUid.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<String>(eventId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (bucketId.present) {
+      map['bucket_id'] = Variable<String>(bucketId.value);
+    }
+    if (bucketName.present) {
+      map['bucket_name'] = Variable<String>(bucketName.value);
+    }
+    if (actorUid.present) {
+      map['actor_uid'] = Variable<String>(actorUid.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (metadata.present) {
+      map['metadata'] = Variable<String>(metadata.value);
+    }
+    if (correlationId.present) {
+      map['correlation_id'] = Variable<String>(correlationId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (readAt.present) {
+      map['read_at'] = Variable<DateTime>(readAt.value);
+    }
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserNotificationRowsCompanion(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('recipientUid: $recipientUid, ')
+          ..write('eventId: $eventId, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('bucketName: $bucketName, ')
+          ..write('actorUid: $actorUid, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('metadata: $metadata, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('readAt: $readAt, ')
+          ..write('archivedAt: $archivedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BucketActivityRowsTable extends BucketActivityRows
+    with TableInfo<$BucketActivityRowsTable, BucketActivityRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BucketActivityRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  @override
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('synced'),
+  );
+  static const VerificationMeta _deletedLocalMeta = const VerificationMeta(
+    'deletedLocal',
+  );
+  @override
+  late final GeneratedColumn<bool> deletedLocal = GeneratedColumn<bool>(
+    'deleted_local',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted_local" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtLocalMeta = const VerificationMeta(
+    'updatedAtLocal',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAtLocal =
+      GeneratedColumn<DateTime>(
+        'updated_at_local',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _serverUpdatedAtMeta = const VerificationMeta(
+    'serverUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> serverUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'server_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bucketIdMeta = const VerificationMeta(
+    'bucketId',
+  );
+  @override
+  late final GeneratedColumn<String> bucketId = GeneratedColumn<String>(
+    'bucket_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _actorUidMeta = const VerificationMeta(
+    'actorUid',
+  );
+  @override
+  late final GeneratedColumn<String> actorUid = GeneratedColumn<String>(
+    'actor_uid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('unknown'),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('bucket'),
+  );
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
+  );
+  @override
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+    'summary',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _metadataMeta = const VerificationMeta(
+    'metadata',
+  );
+  @override
+  late final GeneratedColumn<String> metadata = GeneratedColumn<String>(
+    'metadata',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _correlationIdMeta = const VerificationMeta(
+    'correlationId',
+  );
+  @override
+  late final GeneratedColumn<String> correlationId = GeneratedColumn<String>(
+    'correlation_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    bucketId,
+    actorUid,
+    type,
+    category,
+    summary,
+    metadata,
+    correlationId,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bucket_activity_rows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BucketActivityRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('deleted_local')) {
+      context.handle(
+        _deletedLocalMeta,
+        deletedLocal.isAcceptableOrUnknown(
+          data['deleted_local']!,
+          _deletedLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at_local')) {
+      context.handle(
+        _updatedAtLocalMeta,
+        updatedAtLocal.isAcceptableOrUnknown(
+          data['updated_at_local']!,
+          _updatedAtLocalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('server_updated_at')) {
+      context.handle(
+        _serverUpdatedAtMeta,
+        serverUpdatedAt.isAcceptableOrUnknown(
+          data['server_updated_at']!,
+          _serverUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('bucket_id')) {
+      context.handle(
+        _bucketIdMeta,
+        bucketId.isAcceptableOrUnknown(data['bucket_id']!, _bucketIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bucketIdMeta);
+    }
+    if (data.containsKey('actor_uid')) {
+      context.handle(
+        _actorUidMeta,
+        actorUid.isAcceptableOrUnknown(data['actor_uid']!, _actorUidMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    }
+    if (data.containsKey('summary')) {
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
+    }
+    if (data.containsKey('metadata')) {
+      context.handle(
+        _metadataMeta,
+        metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta),
+      );
+    }
+    if (data.containsKey('correlation_id')) {
+      context.handle(
+        _correlationIdMeta,
+        correlationId.isAcceptableOrUnknown(
+          data['correlation_id']!,
+          _correlationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BucketActivityRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BucketActivityRow(
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      deletedLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted_local'],
+      )!,
+      updatedAtLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at_local'],
+      ),
+      serverUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}server_updated_at'],
+      ),
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      bucketId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bucket_id'],
+      )!,
+      actorUid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}actor_uid'],
+      ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      summary: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}summary'],
+      )!,
+      metadata: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata'],
+      )!,
+      correlationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}correlation_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      ),
+    );
+  }
+
+  @override
+  $BucketActivityRowsTable createAlias(String alias) {
+    return $BucketActivityRowsTable(attachedDatabase, alias);
+  }
+}
+
+class BucketActivityRow extends DataClass
+    implements Insertable<BucketActivityRow> {
+  final String syncState;
+  final bool deletedLocal;
+  final DateTime? updatedAtLocal;
+  final DateTime? serverUpdatedAt;
+  final String id;
+  final String bucketId;
+  final String? actorUid;
+  final String type;
+  final String category;
+  final String summary;
+  final String metadata;
+  final String? correlationId;
+  final DateTime? createdAt;
+  const BucketActivityRow({
+    required this.syncState,
+    required this.deletedLocal,
+    this.updatedAtLocal,
+    this.serverUpdatedAt,
+    required this.id,
+    required this.bucketId,
+    this.actorUid,
+    required this.type,
+    required this.category,
+    required this.summary,
+    required this.metadata,
+    this.correlationId,
+    this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_state'] = Variable<String>(syncState);
+    map['deleted_local'] = Variable<bool>(deletedLocal);
+    if (!nullToAbsent || updatedAtLocal != null) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal);
+    }
+    if (!nullToAbsent || serverUpdatedAt != null) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt);
+    }
+    map['id'] = Variable<String>(id);
+    map['bucket_id'] = Variable<String>(bucketId);
+    if (!nullToAbsent || actorUid != null) {
+      map['actor_uid'] = Variable<String>(actorUid);
+    }
+    map['type'] = Variable<String>(type);
+    map['category'] = Variable<String>(category);
+    map['summary'] = Variable<String>(summary);
+    map['metadata'] = Variable<String>(metadata);
+    if (!nullToAbsent || correlationId != null) {
+      map['correlation_id'] = Variable<String>(correlationId);
+    }
+    if (!nullToAbsent || createdAt != null) {
+      map['created_at'] = Variable<DateTime>(createdAt);
+    }
+    return map;
+  }
+
+  BucketActivityRowsCompanion toCompanion(bool nullToAbsent) {
+    return BucketActivityRowsCompanion(
+      syncState: Value(syncState),
+      deletedLocal: Value(deletedLocal),
+      updatedAtLocal: updatedAtLocal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAtLocal),
+      serverUpdatedAt: serverUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverUpdatedAt),
+      id: Value(id),
+      bucketId: Value(bucketId),
+      actorUid: actorUid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(actorUid),
+      type: Value(type),
+      category: Value(category),
+      summary: Value(summary),
+      metadata: Value(metadata),
+      correlationId: correlationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(correlationId),
+      createdAt: createdAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createdAt),
+    );
+  }
+
+  factory BucketActivityRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BucketActivityRow(
+      syncState: serializer.fromJson<String>(json['syncState']),
+      deletedLocal: serializer.fromJson<bool>(json['deletedLocal']),
+      updatedAtLocal: serializer.fromJson<DateTime?>(json['updatedAtLocal']),
+      serverUpdatedAt: serializer.fromJson<DateTime?>(json['serverUpdatedAt']),
+      id: serializer.fromJson<String>(json['id']),
+      bucketId: serializer.fromJson<String>(json['bucketId']),
+      actorUid: serializer.fromJson<String?>(json['actorUid']),
+      type: serializer.fromJson<String>(json['type']),
+      category: serializer.fromJson<String>(json['category']),
+      summary: serializer.fromJson<String>(json['summary']),
+      metadata: serializer.fromJson<String>(json['metadata']),
+      correlationId: serializer.fromJson<String?>(json['correlationId']),
+      createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncState': serializer.toJson<String>(syncState),
+      'deletedLocal': serializer.toJson<bool>(deletedLocal),
+      'updatedAtLocal': serializer.toJson<DateTime?>(updatedAtLocal),
+      'serverUpdatedAt': serializer.toJson<DateTime?>(serverUpdatedAt),
+      'id': serializer.toJson<String>(id),
+      'bucketId': serializer.toJson<String>(bucketId),
+      'actorUid': serializer.toJson<String?>(actorUid),
+      'type': serializer.toJson<String>(type),
+      'category': serializer.toJson<String>(category),
+      'summary': serializer.toJson<String>(summary),
+      'metadata': serializer.toJson<String>(metadata),
+      'correlationId': serializer.toJson<String?>(correlationId),
+      'createdAt': serializer.toJson<DateTime?>(createdAt),
+    };
+  }
+
+  BucketActivityRow copyWith({
+    String? syncState,
+    bool? deletedLocal,
+    Value<DateTime?> updatedAtLocal = const Value.absent(),
+    Value<DateTime?> serverUpdatedAt = const Value.absent(),
+    String? id,
+    String? bucketId,
+    Value<String?> actorUid = const Value.absent(),
+    String? type,
+    String? category,
+    String? summary,
+    String? metadata,
+    Value<String?> correlationId = const Value.absent(),
+    Value<DateTime?> createdAt = const Value.absent(),
+  }) => BucketActivityRow(
+    syncState: syncState ?? this.syncState,
+    deletedLocal: deletedLocal ?? this.deletedLocal,
+    updatedAtLocal: updatedAtLocal.present
+        ? updatedAtLocal.value
+        : this.updatedAtLocal,
+    serverUpdatedAt: serverUpdatedAt.present
+        ? serverUpdatedAt.value
+        : this.serverUpdatedAt,
+    id: id ?? this.id,
+    bucketId: bucketId ?? this.bucketId,
+    actorUid: actorUid.present ? actorUid.value : this.actorUid,
+    type: type ?? this.type,
+    category: category ?? this.category,
+    summary: summary ?? this.summary,
+    metadata: metadata ?? this.metadata,
+    correlationId: correlationId.present
+        ? correlationId.value
+        : this.correlationId,
+    createdAt: createdAt.present ? createdAt.value : this.createdAt,
+  );
+  BucketActivityRow copyWithCompanion(BucketActivityRowsCompanion data) {
+    return BucketActivityRow(
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      deletedLocal: data.deletedLocal.present
+          ? data.deletedLocal.value
+          : this.deletedLocal,
+      updatedAtLocal: data.updatedAtLocal.present
+          ? data.updatedAtLocal.value
+          : this.updatedAtLocal,
+      serverUpdatedAt: data.serverUpdatedAt.present
+          ? data.serverUpdatedAt.value
+          : this.serverUpdatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      bucketId: data.bucketId.present ? data.bucketId.value : this.bucketId,
+      actorUid: data.actorUid.present ? data.actorUid.value : this.actorUid,
+      type: data.type.present ? data.type.value : this.type,
+      category: data.category.present ? data.category.value : this.category,
+      summary: data.summary.present ? data.summary.value : this.summary,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      correlationId: data.correlationId.present
+          ? data.correlationId.value
+          : this.correlationId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BucketActivityRow(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('actorUid: $actorUid, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('summary: $summary, ')
+          ..write('metadata: $metadata, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncState,
+    deletedLocal,
+    updatedAtLocal,
+    serverUpdatedAt,
+    id,
+    bucketId,
+    actorUid,
+    type,
+    category,
+    summary,
+    metadata,
+    correlationId,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BucketActivityRow &&
+          other.syncState == this.syncState &&
+          other.deletedLocal == this.deletedLocal &&
+          other.updatedAtLocal == this.updatedAtLocal &&
+          other.serverUpdatedAt == this.serverUpdatedAt &&
+          other.id == this.id &&
+          other.bucketId == this.bucketId &&
+          other.actorUid == this.actorUid &&
+          other.type == this.type &&
+          other.category == this.category &&
+          other.summary == this.summary &&
+          other.metadata == this.metadata &&
+          other.correlationId == this.correlationId &&
+          other.createdAt == this.createdAt);
+}
+
+class BucketActivityRowsCompanion extends UpdateCompanion<BucketActivityRow> {
+  final Value<String> syncState;
+  final Value<bool> deletedLocal;
+  final Value<DateTime?> updatedAtLocal;
+  final Value<DateTime?> serverUpdatedAt;
+  final Value<String> id;
+  final Value<String> bucketId;
+  final Value<String?> actorUid;
+  final Value<String> type;
+  final Value<String> category;
+  final Value<String> summary;
+  final Value<String> metadata;
+  final Value<String?> correlationId;
+  final Value<DateTime?> createdAt;
+  final Value<int> rowid;
+  const BucketActivityRowsCompanion({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.bucketId = const Value.absent(),
+    this.actorUid = const Value.absent(),
+    this.type = const Value.absent(),
+    this.category = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.correlationId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BucketActivityRowsCompanion.insert({
+    this.syncState = const Value.absent(),
+    this.deletedLocal = const Value.absent(),
+    this.updatedAtLocal = const Value.absent(),
+    this.serverUpdatedAt = const Value.absent(),
+    required String id,
+    required String bucketId,
+    this.actorUid = const Value.absent(),
+    this.type = const Value.absent(),
+    this.category = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.correlationId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       bucketId = Value(bucketId);
+  static Insertable<BucketActivityRow> custom({
+    Expression<String>? syncState,
+    Expression<bool>? deletedLocal,
+    Expression<DateTime>? updatedAtLocal,
+    Expression<DateTime>? serverUpdatedAt,
+    Expression<String>? id,
+    Expression<String>? bucketId,
+    Expression<String>? actorUid,
+    Expression<String>? type,
+    Expression<String>? category,
+    Expression<String>? summary,
+    Expression<String>? metadata,
+    Expression<String>? correlationId,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (syncState != null) 'sync_state': syncState,
+      if (deletedLocal != null) 'deleted_local': deletedLocal,
+      if (updatedAtLocal != null) 'updated_at_local': updatedAtLocal,
+      if (serverUpdatedAt != null) 'server_updated_at': serverUpdatedAt,
+      if (id != null) 'id': id,
+      if (bucketId != null) 'bucket_id': bucketId,
+      if (actorUid != null) 'actor_uid': actorUid,
+      if (type != null) 'type': type,
+      if (category != null) 'category': category,
+      if (summary != null) 'summary': summary,
+      if (metadata != null) 'metadata': metadata,
+      if (correlationId != null) 'correlation_id': correlationId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BucketActivityRowsCompanion copyWith({
+    Value<String>? syncState,
+    Value<bool>? deletedLocal,
+    Value<DateTime?>? updatedAtLocal,
+    Value<DateTime?>? serverUpdatedAt,
+    Value<String>? id,
+    Value<String>? bucketId,
+    Value<String?>? actorUid,
+    Value<String>? type,
+    Value<String>? category,
+    Value<String>? summary,
+    Value<String>? metadata,
+    Value<String?>? correlationId,
+    Value<DateTime?>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return BucketActivityRowsCompanion(
+      syncState: syncState ?? this.syncState,
+      deletedLocal: deletedLocal ?? this.deletedLocal,
+      updatedAtLocal: updatedAtLocal ?? this.updatedAtLocal,
+      serverUpdatedAt: serverUpdatedAt ?? this.serverUpdatedAt,
+      id: id ?? this.id,
+      bucketId: bucketId ?? this.bucketId,
+      actorUid: actorUid ?? this.actorUid,
+      type: type ?? this.type,
+      category: category ?? this.category,
+      summary: summary ?? this.summary,
+      metadata: metadata ?? this.metadata,
+      correlationId: correlationId ?? this.correlationId,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (deletedLocal.present) {
+      map['deleted_local'] = Variable<bool>(deletedLocal.value);
+    }
+    if (updatedAtLocal.present) {
+      map['updated_at_local'] = Variable<DateTime>(updatedAtLocal.value);
+    }
+    if (serverUpdatedAt.present) {
+      map['server_updated_at'] = Variable<DateTime>(serverUpdatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (bucketId.present) {
+      map['bucket_id'] = Variable<String>(bucketId.value);
+    }
+    if (actorUid.present) {
+      map['actor_uid'] = Variable<String>(actorUid.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
+    }
+    if (metadata.present) {
+      map['metadata'] = Variable<String>(metadata.value);
+    }
+    if (correlationId.present) {
+      map['correlation_id'] = Variable<String>(correlationId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BucketActivityRowsCompanion(')
+          ..write('syncState: $syncState, ')
+          ..write('deletedLocal: $deletedLocal, ')
+          ..write('updatedAtLocal: $updatedAtLocal, ')
+          ..write('serverUpdatedAt: $serverUpdatedAt, ')
+          ..write('id: $id, ')
+          ..write('bucketId: $bucketId, ')
+          ..write('actorUid: $actorUid, ')
+          ..write('type: $type, ')
+          ..write('category: $category, ')
+          ..write('summary: $summary, ')
+          ..write('metadata: $metadata, ')
+          ..write('correlationId: $correlationId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $OutboxTable extends Outbox with TableInfo<$OutboxTable, OutboxData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -6468,6 +8493,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $JoinRequestRowsTable joinRequestRows = $JoinRequestRowsTable(
     this,
   );
+  late final $UserNotificationRowsTable userNotificationRows =
+      $UserNotificationRowsTable(this);
+  late final $BucketActivityRowsTable bucketActivityRows =
+      $BucketActivityRowsTable(this);
   late final $OutboxTable outbox = $OutboxTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -6482,6 +8511,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     categories,
     notificationRows,
     joinRequestRows,
+    userNotificationRows,
+    bucketActivityRows,
     outbox,
   ];
 }
@@ -6500,6 +8531,9 @@ typedef $$BucketsTableCreateCompanionBuilder =
       required String monthStartDate,
       Value<double> remainingMainBucket,
       Value<String> currency,
+      Value<String> status,
+      Value<DateTime?> deletedAt,
+      Value<String?> deletedBy,
       Value<DateTime?> createdAt,
       Value<int> rowid,
     });
@@ -6517,6 +8551,9 @@ typedef $$BucketsTableUpdateCompanionBuilder =
       Value<String> monthStartDate,
       Value<double> remainingMainBucket,
       Value<String> currency,
+      Value<String> status,
+      Value<DateTime?> deletedAt,
+      Value<String?> deletedBy,
       Value<DateTime?> createdAt,
       Value<int> rowid,
     });
@@ -6587,6 +8624,21 @@ class $$BucketsTableFilterComposer
 
   ColumnFilters<String> get currency => $composableBuilder(
     column: $table.currency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deletedBy => $composableBuilder(
+    column: $table.deletedBy,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6665,6 +8717,21 @@ class $$BucketsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deletedBy => $composableBuilder(
+    column: $table.deletedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6728,6 +8795,15 @@ class $$BucketsTableAnnotationComposer
   GeneratedColumn<String> get currency =>
       $composableBuilder(column: $table.currency, builder: (column) => column);
 
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedBy =>
+      $composableBuilder(column: $table.deletedBy, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -6772,6 +8848,9 @@ class $$BucketsTableTableManager
                 Value<String> monthStartDate = const Value.absent(),
                 Value<double> remainingMainBucket = const Value.absent(),
                 Value<String> currency = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> deletedBy = const Value.absent(),
                 Value<DateTime?> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BucketsCompanion(
@@ -6787,6 +8866,9 @@ class $$BucketsTableTableManager
                 monthStartDate: monthStartDate,
                 remainingMainBucket: remainingMainBucket,
                 currency: currency,
+                status: status,
+                deletedAt: deletedAt,
+                deletedBy: deletedBy,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -6804,6 +8886,9 @@ class $$BucketsTableTableManager
                 required String monthStartDate,
                 Value<double> remainingMainBucket = const Value.absent(),
                 Value<String> currency = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> deletedBy = const Value.absent(),
                 Value<DateTime?> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BucketsCompanion.insert(
@@ -6819,6 +8904,9 @@ class $$BucketsTableTableManager
                 monthStartDate: monthStartDate,
                 remainingMainBucket: remainingMainBucket,
                 currency: currency,
+                status: status,
+                deletedAt: deletedAt,
+                deletedBy: deletedBy,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -7950,6 +10038,7 @@ typedef $$BucketMemberRowsTableCreateCompanionBuilder =
       Value<DateTime?> joinedAt,
       Value<String?> name,
       Value<String?> photoUrl,
+      Value<String> role,
       Value<int> rowid,
     });
 typedef $$BucketMemberRowsTableUpdateCompanionBuilder =
@@ -7963,6 +10052,7 @@ typedef $$BucketMemberRowsTableUpdateCompanionBuilder =
       Value<DateTime?> joinedAt,
       Value<String?> name,
       Value<String?> photoUrl,
+      Value<String> role,
       Value<int> rowid,
     });
 
@@ -8017,6 +10107,11 @@ class $$BucketMemberRowsTableFilterComposer
 
   ColumnFilters<String> get photoUrl => $composableBuilder(
     column: $table.photoUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -8074,6 +10169,11 @@ class $$BucketMemberRowsTableOrderingComposer
     column: $table.photoUrl,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$BucketMemberRowsTableAnnotationComposer
@@ -8117,6 +10217,9 @@ class $$BucketMemberRowsTableAnnotationComposer
 
   GeneratedColumn<String> get photoUrl =>
       $composableBuilder(column: $table.photoUrl, builder: (column) => column);
+
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
 }
 
 class $$BucketMemberRowsTableTableManager
@@ -8165,6 +10268,7 @@ class $$BucketMemberRowsTableTableManager
                 Value<DateTime?> joinedAt = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<String> role = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BucketMemberRowsCompanion(
                 syncState: syncState,
@@ -8176,6 +10280,7 @@ class $$BucketMemberRowsTableTableManager
                 joinedAt: joinedAt,
                 name: name,
                 photoUrl: photoUrl,
+                role: role,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -8189,6 +10294,7 @@ class $$BucketMemberRowsTableTableManager
                 Value<DateTime?> joinedAt = const Value.absent(),
                 Value<String?> name = const Value.absent(),
                 Value<String?> photoUrl = const Value.absent(),
+                Value<String> role = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => BucketMemberRowsCompanion.insert(
                 syncState: syncState,
@@ -8200,6 +10306,7 @@ class $$BucketMemberRowsTableTableManager
                 joinedAt: joinedAt,
                 name: name,
                 photoUrl: photoUrl,
+                role: role,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -9207,6 +11314,875 @@ typedef $$JoinRequestRowsTableProcessedTableManager =
       JoinRequestRow,
       PrefetchHooks Function()
     >;
+typedef $$UserNotificationRowsTableCreateCompanionBuilder =
+    UserNotificationRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      required String id,
+      required String recipientUid,
+      Value<String> eventId,
+      Value<String> type,
+      Value<String> category,
+      Value<String?> bucketId,
+      Value<String> bucketName,
+      Value<String?> actorUid,
+      Value<String> title,
+      Value<String> body,
+      Value<String> metadata,
+      Value<String?> correlationId,
+      Value<DateTime?> createdAt,
+      Value<DateTime?> readAt,
+      Value<DateTime?> archivedAt,
+      Value<int> rowid,
+    });
+typedef $$UserNotificationRowsTableUpdateCompanionBuilder =
+    UserNotificationRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String> id,
+      Value<String> recipientUid,
+      Value<String> eventId,
+      Value<String> type,
+      Value<String> category,
+      Value<String?> bucketId,
+      Value<String> bucketName,
+      Value<String?> actorUid,
+      Value<String> title,
+      Value<String> body,
+      Value<String> metadata,
+      Value<String?> correlationId,
+      Value<DateTime?> createdAt,
+      Value<DateTime?> readAt,
+      Value<DateTime?> archivedAt,
+      Value<int> rowid,
+    });
+
+class $$UserNotificationRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $UserNotificationRowsTable> {
+  $$UserNotificationRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recipientUid => $composableBuilder(
+    column: $table.recipientUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventId => $composableBuilder(
+    column: $table.eventId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actorUid => $composableBuilder(
+    column: $table.actorUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserNotificationRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserNotificationRowsTable> {
+  $$UserNotificationRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recipientUid => $composableBuilder(
+    column: $table.recipientUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventId => $composableBuilder(
+    column: $table.eventId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actorUid => $composableBuilder(
+    column: $table.actorUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get body => $composableBuilder(
+    column: $table.body,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get readAt => $composableBuilder(
+    column: $table.readAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserNotificationRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserNotificationRowsTable> {
+  $$UserNotificationRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get recipientUid => $composableBuilder(
+    column: $table.recipientUid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eventId =>
+      $composableBuilder(column: $table.eventId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get bucketId =>
+      $composableBuilder(column: $table.bucketId, builder: (column) => column);
+
+  GeneratedColumn<String> get bucketName => $composableBuilder(
+    column: $table.bucketName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get actorUid =>
+      $composableBuilder(column: $table.actorUid, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  GeneratedColumn<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get readAt =>
+      $composableBuilder(column: $table.readAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$UserNotificationRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserNotificationRowsTable,
+          UserNotificationRow,
+          $$UserNotificationRowsTableFilterComposer,
+          $$UserNotificationRowsTableOrderingComposer,
+          $$UserNotificationRowsTableAnnotationComposer,
+          $$UserNotificationRowsTableCreateCompanionBuilder,
+          $$UserNotificationRowsTableUpdateCompanionBuilder,
+          (
+            UserNotificationRow,
+            BaseReferences<
+              _$AppDatabase,
+              $UserNotificationRowsTable,
+              UserNotificationRow
+            >,
+          ),
+          UserNotificationRow,
+          PrefetchHooks Function()
+        > {
+  $$UserNotificationRowsTableTableManager(
+    _$AppDatabase db,
+    $UserNotificationRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserNotificationRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserNotificationRowsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$UserNotificationRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> recipientUid = const Value.absent(),
+                Value<String> eventId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String?> bucketId = const Value.absent(),
+                Value<String> bucketName = const Value.absent(),
+                Value<String?> actorUid = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> metadata = const Value.absent(),
+                Value<String?> correlationId = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime?> readAt = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserNotificationRowsCompanion(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                recipientUid: recipientUid,
+                eventId: eventId,
+                type: type,
+                category: category,
+                bucketId: bucketId,
+                bucketName: bucketName,
+                actorUid: actorUid,
+                title: title,
+                body: body,
+                metadata: metadata,
+                correlationId: correlationId,
+                createdAt: createdAt,
+                readAt: readAt,
+                archivedAt: archivedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                required String id,
+                required String recipientUid,
+                Value<String> eventId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String?> bucketId = const Value.absent(),
+                Value<String> bucketName = const Value.absent(),
+                Value<String?> actorUid = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> body = const Value.absent(),
+                Value<String> metadata = const Value.absent(),
+                Value<String?> correlationId = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<DateTime?> readAt = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserNotificationRowsCompanion.insert(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                recipientUid: recipientUid,
+                eventId: eventId,
+                type: type,
+                category: category,
+                bucketId: bucketId,
+                bucketName: bucketName,
+                actorUid: actorUid,
+                title: title,
+                body: body,
+                metadata: metadata,
+                correlationId: correlationId,
+                createdAt: createdAt,
+                readAt: readAt,
+                archivedAt: archivedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserNotificationRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserNotificationRowsTable,
+      UserNotificationRow,
+      $$UserNotificationRowsTableFilterComposer,
+      $$UserNotificationRowsTableOrderingComposer,
+      $$UserNotificationRowsTableAnnotationComposer,
+      $$UserNotificationRowsTableCreateCompanionBuilder,
+      $$UserNotificationRowsTableUpdateCompanionBuilder,
+      (
+        UserNotificationRow,
+        BaseReferences<
+          _$AppDatabase,
+          $UserNotificationRowsTable,
+          UserNotificationRow
+        >,
+      ),
+      UserNotificationRow,
+      PrefetchHooks Function()
+    >;
+typedef $$BucketActivityRowsTableCreateCompanionBuilder =
+    BucketActivityRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      required String id,
+      required String bucketId,
+      Value<String?> actorUid,
+      Value<String> type,
+      Value<String> category,
+      Value<String> summary,
+      Value<String> metadata,
+      Value<String?> correlationId,
+      Value<DateTime?> createdAt,
+      Value<int> rowid,
+    });
+typedef $$BucketActivityRowsTableUpdateCompanionBuilder =
+    BucketActivityRowsCompanion Function({
+      Value<String> syncState,
+      Value<bool> deletedLocal,
+      Value<DateTime?> updatedAtLocal,
+      Value<DateTime?> serverUpdatedAt,
+      Value<String> id,
+      Value<String> bucketId,
+      Value<String?> actorUid,
+      Value<String> type,
+      Value<String> category,
+      Value<String> summary,
+      Value<String> metadata,
+      Value<String?> correlationId,
+      Value<DateTime?> createdAt,
+      Value<int> rowid,
+    });
+
+class $$BucketActivityRowsTableFilterComposer
+    extends Composer<_$AppDatabase, $BucketActivityRowsTable> {
+  $$BucketActivityRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actorUid => $composableBuilder(
+    column: $table.actorUid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BucketActivityRowsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BucketActivityRowsTable> {
+  $$BucketActivityRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bucketId => $composableBuilder(
+    column: $table.bucketId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actorUid => $composableBuilder(
+    column: $table.actorUid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+    column: $table.metadata,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BucketActivityRowsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BucketActivityRowsTable> {
+  $$BucketActivityRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<bool> get deletedLocal => $composableBuilder(
+    column: $table.deletedLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAtLocal => $composableBuilder(
+    column: $table.updatedAtLocal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get serverUpdatedAt => $composableBuilder(
+    column: $table.serverUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get bucketId =>
+      $composableBuilder(column: $table.bucketId, builder: (column) => column);
+
+  GeneratedColumn<String> get actorUid =>
+      $composableBuilder(column: $table.actorUid, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  GeneratedColumn<String> get correlationId => $composableBuilder(
+    column: $table.correlationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$BucketActivityRowsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BucketActivityRowsTable,
+          BucketActivityRow,
+          $$BucketActivityRowsTableFilterComposer,
+          $$BucketActivityRowsTableOrderingComposer,
+          $$BucketActivityRowsTableAnnotationComposer,
+          $$BucketActivityRowsTableCreateCompanionBuilder,
+          $$BucketActivityRowsTableUpdateCompanionBuilder,
+          (
+            BucketActivityRow,
+            BaseReferences<
+              _$AppDatabase,
+              $BucketActivityRowsTable,
+              BucketActivityRow
+            >,
+          ),
+          BucketActivityRow,
+          PrefetchHooks Function()
+        > {
+  $$BucketActivityRowsTableTableManager(
+    _$AppDatabase db,
+    $BucketActivityRowsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BucketActivityRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BucketActivityRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BucketActivityRowsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> bucketId = const Value.absent(),
+                Value<String?> actorUid = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> summary = const Value.absent(),
+                Value<String> metadata = const Value.absent(),
+                Value<String?> correlationId = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BucketActivityRowsCompanion(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                bucketId: bucketId,
+                actorUid: actorUid,
+                type: type,
+                category: category,
+                summary: summary,
+                metadata: metadata,
+                correlationId: correlationId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncState = const Value.absent(),
+                Value<bool> deletedLocal = const Value.absent(),
+                Value<DateTime?> updatedAtLocal = const Value.absent(),
+                Value<DateTime?> serverUpdatedAt = const Value.absent(),
+                required String id,
+                required String bucketId,
+                Value<String?> actorUid = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> category = const Value.absent(),
+                Value<String> summary = const Value.absent(),
+                Value<String> metadata = const Value.absent(),
+                Value<String?> correlationId = const Value.absent(),
+                Value<DateTime?> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BucketActivityRowsCompanion.insert(
+                syncState: syncState,
+                deletedLocal: deletedLocal,
+                updatedAtLocal: updatedAtLocal,
+                serverUpdatedAt: serverUpdatedAt,
+                id: id,
+                bucketId: bucketId,
+                actorUid: actorUid,
+                type: type,
+                category: category,
+                summary: summary,
+                metadata: metadata,
+                correlationId: correlationId,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BucketActivityRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BucketActivityRowsTable,
+      BucketActivityRow,
+      $$BucketActivityRowsTableFilterComposer,
+      $$BucketActivityRowsTableOrderingComposer,
+      $$BucketActivityRowsTableAnnotationComposer,
+      $$BucketActivityRowsTableCreateCompanionBuilder,
+      $$BucketActivityRowsTableUpdateCompanionBuilder,
+      (
+        BucketActivityRow,
+        BaseReferences<
+          _$AppDatabase,
+          $BucketActivityRowsTable,
+          BucketActivityRow
+        >,
+      ),
+      BucketActivityRow,
+      PrefetchHooks Function()
+    >;
 typedef $$OutboxTableCreateCompanionBuilder =
     OutboxCompanion Function({
       required String id,
@@ -9558,6 +12534,10 @@ class $AppDatabaseManager {
       $$NotificationRowsTableTableManager(_db, _db.notificationRows);
   $$JoinRequestRowsTableTableManager get joinRequestRows =>
       $$JoinRequestRowsTableTableManager(_db, _db.joinRequestRows);
+  $$UserNotificationRowsTableTableManager get userNotificationRows =>
+      $$UserNotificationRowsTableTableManager(_db, _db.userNotificationRows);
+  $$BucketActivityRowsTableTableManager get bucketActivityRows =>
+      $$BucketActivityRowsTableTableManager(_db, _db.bucketActivityRows);
   $$OutboxTableTableManager get outbox =>
       $$OutboxTableTableManager(_db, _db.outbox);
 }

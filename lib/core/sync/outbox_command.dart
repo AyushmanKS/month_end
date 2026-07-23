@@ -18,6 +18,9 @@ enum OutboxOp {
   joinRequestDecide,
   joinRequestCancel,
   markNotificationsRead,
+  inboxMarkRead,
+  inboxMarkAllRead,
+  inboxArchive,
   profileUpdate,
 }
 

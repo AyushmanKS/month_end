@@ -11,78 +11,90 @@ import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_skeletons.dart';
-import '../../../../shared_providers/supabase_providers.dart';
-import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/user_notification.dart';
 import '../providers/notification_providers.dart';
 import '../../../bucket/domain/entities/join_request.dart';
 import '../../../bucket/presentation/providers/join_request_providers.dart';
 import '../../../suggestions/presentation/providers/suggestion_providers.dart';
 import '../../../suggestions/presentation/widgets/suggestion_card.dart';
 
-class NotificationsScreen extends ConsumerStatefulWidget {
+class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
 
-  @override
-  ConsumerState<NotificationsScreen> createState() =>
-      _NotificationsScreenState();
-}
-
-class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => markNotificationsRead(ref),
-    );
-  }
-
-  String _iconFor(AppNotificationType type) {
+  String _iconFor(String type) {
     switch (type) {
-      case AppNotificationType.expenseAdded:
+      case 'expense_added':
         return AppAssets.addCircle;
-      case AppNotificationType.expenseEdited:
+      case 'expense_edited':
         return AppAssets.edit;
-      case AppNotificationType.expenseDeleted:
+      case 'expense_deleted':
         return AppAssets.delete;
-      case AppNotificationType.bigExpenseAdded:
+      case 'big_expense_added':
         return AppAssets.bolt;
-      case AppNotificationType.budgetThreshold:
+      case 'budget_threshold':
         return AppAssets.warning;
-      case AppNotificationType.ownershipTransferred:
+      case 'budget_changed':
+      case 'currency_changed':
+      case 'week_total_edited':
+        return AppAssets.payments;
+      case 'ownership_transferred':
+      case 'ownership_transferred_to_you':
+      case 'ownership_transferred_away':
         return AppAssets.swapHorizontal;
-      case AppNotificationType.memberLeft:
+      case 'member_joined':
+      case 'join_requested':
+      case 'join_accepted':
+        return AppAssets.personAdd;
+      case 'member_left':
+      case 'member_removed':
+      case 'removed_from_bucket':
+      case 'join_rejected':
         return AppAssets.personOff;
-      case AppNotificationType.joinRequested:
-        return AppAssets.personAdd;
-      case AppNotificationType.memberJoined:
-        return AppAssets.personAdd;
-      case AppNotificationType.unknown:
+      case 'bucket_deleted':
+        return AppAssets.delete;
+      case 'bucket_archived':
+        return AppAssets.folder;
+      case 'bucket_restored':
+      case 'bucket_created':
+        return AppAssets.savings;
+      default:
         return AppAssets.notificationNone;
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final notificationsAsync = ref.watch(notificationsProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final inboxAsync = ref.watch(inboxProvider);
     final suggestions = ref.watch(suggestionsProvider).value ?? const [];
     final joinRequests =
         ref.watch(incomingJoinRequestsProvider).value ?? const [];
-    final userId = ref.watch(currentUserIdProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Activity')),
+      appBar: AppBar(
+        title: const Text('Activity'),
+        actions: [
+          if ((inboxAsync.value ?? const []).any((n) => n.isUnread))
+            TextButton(
+              onPressed: () => markAllInboxRead(ref),
+              child: const Text('Mark all read'),
+            ),
+        ],
+      ),
       body: SafeArea(
-        child: notificationsAsync.when(
+        child: inboxAsync.when(
           loading: () => const NotificationsSkeleton(),
           error: (e, _) => AppErrorView(message: ErrorHandler.userMessage(e)),
-          data: (notifications) {
+          data: (inbox) {
+            final notifications = inbox
+                .where((n) => n.type != 'join_requested')
+                .toList();
             if (notifications.isEmpty &&
                 suggestions.isEmpty &&
                 joinRequests.isEmpty) {
               return const AppEmptyState(
                 title: 'Nothing yet',
                 subtitle:
-                    'Expenses, big spends and budget alerts will show here.',
+                    'Invites, membership changes and budget alerts show here.',
                 icon: AppAssets.notificationNone,
               );
             }
@@ -124,12 +136,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                     child:
-                        _NotificationTile(
+                        _InboxTile(
                           notification: notifications[i],
                           icon: _iconFor(notifications[i].type),
-                          unread:
-                              userId != null &&
-                              !notifications[i].isReadBy(userId),
+                          onTap: () => markInboxRead(ref, notifications[i].id),
+                          onArchive: () => archiveInboxNotification(
+                            ref,
+                            notifications[i].id,
+                          ),
                         ).animate().fadeIn(
                           delay: AppDurations.listStagger * (i % 8),
                           duration: AppDurations.fast,
@@ -138,6 +152,104 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _InboxTile extends StatelessWidget {
+  const _InboxTile({
+    required this.notification,
+    required this.icon,
+    required this.onTap,
+    required this.onArchive,
+  });
+
+  final UserNotification notification;
+  final String icon;
+  final VoidCallback onTap;
+  final VoidCallback onArchive;
+
+  @override
+  Widget build(BuildContext context) {
+    final unread = notification.isUnread;
+    final title = notification.title.isEmpty
+        ? notification.body
+        : notification.title;
+    return Dismissible(
+      key: ValueKey(notification.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onArchive(),
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: AppSpacing.lg),
+        child: const AppIcon(AppAssets.inbox, color: AppColors.primary),
+      ),
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  child: AppIcon(icon, size: 20, color: AppColors.primary),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: unread
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                        ),
+                      ),
+                      if (notification.body.isNotEmpty &&
+                          notification.title.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          notification.body,
+                          style: TextStyle(
+                            color: context.brand.textSecondary,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 2),
+                      Text(
+                        notification.createdAt != null
+                            ? AppDateUtils.dayYear(notification.createdAt!)
+                            : '',
+                        style: TextStyle(
+                          color: context.brand.textSecondary,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (unread)
+                  Container(
+                    margin: const EdgeInsets.only(top: 4, left: AppSpacing.xs),
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -222,65 +334,6 @@ class _JoinRequestCardState extends ConsumerState<_JoinRequestCard> {
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NotificationTile extends StatelessWidget {
-  const _NotificationTile({
-    required this.notification,
-    required this.icon,
-    required this.unread,
-  });
-
-  final AppNotification notification;
-  final String icon;
-  final bool unread;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-              child: AppIcon(icon, size: 20, color: AppColors.primary),
-            ),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notification.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    AppDateUtils.dayYear(notification.createdAt),
-                    style: TextStyle(
-                      color: context.brand.textSecondary,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (unread)
-              Container(
-                width: 10,
-                height: 10,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-              ),
           ],
         ),
       ),

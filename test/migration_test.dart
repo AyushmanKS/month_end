@@ -20,13 +20,13 @@ void main() {
     );
   });
 
-  test('migrating v1 to v2 matches the generated snapshot', () async {
+  test('migrating from v1 to latest matches the generated snapshot', () async {
     final verifier = SchemaVerifier(GeneratedHelper());
     final connection = await verifier.startAt(1);
     final db = AppDatabase.forTesting(connection);
     addTearDown(db.close);
 
-    await verifier.migrateAndValidate(db, 2);
+    await verifier.migrateAndValidate(db, 3);
   });
 
   test('foreign keys are enabled on open', () async {

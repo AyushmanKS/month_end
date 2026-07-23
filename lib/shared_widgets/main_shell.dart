@@ -31,12 +31,13 @@ class MainShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).uri.path;
     final currentIndex = _indexForLocation(location);
-    final unread = ref.watch(unreadNotificationCountProvider);
+    final unread = ref.watch(unreadInboxCountProvider);
     final hasBuckets = ref.watch(myBucketsProvider).value?.isNotEmpty ?? false;
     ref.watch(thresholdWatcherProvider);
     ref.watch(bucketHydratorProvider);
     ref.watch(expenseHydratorProvider);
     ref.watch(joinRequestHydratorProvider);
+    ref.watch(inboxHydratorProvider);
 
     return Scaffold(
       extendBody: true,

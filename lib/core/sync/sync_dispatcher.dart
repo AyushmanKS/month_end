@@ -130,6 +130,18 @@ class SupabaseSyncDispatcher implements SyncDispatcher {
           'mark_notifications_read',
           params: {'p_bucket_id': row.entityId},
         );
+      case OutboxOp.inboxMarkRead:
+        await _client.rpc(
+          'mark_notification_read',
+          params: {'p_id': row.entityId},
+        );
+      case OutboxOp.inboxMarkAllRead:
+        await _client.rpc('mark_all_notifications_read');
+      case OutboxOp.inboxArchive:
+        await _client.rpc(
+          'archive_notification',
+          params: {'p_id': row.entityId},
+        );
       case OutboxOp.inviteByUsername:
         final user = await _client
             .from('users')

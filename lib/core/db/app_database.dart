@@ -20,6 +20,9 @@ class Buckets extends Table with SyncColumns {
   TextColumn get monthStartDate => text()();
   RealColumn get remainingMainBucket => real().withDefault(const Constant(0))();
   TextColumn get currency => text().withDefault(const Constant('INR'))();
+  TextColumn get status => text().withDefault(const Constant('active'))();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+  TextColumn get deletedBy => text().nullable()();
   DateTimeColumn get createdAt => dateTime().nullable()();
 
   @override
@@ -79,6 +82,7 @@ class BucketMemberRows extends Table with SyncColumns {
   DateTimeColumn get joinedAt => dateTime().nullable()();
   TextColumn get name => text().nullable()();
   TextColumn get photoUrl => text().nullable()();
+  TextColumn get role => text().withDefault(const Constant('member'))();
 
   @override
   Set<Column> get primaryKey => {bucketId, userId};
@@ -104,6 +108,44 @@ class NotificationRows extends Table with SyncColumns {
   DateTimeColumn get createdAt => dateTime().nullable()();
   TextColumn get actorUid => text().nullable()();
   TextColumn get readBy => text().withDefault(const Constant('[]'))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('UserNotificationRow')
+class UserNotificationRows extends Table with SyncColumns {
+  TextColumn get id => text()();
+  TextColumn get recipientUid => text()();
+  TextColumn get eventId => text().withDefault(const Constant(''))();
+  TextColumn get type => text().withDefault(const Constant('unknown'))();
+  TextColumn get category => text().withDefault(const Constant('bucket'))();
+  TextColumn get bucketId => text().nullable()();
+  TextColumn get bucketName => text().withDefault(const Constant(''))();
+  TextColumn get actorUid => text().nullable()();
+  TextColumn get title => text().withDefault(const Constant(''))();
+  TextColumn get body => text().withDefault(const Constant(''))();
+  TextColumn get metadata => text().withDefault(const Constant('{}'))();
+  TextColumn get correlationId => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().nullable()();
+  DateTimeColumn get readAt => dateTime().nullable()();
+  DateTimeColumn get archivedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DataClassName('BucketActivityRow')
+class BucketActivityRows extends Table with SyncColumns {
+  TextColumn get id => text()();
+  TextColumn get bucketId => text()();
+  TextColumn get actorUid => text().nullable()();
+  TextColumn get type => text().withDefault(const Constant('unknown'))();
+  TextColumn get category => text().withDefault(const Constant('bucket'))();
+  TextColumn get summary => text().withDefault(const Constant(''))();
+  TextColumn get metadata => text().withDefault(const Constant('{}'))();
+  TextColumn get correlationId => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().nullable()();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -153,6 +195,8 @@ class Outbox extends Table {
     Categories,
     NotificationRows,
     JoinRequestRows,
+    UserNotificationRows,
+    BucketActivityRows,
     Outbox,
   ],
 )
@@ -161,7 +205,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -169,6 +213,14 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) {
         await m.createTable(joinRequestRows);
+      }
+      if (from < 3) {
+        await m.createTable(userNotificationRows);
+        await m.createTable(bucketActivityRows);
+        await m.addColumn(buckets, buckets.status);
+        await m.addColumn(buckets, buckets.deletedAt);
+        await m.addColumn(buckets, buckets.deletedBy);
+        await m.addColumn(bucketMemberRows, bucketMemberRows.role);
       }
     },
     beforeOpen: (details) async {
@@ -186,6 +238,8 @@ class AppDatabase extends _$AppDatabase {
       b.deleteWhere(categories, (_) => const Constant(true));
       b.deleteWhere(notificationRows, (_) => const Constant(true));
       b.deleteWhere(joinRequestRows, (_) => const Constant(true));
+      b.deleteWhere(userNotificationRows, (_) => const Constant(true));
+      b.deleteWhere(bucketActivityRows, (_) => const Constant(true));
       b.deleteWhere(outbox, (_) => const Constant(true));
     });
   }
