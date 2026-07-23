@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:cross_file/cross_file.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +30,15 @@ class CloudinaryImageUploadService implements ImageUploadService {
       'https://api.cloudinary.com/v1_1/$_cloudName/image/upload',
     );
     final request = http.MultipartRequest('POST', uri)
-      ..fields['upload_preset'] = _preset
-      ..files.add(await http.MultipartFile.fromPath('file', filePath));
+      ..fields['upload_preset'] = _preset;
+    if (kIsWeb) {
+      final bytes = await XFile(filePath).readAsBytes();
+      request.files.add(
+        http.MultipartFile.fromBytes('file', bytes, filename: 'receipt.jpg'),
+      );
+    } else {
+      request.files.add(await http.MultipartFile.fromPath('file', filePath));
+    }
 
     AppLogger.instance.i('Uploading receipt image to Cloudinary');
     final streamed = await _client.send(request);
