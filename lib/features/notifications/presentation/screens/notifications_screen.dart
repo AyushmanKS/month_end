@@ -6,14 +6,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_durations.dart';
 import '../../../../core/constants/app_spacing.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../app/router/route_names.dart';
 import '../../../../core/error/error_handler.dart';
 import '../../../../core/theme/theme_extension.dart';
 import '../../../../core/utils/date_utils.dart';
+import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_skeletons.dart';
 import '../../domain/entities/user_notification.dart';
 import '../providers/notification_providers.dart';
 import '../../../bucket/domain/entities/join_request.dart';
+import '../../../bucket/presentation/providers/bucket_providers.dart';
 import '../../../bucket/presentation/providers/join_request_providers.dart';
 import '../../../suggestions/presentation/providers/suggestion_providers.dart';
 import '../../../suggestions/presentation/widgets/suggestion_card.dart';
@@ -60,6 +64,22 @@ class NotificationsScreen extends ConsumerWidget {
       default:
         return AppAssets.notificationNone;
     }
+  }
+
+  void _showDetail(
+    BuildContext context,
+    WidgetRef ref,
+    UserNotification notification,
+    String icon,
+  ) {
+    markInboxRead(ref, notification.id);
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (_) =>
+          _NotificationDetailSheet(notification: notification, icon: icon),
+    );
   }
 
   @override
@@ -140,6 +160,12 @@ class NotificationsScreen extends ConsumerWidget {
                           notification: notifications[i],
                           icon: _iconFor(notifications[i].type),
                           onTap: () => markInboxRead(ref, notifications[i].id),
+                          onLongPress: () => _showDetail(
+                            context,
+                            ref,
+                            notifications[i],
+                            _iconFor(notifications[i].type),
+                          ),
                           onArchive: () => archiveInboxNotification(
                             ref,
                             notifications[i].id,
@@ -163,12 +189,14 @@ class _InboxTile extends StatelessWidget {
     required this.notification,
     required this.icon,
     required this.onTap,
+    required this.onLongPress,
     required this.onArchive,
   });
 
   final UserNotification notification;
   final String icon;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
   final VoidCallback onArchive;
 
   @override
@@ -188,6 +216,7 @@ class _InboxTile extends StatelessWidget {
       ),
       child: Card(
         child: InkWell(
+          onLongPress: onLongPress,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           onTap: onTap,
           child: Padding(
@@ -251,6 +280,144 @@ class _InboxTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NotificationDetailSheet extends ConsumerWidget {
+  const _NotificationDetailSheet({
+    required this.notification,
+    required this.icon,
+  });
+
+  final UserNotification notification;
+  final String icon;
+
+  String _timestamp(DateTime? date) {
+    if (date == null) return '';
+    final d = date.toLocal();
+    final h = d.hour.toString().padLeft(2, '0');
+    final m = d.minute.toString().padLeft(2, '0');
+    return '${AppDateUtils.dayYear(date)} at $h:$m';
+  }
+
+  String _categoryLabel(NotificationCategory c) {
+    final name = c.name;
+    return name.isEmpty ? '' : '${name[0].toUpperCase()}${name.substring(1)}';
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final n = notification;
+    final buckets = ref.watch(myBucketsProvider).value ?? const [];
+    final bucketExists =
+        n.bucketId != null && buckets.any((b) => b.id == n.bucketId);
+    final hasSeparateBody = n.body.isNotEmpty && n.title.isNotEmpty;
+    final heading = n.title.isEmpty ? n.body : n.title;
+
+    void openBucket({required bool activity}) {
+      ref.read(selectedBucketIdProvider.notifier).state = n.bucketId;
+      Navigator.of(context).pop();
+      if (activity) {
+        context.push(RouteNames.bucketActivity);
+      } else {
+        context.go(RouteNames.home);
+      }
+    }
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          0,
+          AppSpacing.lg,
+          AppSpacing.lg,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 22,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                  child: AppIcon(icon, size: 22, color: AppColors.primary),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Expanded(
+                  child: Text(
+                    heading,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+              ],
+            ),
+            if (hasSeparateBody) ...[
+              const SizedBox(height: AppSpacing.md),
+              Text(n.body, style: Theme.of(context).textTheme.bodyMedium),
+            ],
+            const SizedBox(height: AppSpacing.md),
+            _MetaRow(label: 'When', value: _timestamp(n.createdAt)),
+            if (n.bucketName.isNotEmpty)
+              _MetaRow(label: 'Bucket', value: n.bucketName),
+            _MetaRow(label: 'Category', value: _categoryLabel(n.category)),
+            const SizedBox(height: AppSpacing.lg),
+            if (bucketExists) ...[
+              AppButton(
+                label: 'Open bucket',
+                onPressed: () => openBucket(activity: false),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              AppButton(
+                label: 'View activity',
+                variant: AppButtonVariant.ghost,
+                onPressed: () => openBucket(activity: true),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+            AppButton(
+              label: 'Archive',
+              variant: AppButtonVariant.ghost,
+              icon: AppAssets.inbox,
+              onPressed: () {
+                archiveInboxNotification(ref, n.id);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    if (value.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 84,
+            child: Text(
+              label,
+              style: TextStyle(color: context.brand.textSecondary),
+            ),
+          ),
+          Expanded(
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+          ),
+        ],
       ),
     );
   }
