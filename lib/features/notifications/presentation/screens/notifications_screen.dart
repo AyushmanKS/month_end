@@ -14,6 +14,7 @@ import '../../../../core/utils/date_utils.dart';
 import '../../../../core/widgets/app_button.dart';
 import '../../../../core/widgets/app_loader.dart';
 import '../../../../core/widgets/app_skeletons.dart';
+import '../../../../shared_providers/supabase_providers.dart';
 import '../../domain/entities/user_notification.dart';
 import '../providers/notification_providers.dart';
 import '../../../bucket/domain/entities/join_request.dart';
@@ -307,12 +308,29 @@ class _NotificationDetailSheet extends ConsumerWidget {
     return name.isEmpty ? '' : '${name[0].toUpperCase()}${name.substring(1)}';
   }
 
+  String _actorDisplay(WidgetRef ref, UserNotification n) {
+    if (n.actorUid == null) return '';
+    if (n.actorUid == ref.watch(currentUserIdProvider)) return 'You';
+    if (n.bucketId != null) {
+      final members =
+          ref.watch(bucketMembersFamilyProvider(n.bucketId!)).value ?? const [];
+      for (final m in members) {
+        if (m.userId == n.actorUid) {
+          final name = m.name;
+          if (name != null && name.isNotEmpty) return name;
+        }
+      }
+    }
+    return 'A member';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final n = notification;
     final buckets = ref.watch(myBucketsProvider).value ?? const [];
     final bucketExists =
         n.bucketId != null && buckets.any((b) => b.id == n.bucketId);
+    final actorDisplay = _actorDisplay(ref, n);
     final hasSeparateBody = n.body.isNotEmpty && n.title.isNotEmpty;
     final heading = n.title.isEmpty ? n.body : n.title;
 
@@ -360,6 +378,7 @@ class _NotificationDetailSheet extends ConsumerWidget {
             ],
             const SizedBox(height: AppSpacing.md),
             _MetaRow(label: 'When', value: _timestamp(n.createdAt)),
+            _MetaRow(label: 'By', value: actorDisplay),
             if (n.bucketName.isNotEmpty)
               _MetaRow(label: 'Bucket', value: n.bucketName),
             _MetaRow(label: 'Category', value: _categoryLabel(n.category)),
