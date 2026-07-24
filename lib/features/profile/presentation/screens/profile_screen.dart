@@ -139,8 +139,10 @@ class ProfileScreen extends ConsumerWidget {
     final userAsync = ref.watch(appUserStreamProvider);
     final user = userAsync.value;
     final ownsBuckets = ref.watch(ownedBucketsProvider).isNotEmpty;
+    final hasDeletedBuckets =
+        (ref.watch(deletedBucketsProvider).value ?? const []).isNotEmpty;
     final isRegistered = user != null && !user.isAnonymous;
-    final hasAccountActions = ownsBuckets || isRegistered;
+    final hasAccountActions = ownsBuckets || hasDeletedBuckets || isRegistered;
     final resolvingUser = userAsync.isLoading && !userAsync.hasValue;
     final currency = ref.watch(activeCurrencyProvider);
     final busy = ref.watch(bucketControllerProvider).isLoading;
@@ -196,11 +198,13 @@ class ProfileScreen extends ConsumerWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: AppSpacing.xs),
-                    if (ownsBuckets) ...[
+                    if (ownsBuckets || hasDeletedBuckets) ...[
                       AppButton(
-                        label: 'Manage my buckets',
+                        label: ownsBuckets
+                            ? 'Manage my buckets'
+                            : 'Recently deleted buckets',
                         variant: AppButtonVariant.ghost,
-                        icon: AppAssets.folder,
+                        icon: ownsBuckets ? AppAssets.folder : AppAssets.delete,
                         onPressed: () => context.push(RouteNames.manageBuckets),
                       ),
                       const SizedBox(height: AppSpacing.sm),
