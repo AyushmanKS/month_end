@@ -93,7 +93,7 @@ class NotificationsScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Activity'),
         actions: [
-          if ((inboxAsync.value ?? const []).any((n) => n.isUnread))
+          if (ref.watch(unreadInboxCountProvider) > 0)
             TextButton(
               onPressed: () => markAllInboxRead(ref),
               child: const Text('Mark all read'),
