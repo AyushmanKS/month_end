@@ -158,28 +158,6 @@ class BucketRemoteDataSource {
     }
   }
 
-  Future<List<Bucket>> fetchDeletedBuckets() async {
-    try {
-      final data = await _client.rpc('get_deleted_buckets');
-      final rows = (data as List).cast<Map<String, dynamic>>();
-      return rows.map(Bucket.fromJson).toList();
-    } catch (e, s) {
-      throw ErrorHandler.map(e, s);
-    }
-  }
-
-  Future<Bucket> restoreBucket(String bucketId) async {
-    try {
-      final data = await _client.rpc(
-        'restore_bucket',
-        params: {'p_bucket_id': bucketId},
-      );
-      return Bucket.fromJson(Map<String, dynamic>.from(data as Map));
-    } catch (e, s) {
-      throw ErrorHandler.map(e, s);
-    }
-  }
-
   Future<WeeklyBucket> setWeekManualTotal({
     required String weekId,
     required double amount,

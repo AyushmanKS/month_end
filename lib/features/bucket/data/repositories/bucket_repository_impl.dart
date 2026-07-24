@@ -63,13 +63,6 @@ class BucketRepositoryImpl implements BucketRepository {
   Future<void> deleteBucket(String bucketId) => _remote.deleteBucket(bucketId);
 
   @override
-  Future<List<Bucket>> fetchDeletedBuckets() => _remote.fetchDeletedBuckets();
-
-  @override
-  Future<Bucket> restoreBucket(String bucketId) =>
-      _remote.restoreBucket(bucketId);
-
-  @override
   Future<List<BucketMember>> fetchMembers(String bucketId) =>
       _remote.fetchMembers(bucketId);
 

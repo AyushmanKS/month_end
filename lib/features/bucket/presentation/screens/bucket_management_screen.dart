@@ -72,8 +72,8 @@ class BucketManagementScreen extends ConsumerWidget {
       context,
       title: 'Delete “${bucket.name}”?',
       message:
-          'This moves the bucket to Recently deleted. You can restore it '
-          'within 30 days; after that it is permanently removed.',
+          'This permanently deletes the bucket, its weeks and expenses. This '
+          'cannot be undone.',
       confirmLabel: 'Delete bucket',
       destructive: true,
       icon: AppAssets.delete,
@@ -85,8 +85,7 @@ class BucketManagementScreen extends ConsumerWidget {
     if (!context.mounted) return;
     switch (outcome) {
       case BucketDeleteOutcome.deleted:
-        ref.invalidate(deletedBucketsProvider);
-        showAppSnack('Bucket moved to Recently deleted.', success: true);
+        showAppSnack('Bucket deleted.', success: true);
       case BucketDeleteOutcome.hasMembers:
         _openMultiMemberSheet(context, ref, bucket);
       case BucketDeleteOutcome.offline:
@@ -94,17 +93,6 @@ class BucketManagementScreen extends ConsumerWidget {
       case BucketDeleteOutcome.failed:
         showAppSnack('Could not delete the bucket.');
     }
-  }
-
-  Future<void> _restore(BuildContext context, WidgetRef ref, Bucket b) async {
-    final ok = await ref
-        .read(bucketControllerProvider.notifier)
-        .restoreBucket(b.id);
-    ref.invalidate(deletedBucketsProvider);
-    showAppSnack(
-      ok ? '“${b.name}” restored.' : 'Could not restore the bucket.',
-      success: ok,
-    );
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
@@ -131,9 +119,6 @@ class BucketManagementScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final owned = ref.watch(ownedBucketsProvider);
     final busy = ref.watch(bucketControllerProvider).isLoading;
-    final deleted = forAccountDeletion
-        ? const <Bucket>[]
-        : (ref.watch(deletedBucketsProvider).value ?? const <Bucket>[]);
 
     return Scaffold(
       appBar: AppBar(
@@ -143,7 +128,7 @@ class BucketManagementScreen extends ConsumerWidget {
         child: Column(
           children: [
             Expanded(
-              child: owned.isEmpty && deleted.isEmpty
+              child: owned.isEmpty
                   ? AppEmptyState(
                       title: forAccountDeletion
                           ? 'All buckets resolved'
@@ -177,28 +162,6 @@ class BucketManagementScreen extends ConsumerWidget {
                             onTransfer: () => _transfer(context, ref, bucket),
                             onDelete: () => _delete(context, ref, bucket),
                           ),
-                        if (deleted.isNotEmpty) ...[
-                          const SizedBox(height: AppSpacing.lg),
-                          Text(
-                            'Recently deleted',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: AppSpacing.xs),
-                          for (final bucket in deleted)
-                            Card(
-                              child: ListTile(
-                                leading: const AppIcon(AppAssets.delete),
-                                title: Text(bucket.name),
-                                subtitle: const Text('Restore within 30 days'),
-                                trailing: TextButton(
-                                  onPressed: busy
-                                      ? null
-                                      : () => _restore(context, ref, bucket),
-                                  child: const Text('Restore'),
-                                ),
-                              ),
-                            ),
-                        ],
                       ],
                     ),
             ),
@@ -305,11 +268,7 @@ class _MultiMemberDeleteSheet extends ConsumerWidget {
                         switch (outcome) {
                           case BucketDeleteOutcome.deleted:
                             Navigator.of(context).pop();
-                            ref.invalidate(deletedBucketsProvider);
-                            showAppSnack(
-                              'Bucket moved to Recently deleted.',
-                              success: true,
-                            );
+                            showAppSnack('Bucket deleted.', success: true);
                           case BucketDeleteOutcome.hasMembers:
                             showAppSnack('Remove the remaining members first.');
                           case BucketDeleteOutcome.offline:

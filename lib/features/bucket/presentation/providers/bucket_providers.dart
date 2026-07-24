@@ -397,20 +397,6 @@ class BucketController extends StateNotifier<AsyncValue<Bucket?>> {
     }
   }
 
-  Future<bool> restoreBucket(String bucketId) async {
-    state = const AsyncValue.loading();
-    try {
-      final bucket = await _repo.restoreBucket(bucketId);
-      await _local.upsertBucketLocal(bucket, syncState: 'synced');
-      _ref.read(selectedBucketIdProvider.notifier).state = bucket.id;
-      state = const AsyncValue.data(null);
-      return true;
-    } catch (e, s) {
-      state = AsyncValue.error(ErrorHandler.map(e, s), s);
-      return false;
-    }
-  }
-
   Future<BucketDeleteOutcome> deleteBucket(String bucketId) async {
     if (!(_ref.read(isOnlineProvider).value ?? true)) {
       return BucketDeleteOutcome.offline;
@@ -476,14 +462,3 @@ final bucketControllerProvider =
     StateNotifierProvider<BucketController, AsyncValue<Bucket?>>((ref) {
       return BucketController(ref);
     });
-
-final deletedBucketsProvider = FutureProvider.autoDispose<List<Bucket>>((
-  ref,
-) async {
-  if (!(ref.watch(isOnlineProvider).value ?? true)) return const [];
-  try {
-    return await ref.read(bucketRepositoryProvider).fetchDeletedBuckets();
-  } catch (_) {
-    return const [];
-  }
-});
